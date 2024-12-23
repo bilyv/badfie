@@ -1,6 +1,7 @@
-import { Bell, Moon, Sun, User } from "lucide-react";
+import { Bell, Moon, Sun, User, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +15,7 @@ export function Navbar() {
   return (
     <div className="border-b">
       <div className="flex h-16 items-center px-4">
+        <SidebarTrigger className="mr-4" />
         <div className="ml-auto flex items-center space-x-4">
           <Button
             variant="ghost"

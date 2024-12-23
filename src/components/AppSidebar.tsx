@@ -6,7 +6,9 @@ import {
   Percent, 
   FileText, 
   Users, 
-  Settings 
+  Settings,
+  Package,
+  ArrowUp
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -18,7 +20,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarFooter,
+  SidebarHeader,
 } from "@/components/ui/sidebar";
+import { Button } from "./ui/button";
 
 const menuItems = [
   {
@@ -67,10 +72,14 @@ export function AppSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar>
+    <Sidebar className="w-64">
+      <SidebarHeader className="p-4 flex items-center gap-2 text-lg font-semibold">
+        <Package className="h-6 w-6" />
+        <span>Inventory</span>
+      </SidebarHeader>
+      
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -79,9 +88,10 @@ export function AppSidebar() {
                     asChild 
                     tooltip={item.title}
                     isActive={location.pathname === item.path}
+                    className="h-12 text-base"
                   >
-                    <Link to={item.path} className="flex items-center gap-2">
-                      <item.icon className="h-4 w-4" />
+                    <Link to={item.path} className="flex items-center gap-3">
+                      <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -91,6 +101,19 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter className="p-4 space-y-4">
+        <div className="flex items-center gap-2 text-sm">
+          <div className="flex-1">
+            <p className="font-medium">Business Account</p>
+            <p className="text-muted-foreground text-xs">Pro features available</p>
+          </div>
+          <Button variant="outline" size="sm" className="gap-1">
+            <ArrowUp className="h-4 w-4" />
+            Upgrade
+          </Button>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }
