@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const plans = [
   {
@@ -18,6 +19,8 @@ const plans = [
       "Advanced analytics",
       "Priority support",
       "Custom branding",
+      "API access",
+      "Multiple users",
     ],
   },
   {
@@ -28,6 +31,8 @@ const plans = [
       "Dedicated account manager",
       "Custom integrations",
       "SLA guarantee",
+      "Advanced security",
+      "Custom reporting",
     ],
   },
 ];
@@ -39,43 +44,47 @@ export function useUpgradeDialog() {
   const closeUpgradeDialog = () => setOpen(false);
 
   const handleUpgrade = (planName: string) => {
-    // Here you would implement the actual upgrade logic
-    console.log(`Selected ${planName} plan`);
+    toast({
+      title: "Subscription Updated",
+      description: `Successfully subscribed to ${planName} plan.`,
+    });
     closeUpgradeDialog();
   };
 
   const UpgradeDialog = () => (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Upgrade Your Plan</DialogTitle>
+          <DialogTitle className="text-2xl">Upgrade Your Plan</DialogTitle>
           <DialogDescription>
-            Choose the plan that best fits your needs
+            Choose the plan that best fits your business needs
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-6 py-4 md:grid-cols-2">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className="flex flex-col gap-4 rounded-lg border p-4"
+              className="flex flex-col gap-4 rounded-lg border p-6 hover:border-primary transition-colors"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-semibold">{plan.name}</h4>
-                  <p className="text-sm text-muted-foreground">{plan.price}</p>
-                </div>
-                <Button onClick={() => handleUpgrade(plan.name)}>
-                  Select Plan
-                </Button>
+              <div>
+                <h4 className="text-xl font-semibold">{plan.name}</h4>
+                <p className="text-2xl font-bold mt-2">{plan.price}</p>
               </div>
-              <ul className="space-y-2">
+              <ul className="space-y-3 flex-1">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-green-500" />
-                    {feature}
+                    <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
+              <Button 
+                onClick={() => handleUpgrade(plan.name)}
+                className="w-full mt-4"
+                variant={plan.name === "Enterprise" ? "default" : "outline"}
+              >
+                Get Started
+              </Button>
             </div>
           ))}
         </div>
