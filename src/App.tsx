@@ -16,6 +16,7 @@ import Reports from "./pages/Reports";
 import Users from "./pages/Users";
 import Connect from "./pages/Connect";
 import Settings from "./pages/Settings";
+import Auth from "./pages/Auth";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 
 const queryClient = new QueryClient();
@@ -30,28 +31,36 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <SidebarProvider>
-              <div className="flex min-h-screen w-full">
-                <AppSidebar />
-                <main className="flex-1">
-                  <Navbar />
-                  <div className="container py-6">
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/sales" element={<Sales />} />
-                      <Route path="/expenses" element={<Expenses />} />
-                      <Route path="/tax" element={<Tax />} />
-                      <Route path="/reports" element={<Reports />} />
-                      <Route path="/users" element={<Users />} />
-                      <Route path="/connect" element={<Connect />} />
-                      <Route path="/settings" element={<Settings />} />
-                    </Routes>
-                  </div>
-                </main>
-              </div>
-              <UpgradeDialog />
-            </SidebarProvider>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route
+                path="/*"
+                element={
+                  <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                      <AppSidebar />
+                      <main className="flex-1">
+                        <Navbar />
+                        <div className="container py-6">
+                          <Routes>
+                            <Route path="/" element={<Index />} />
+                            <Route path="/products" element={<Products />} />
+                            <Route path="/sales" element={<Sales />} />
+                            <Route path="/expenses" element={<Expenses />} />
+                            <Route path="/tax" element={<Tax />} />
+                            <Route path="/reports" element={<Reports />} />
+                            <Route path="/users" element={<Users />} />
+                            <Route path="/connect" element={<Connect />} />
+                            <Route path="/settings" element={<Settings />} />
+                          </Routes>
+                        </div>
+                      </main>
+                    </div>
+                    <UpgradeDialog />
+                  </SidebarProvider>
+                }
+              />
+            </Routes>
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
