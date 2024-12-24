@@ -8,7 +8,8 @@ import {
   Users, 
   Settings,
   Package,
-  ArrowUp
+  ArrowUp,
+  Link2
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -24,6 +25,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button";
+import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 
 const menuItems = [
   {
@@ -62,6 +64,11 @@ const menuItems = [
     icon: Users,
   },
   {
+    title: "Connect",
+    path: "/connect",
+    icon: Link2,
+  },
+  {
     title: "Settings",
     path: "/settings",
     icon: Settings,
@@ -70,6 +77,7 @@ const menuItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const { openUpgradeDialog } = useUpgradeDialog();
 
   return (
     <Sidebar className="w-64">
@@ -108,7 +116,7 @@ export function AppSidebar() {
             <p className="font-medium">Business Account</p>
             <p className="text-muted-foreground text-xs">Pro features available</p>
           </div>
-          <Button variant="outline" size="sm" className="gap-1">
+          <Button variant="outline" size="sm" className="gap-1" onClick={openUpgradeDialog}>
             <ArrowUp className="h-4 w-4" />
             Upgrade
           </Button>
