@@ -1,4 +1,4 @@
-import { Bell, Moon, Sun, User, Package } from "lucide-react";
+import { Bell, Moon, Sun, User, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -15,30 +15,52 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 
 export function Navbar() {
   const { setTheme, theme } = useTheme();
-
-  const notifications = [
+  const [notifications, setNotifications] = useState([
     {
       id: 1,
       title: "Low stock alert",
       message: "Product X is running low on stock",
       time: "5 minutes ago",
+      read: false,
     },
     {
       id: 2,
       title: "New order received",
       message: "Order #1234 needs processing",
       time: "10 minutes ago",
+      read: false,
     },
     {
       id: 3,
       title: "Payment received",
       message: "Payment for order #1233 confirmed",
       time: "1 hour ago",
+      read: false,
     },
-  ];
+  ]);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const markAsRead = (id: number) => {
+    setNotifications(notifications.map(n => 
+      n.id === id ? { ...n, read: true } : n
+    ));
+    toast({
+      description: "Notification marked as read",
+    });
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, read: true })));
+    toast({
+      description: "All notifications marked as read",
+    });
+  };
 
   return (
     <div className="border-b">
@@ -53,22 +75,48 @@ export function Navbar() {
                 className="relative"
               >
                 <Bell className="h-5 w-5" />
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-                  {notifications.length}
-                </span>
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                    {unreadCount}
+                  </span>
+                )}
               </Button>
             </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
+            <SheetContent className="w-[320px]">
+              <SheetHeader className="space-y-4">
                 <SheetTitle>Notifications</SheetTitle>
+                {unreadCount > 0 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={markAllAsRead}
+                    className="w-full"
+                  >
+                    Mark all as read
+                  </Button>
+                )}
               </SheetHeader>
               <div className="mt-4 space-y-4">
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className="flex flex-col space-y-1 border-b pb-4 last:border-0"
+                    className={`flex flex-col space-y-1 border-b pb-4 last:border-0 ${
+                      notification.read ? 'opacity-60' : ''
+                    }`}
                   >
-                    <h4 className="text-sm font-medium">{notification.title}</h4>
+                    <div className="flex items-start justify-between">
+                      <h4 className="text-sm font-medium">{notification.title}</h4>
+                      {!notification.read && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => markAsRead(notification.id)}
+                          className="h-6 px-2"
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       {notification.message}
                     </p>
