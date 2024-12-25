@@ -81,8 +81,8 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="w-64">
-      <SidebarHeader className="p-4 flex items-center gap-2 text-lg font-semibold">
-        <Package className="h-6 w-6" />
+      <SidebarHeader className="p-3 flex items-center gap-2 text-base font-semibold">
+        <Package className="h-5 w-5" />
         <span>Inventory</span>
       </SidebarHeader>
       
@@ -96,10 +96,10 @@ export function AppSidebar() {
                     asChild 
                     tooltip={item.title}
                     isActive={location.pathname === item.path}
-                    className="h-12 text-base"
+                    className="h-10 text-sm"
                   >
                     <Link to={item.path} className="flex items-center gap-3">
-                      <item.icon className="h-5 w-5" />
+                      <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -110,7 +110,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 space-y-4">
+      <SidebarFooter className="p-3 space-y-3">
         <div className="flex items-center gap-2 text-sm">
           <div className="flex-1">
             <p className="font-medium">Business Account</p>
