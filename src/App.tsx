@@ -2,11 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "next-themes";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Navbar } from "@/components/Navbar";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import MultiStore from "./pages/MultiStore";
 import Products from "./pages/Products";
@@ -21,6 +23,22 @@ import Auth from "./pages/Auth";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 
 const queryClient = new QueryClient();
+
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+  }, []);
+
+  if (isAuthenticated === null) {
+    return null; // or a loading spinner
+  }
+
+  return isAuthenticated ? children : <Navigate to="/auth" />;
+};
 
 const App = () => {
   const { UpgradeDialog } = useUpgradeDialog();
@@ -37,29 +55,31 @@ const App = () => {
               <Route
                 path="/*"
                 element={
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Navbar />
-                        <div className="container py-6">
-                          <Routes>
-                            <Route path="/" element={<Index />} />
-                            <Route path="/multi-store" element={<MultiStore />} />
-                            <Route path="/products" element={<Products />} />
-                            <Route path="/sales" element={<Sales />} />
-                            <Route path="/expenses" element={<Expenses />} />
-                            <Route path="/tax" element={<Tax />} />
-                            <Route path="/reports" element={<Reports />} />
-                            <Route path="/users" element={<Users />} />
-                            <Route path="/docs-storage" element={<DocsStorage />} />
-                            <Route path="/settings" element={<Settings />} />
-                          </Routes>
-                        </div>
-                      </main>
-                    </div>
-                    <UpgradeDialog />
-                  </SidebarProvider>
+                  <PrivateRoute>
+                    <SidebarProvider>
+                      <div className="flex min-h-screen w-full">
+                        <AppSidebar />
+                        <main className="flex-1">
+                          <Navbar />
+                          <div className="container py-6">
+                            <Routes>
+                              <Route path="/" element={<Index />} />
+                              <Route path="/multi-store" element={<MultiStore />} />
+                              <Route path="/products" element={<Products />} />
+                              <Route path="/sales" element={<Sales />} />
+                              <Route path="/expenses" element={<Expenses />} />
+                              <Route path="/tax" element={<Tax />} />
+                              <Route path="/reports" element={<Reports />} />
+                              <Route path="/users" element={<Users />} />
+                              <Route path="/docs-storage" element={<DocsStorage />} />
+                              <Route path="/settings" element={<Settings />} />
+                            </Routes>
+                          </div>
+                        </main>
+                      </div>
+                      <UpgradeDialog />
+                    </SidebarProvider>
+                  </PrivateRoute>
                 }
               />
             </Routes>

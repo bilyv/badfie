@@ -1,7 +1,9 @@
-import { Bell, Moon, Sun, User, Check } from "lucide-react";
+import { Bell, Moon, Sun, User, Check, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +22,7 @@ import { toast } from "@/hooks/use-toast";
 
 export function Navbar() {
   const { setTheme, theme } = useTheme();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -59,6 +62,14 @@ export function Navbar() {
     setNotifications(notifications.map(n => ({ ...n, read: true })));
     toast({
       description: "All notifications marked as read",
+    });
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+    toast({
+      description: "You have been logged out",
     });
   };
 
@@ -148,7 +159,10 @@ export function Navbar() {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Log out</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                <LogOut className="mr-2 h-4 w-4" />
+                Log out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
