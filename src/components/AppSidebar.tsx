@@ -9,7 +9,8 @@ import {
   Settings,
   Package,
   ArrowUp,
-  Link2
+  Database,
+  Folder
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -32,6 +33,11 @@ const menuItems = [
     title: "Dashboard",
     path: "/",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Multi-Store",
+    path: "/multi-store",
+    icon: Database,
   },
   {
     title: "Products",
@@ -64,9 +70,9 @@ const menuItems = [
     icon: Users,
   },
   {
-    title: "Connect",
-    path: "/connect",
-    icon: Link2,
+    title: "Docs Storage",
+    path: "/docs-storage",
+    icon: Folder,
   },
   {
     title: "Settings",
@@ -81,8 +87,8 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="w-64">
-      <SidebarHeader className="p-3 flex items-center gap-2 text-base font-semibold">
-        <Package className="h-5 w-5" />
+      <SidebarHeader className="p-2 flex items-center gap-2 text-sm font-semibold">
+        <Package className="h-4 w-4" />
         <span>Inventory</span>
       </SidebarHeader>
       
@@ -96,7 +102,7 @@ export function AppSidebar() {
                     asChild 
                     tooltip={item.title}
                     isActive={location.pathname === item.path}
-                    className="h-10 text-sm"
+                    className="h-8 text-sm"
                   >
                     <Link to={item.path} className="flex items-center gap-3">
                       <item.icon className="h-4 w-4" />
