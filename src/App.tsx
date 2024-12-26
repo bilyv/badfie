@@ -20,7 +20,6 @@ import Users from "./pages/Users";
 import DocsStorage from "./pages/DocsStorage";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
-import Work from "./pages/Work";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 
 const queryClient = new QueryClient();
@@ -53,7 +52,6 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route path="/work" element={<PrivateRoute><Work /></PrivateRoute>} />
               <Route
                 path="/*"
                 element={

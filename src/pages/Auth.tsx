@@ -176,20 +176,6 @@ const Auth = () => {
       });
 
       if (error) throw error;
-
-      // Check if user is a worker
-      const { data: workerData } = await supabase
-        .from('workers')
-        .select('id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
-
-      // If user is a worker, redirect to work page, otherwise to dashboard
-      if (workerData) {
-        navigate('/work');
-      } else {
-        navigate('/');
-      }
     } catch (error: any) {
       toast({
         title: "Error",
