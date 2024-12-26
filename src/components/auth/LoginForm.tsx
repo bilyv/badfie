@@ -43,7 +43,13 @@ export const LoginForm = ({ isLoading, setIsLoading, onGoogleLogin }: LoginFormP
       });
 
       if (error) {
-        if (error.message === "Invalid login credentials") {
+        if (error.message === "Email not confirmed") {
+          toast({
+            title: "Email Not Verified",
+            description: "Please check your email and click the verification link before logging in.",
+            variant: "destructive",
+          });
+        } else if (error.message === "Invalid login credentials") {
           toast({
             title: "Login Failed",
             description: "Incorrect email or password. Please try again.",
