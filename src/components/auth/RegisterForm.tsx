@@ -13,13 +13,11 @@ import {
 } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { useState } from "react";
 import { SocialLogin } from "./SocialLogin";
-import { checkEmailExists, checkUsernameExists } from "./validation";
 
-const signUpSchema = z.object({
+const registerSchema = z.object({
   businessName: z.string().min(2, "Business name must be at least 2 characters"),
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string().min(2, "Username must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
@@ -30,11 +28,13 @@ type RegisterFormProps = {
   onGoogleLogin: () => void;
 };
 
-export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: RegisterFormProps) => {
-  const [signUpCooldown, setSignUpCooldown] = useState(0);
-
+export const RegisterForm = ({
+  isLoading,
+  setIsLoading,
+  onGoogleLogin,
+}: RegisterFormProps) => {
   const form = useForm({
-    resolver: zodResolver(signUpSchema),
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       businessName: "",
       username: "",
@@ -43,109 +43,65 @@ export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: Registe
     },
   });
 
-  const handleSignUp = async (values: z.infer<typeof signUpSchema>) => {
-    if (signUpCooldown > 0) {
-      toast({
-        title: "Please wait",
-        description: `Please wait ${signUpCooldown} seconds before trying again`,
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleRegister = async (values: z.infer<typeof registerSchema>) => {
     setIsLoading(true);
     try {
-      // Check if email exists
-      const emailExists = await checkEmailExists(values.email);
-      if (emailExists) {
+      // First check if username exists
+      const { count: usernameCount } = await supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .eq('username', values.username);
+
+      if (usernameCount && usernameCount > 0) {
         toast({
           title: "Error",
-          description: "Email is already registered",
+          description: "Username already exists",
           variant: "destructive",
         });
         return;
       }
 
-      // Check if username exists
-      const usernameExists = await checkUsernameExists(values.username);
-      if (usernameExists) {
-        toast({
-          title: "Error",
-          description: "Username is already taken",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Sign up the user
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+      // Create auth user first
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
       });
 
-      if (signUpError) {
-        if (signUpError.message.includes("rate limit")) {
-          setSignUpCooldown(60);
-          toast({
-            title: "Too Many Requests",
-            description: "Please wait a minute before trying again",
-            variant: "destructive",
-          });
-        } else {
-          throw signUpError;
-        }
-        return;
-      }
+      if (authError) throw authError;
 
-      if (!authData.session) {
-        toast({
-          title: "Verification Needed",
-          description: "Please check your email to verify your account",
-        });
-        setSignUpCooldown(60);
-        return;
-      }
-
-      // Create profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert([
-          {
-            id: authData.user.id,
-            username: values.username,
-            email: values.email,
-          }
-        ]);
-
-      if (profileError) {
-        console.error("Profile Creation Error:", profileError);
-        throw profileError;
+      if (!authData.user) {
+        throw new Error("Failed to create user");
       }
 
       // Create business
       const { error: businessError } = await supabase
         .from("businesses")
-        .insert([
-          {
-            name: values.businessName,
-            owner_id: authData.user.id,
-          },
-        ]);
+        .insert({
+          name: values.businessName,
+          owner_id: authData.user.id,
+        });
 
-      if (businessError) {
-        console.error("Business Creation Error:", businessError);
-        throw businessError;
-      }
+      if (businessError) throw businessError;
+
+      // Create profile
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({
+          id: authData.user.id,
+          username: values.username,
+          email: values.email,
+        });
+
+      if (profileError) throw profileError;
 
       toast({
-        title: "Success!",
-        description: "Your account has been created. Please check your email for verification.",
+        title: "Success",
+        description: "Registration successful! Please check your email to verify your account.",
       });
     } catch (error: any) {
-      console.error("Full Sign Up Error:", error);
       toast({
         title: "Error",
-        description: error.message || "An unexpected error occurred",
+        description: error.message,
         variant: "destructive",
       });
     } finally {
@@ -156,7 +112,7 @@ export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: Registe
   return (
     <div className="space-y-4">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSignUp)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-4">
           <FormField
             control={form.control}
             name="businessName"
@@ -190,7 +146,7 @@ export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: Registe
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your email" {...field} />
+                  <Input type="email" placeholder="Enter your email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -203,21 +159,18 @@ export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: Registe
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Choose a password" {...field} />
+                  <Input
+                    type="password"
+                    placeholder="Choose a password"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button 
-            type="submit" 
-            className="w-full" 
-            disabled={isLoading || signUpCooldown > 0}
-          >
-            {signUpCooldown > 0 
-              ? `Wait ${signUpCooldown}s` 
-              : (isLoading ? "Loading..." : "Create Account")
-            }
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Creating Account..." : "Create Account"}
           </Button>
         </form>
       </Form>
