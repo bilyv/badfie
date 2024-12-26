@@ -14,6 +14,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { SocialLogin } from "./SocialLogin";
+import { checkEmailExists, checkUsernameExists } from "./validation";
 
 const registerSchema = z.object({
   businessName: z.string().min(2, "Business name must be at least 2 characters"),
@@ -47,12 +48,8 @@ export const RegisterForm = ({
     setIsLoading(true);
     try {
       // First check if username exists
-      const { count: usernameCount } = await supabase
-        .from('profiles')
-        .select('id', { count: 'exact', head: true })
-        .eq('username', values.username);
-
-      if (usernameCount && usernameCount > 0) {
+      const usernameExists = await checkUsernameExists(values.username);
+      if (usernameExists) {
         toast({
           title: "Error",
           description: "Username already exists",
@@ -61,10 +58,27 @@ export const RegisterForm = ({
         return;
       }
 
-      // Create auth user first
+      // Then check if email exists
+      const emailExists = await checkEmailExists(values.email);
+      if (emailExists) {
+        toast({
+          title: "Error",
+          description: "Email already exists",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
+        options: {
+          data: {
+            username: values.username,
+            business_name: values.businessName,
+          },
+        },
       });
 
       if (authError) throw authError;
@@ -72,16 +86,6 @@ export const RegisterForm = ({
       if (!authData.user) {
         throw new Error("Failed to create user");
       }
-
-      // Create business
-      const { error: businessError } = await supabase
-        .from("businesses")
-        .insert({
-          name: values.businessName,
-          owner_id: authData.user.id,
-        });
-
-      if (businessError) throw businessError;
 
       // Create profile
       const { error: profileError } = await supabase
@@ -93,6 +97,16 @@ export const RegisterForm = ({
         });
 
       if (profileError) throw profileError;
+
+      // Create business
+      const { error: businessError } = await supabase
+        .from("businesses")
+        .insert({
+          name: values.businessName,
+          owner_id: authData.user.id,
+        });
+
+      if (businessError) throw businessError;
 
       toast({
         title: "Success",
@@ -120,7 +134,11 @@ export const RegisterForm = ({
               <FormItem>
                 <FormLabel>Business Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your business name" {...field} />
+                  <Input 
+                    placeholder="Enter your business name" 
+                    {...field}
+                    autoComplete="organization"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -133,7 +151,11 @@ export const RegisterForm = ({
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="Choose a username" {...field} />
+                  <Input 
+                    placeholder="Choose a username" 
+                    {...field}
+                    autoComplete="username"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -146,7 +168,12 @@ export const RegisterForm = ({
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="Enter your email" {...field} />
+                  <Input 
+                    type="email" 
+                    placeholder="Enter your email" 
+                    {...field}
+                    autoComplete="email"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -163,6 +190,7 @@ export const RegisterForm = ({
                     type="password"
                     placeholder="Choose a password"
                     {...field}
+                    autoComplete="new-password"
                   />
                 </FormControl>
                 <FormMessage />

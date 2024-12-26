@@ -37,12 +37,42 @@ export const LoginForm = ({ isLoading, setIsLoading, onGoogleLogin }: LoginFormP
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === "Invalid login credentials") {
+          toast({
+            title: "Login Failed",
+            description: "Incorrect email or password. Please try again.",
+            variant: "destructive",
+          });
+        } else {
+          throw error;
+        }
+        return;
+      }
+
+      if (!data.user) {
+        throw new Error("No user data returned");
+      }
+
+      // Check if user has a profile
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", data.user.id)
+        .single();
+
+      if (profileError && profileError.code !== "PGRST116") {
+        throw profileError;
+      }
+
+      toast({
+        description: "Successfully logged in",
+      });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -65,7 +95,11 @@ export const LoginForm = ({ isLoading, setIsLoading, onGoogleLogin }: LoginFormP
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your email" {...field} />
+                  <Input 
+                    placeholder="Enter your email" 
+                    {...field} 
+                    autoComplete="email"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -78,14 +112,19 @@ export const LoginForm = ({ isLoading, setIsLoading, onGoogleLogin }: LoginFormP
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Enter your password" {...field} />
+                  <Input 
+                    type="password" 
+                    placeholder="Enter your password" 
+                    {...field}
+                    autoComplete="current-password"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Loading..." : "Sign In"}
+            {isLoading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
       </Form>
@@ -106,8 +145,9 @@ export const LoginForm = ({ isLoading, setIsLoading, onGoogleLogin }: LoginFormP
         type="button"
         className="w-full"
         onClick={onGoogleLogin}
+        disabled={isLoading}
       >
-        Sign in with Google
+        {isLoading ? "Please wait..." : "Sign in with Google"}
       </Button>
     </div>
   );
