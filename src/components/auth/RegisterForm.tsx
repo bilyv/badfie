@@ -14,6 +14,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { SocialLogin } from "./SocialLogin";
+import { checkEmailExists, checkUsernameExists } from "./validation";
 
 const signUpSchema = z.object({
   businessName: z.string().min(2, "Business name must be at least 2 characters"),
@@ -54,12 +56,7 @@ export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: Registe
     setIsLoading(true);
     try {
       // Check if email exists
-      const { data: emailExists } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', values.email)
-        .single();
-
+      const emailExists = await checkEmailExists(values.email);
       if (emailExists) {
         toast({
           title: "Error",
@@ -70,12 +67,7 @@ export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: Registe
       }
 
       // Check if username exists
-      const { data: usernameExists } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('username', values.username)
-        .single();
-
+      const usernameExists = await checkUsernameExists(values.username);
       if (usernameExists) {
         toast({
           title: "Error",
@@ -85,7 +77,7 @@ export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: Registe
         return;
       }
 
-      // First, sign up the user
+      // Sign up the user
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -121,6 +113,7 @@ export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: Registe
           {
             id: authData.user.id,
             username: values.username,
+            email: values.email,
           }
         ]);
 
@@ -229,25 +222,7 @@ export const RegisterForm = ({ isLoading, setIsLoading, onGoogleLogin }: Registe
         </form>
       </Form>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-
-      <Button
-        variant="outline"
-        type="button"
-        className="w-full"
-        onClick={onGoogleLogin}
-      >
-        Sign up with Google
-      </Button>
+      <SocialLogin onGoogleLogin={onGoogleLogin} isLoading={isLoading} />
     </div>
   );
 };
