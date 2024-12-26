@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Package } from "lucide-react";
@@ -75,17 +73,20 @@ const Auth = () => {
       if (signUpError) throw signUpError;
 
       if (authData.user) {
-        // Create profile
+        // Create profile with more detailed error logging
         const { error: profileError } = await supabase
           .from("profiles")
           .insert([
             {
               id: authData.user.id,
               username: values.username,
-            },
+            }
           ]);
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error("Profile Creation Error:", profileError);
+          throw profileError;
+        }
 
         // Create business
         const { error: businessError } = await supabase
@@ -97,7 +98,10 @@ const Auth = () => {
             },
           ]);
 
-        if (businessError) throw businessError;
+        if (businessError) {
+          console.error("Business Creation Error:", businessError);
+          throw businessError;
+        }
 
         toast({
           title: "Success!",
@@ -105,9 +109,10 @@ const Auth = () => {
         });
       }
     } catch (error: any) {
+      console.error("Full Sign Up Error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {
