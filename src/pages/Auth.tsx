@@ -65,6 +65,7 @@ const Auth = () => {
   const handleSignUp = async (values: z.infer<typeof signUpSchema>) => {
     setIsLoading(true);
     try {
+      // First, sign up the user
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -72,42 +73,47 @@ const Auth = () => {
 
       if (signUpError) throw signUpError;
 
-      if (authData.user) {
-        // Create profile with more detailed error logging
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .insert([
-            {
-              id: authData.user.id,
-              username: values.username,
-            }
-          ]);
-
-        if (profileError) {
-          console.error("Profile Creation Error:", profileError);
-          throw profileError;
-        }
-
-        // Create business
-        const { error: businessError } = await supabase
-          .from("businesses")
-          .insert([
-            {
-              name: values.businessName,
-              owner_id: authData.user.id,
-            },
-          ]);
-
-        if (businessError) {
-          console.error("Business Creation Error:", businessError);
-          throw businessError;
-        }
-
-        toast({
-          title: "Success!",
-          description: "Your account has been created. Please check your email for verification.",
-        });
+      if (!authData.session) {
+        throw new Error("No session after signup");
       }
+
+      // Wait a moment for the session to be fully established
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Create profile using the established session
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert([
+          {
+            id: authData.user.id,
+            username: values.username,
+          }
+        ]);
+
+      if (profileError) {
+        console.error("Profile Creation Error:", profileError);
+        throw profileError;
+      }
+
+      // Create business
+      const { error: businessError } = await supabase
+        .from("businesses")
+        .insert([
+          {
+            name: values.businessName,
+            owner_id: authData.user.id,
+          },
+        ]);
+
+      if (businessError) {
+        console.error("Business Creation Error:", businessError);
+        throw businessError;
+      }
+
+      toast({
+        title: "Success!",
+        description: "Your account has been created. Please check your email for verification.",
+      });
     } catch (error: any) {
       console.error("Full Sign Up Error:", error);
       toast({
