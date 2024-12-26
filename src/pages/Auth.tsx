@@ -7,14 +7,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { RegisterForm } from "@/components/auth/RegisterForm";
+import { PricingPlansDialog } from "@/components/PricingPlansDialog";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPricingPlans, setShowPricingPlans] = useState(false);
 
   useEffect(() => {
     const subscription = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
+        // Show pricing plans dialog for new users
+        const isNewUser = event === "SIGNED_IN";
+        if (isNewUser) {
+          setShowPricingPlans(true);
+        }
         navigate("/");
       }
     });
@@ -75,6 +82,11 @@ const Auth = () => {
           </Tabs>
         </Card>
       </div>
+
+      <PricingPlansDialog 
+        open={showPricingPlans} 
+        onOpenChange={setShowPricingPlans}
+      />
     </div>
   );
 };
