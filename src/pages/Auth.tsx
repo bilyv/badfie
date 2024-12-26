@@ -35,6 +35,7 @@ const loginSchema = z.object({
 const Auth = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [signUpCooldown, setSignUpCooldown] = useState(0);
 
   const signUpForm = useForm({
     resolver: zodResolver(signUpSchema),
@@ -55,14 +56,37 @@ const Auth = () => {
   });
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
+    const subscription = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         navigate("/");
       }
     });
+
+    return () => {
+      subscription.data.subscription.unsubscribe();
+    };
   }, [navigate]);
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (signUpCooldown > 0) {
+      timer = setTimeout(() => {
+        setSignUpCooldown(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [signUpCooldown]);
+
   const handleSignUp = async (values: z.infer<typeof signUpSchema>) => {
+    if (signUpCooldown > 0) {
+      toast({
+        title: "Please wait",
+        description: `Please wait ${signUpCooldown} seconds before trying again`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       // First, sign up the user
@@ -71,10 +95,27 @@ const Auth = () => {
         password: values.password,
       });
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        if (signUpError.message.includes("rate limit")) {
+          setSignUpCooldown(60); // Set a 1-minute cooldown
+          toast({
+            title: "Too Many Requests",
+            description: "Please wait a minute before trying again",
+            variant: "destructive",
+          });
+        } else {
+          throw signUpError;
+        }
+        return;
+      }
 
       if (!authData.session) {
-        throw new Error("No session after signup");
+        toast({
+          title: "Verification Needed",
+          description: "Please check your email to verify your account",
+        });
+        setSignUpCooldown(60);
+        return;
       }
 
       // Wait a moment for the session to be fully established
@@ -290,8 +331,15 @@ const Auth = () => {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Loading..." : "Create Account"}
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isLoading || signUpCooldown > 0}
+                  >
+                    {signUpCooldown > 0 
+                      ? `Wait ${signUpCooldown}s` 
+                      : (isLoading ? "Loading..." : "Create Account")
+                    }
                   </Button>
                 </form>
               </Form>
