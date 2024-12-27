@@ -31,7 +31,7 @@ export const RegisterForm = ({
   });
 
   const handleRegister = async (values: RegisterFormData) => {
-    if (isLoading) return; // Prevent multiple submissions
+    if (isLoading) return;
     setIsLoading(true);
     
     try {
@@ -72,7 +72,6 @@ export const RegisterForm = ({
       if (authError) {
         console.error("Auth error:", authError);
         
-        // Handle rate limiting error
         if (authError.message?.includes("rate_limit") || authError.status === 429) {
           toast({
             title: "Too Many Attempts",
@@ -94,18 +93,7 @@ export const RegisterForm = ({
         throw new Error("Failed to create user");
       }
 
-      // Wait for the session to be established
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
-
-      if (sessionError || !session) {
-        console.error("Session error:", sessionError);
-        throw new Error("Failed to establish session");
-      }
-
-      // Create profile with the established session
+      // Create profile
       const { error: profileError } = await supabase
         .from("profiles")
         .insert({
