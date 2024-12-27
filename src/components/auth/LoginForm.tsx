@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -23,9 +24,15 @@ type LoginFormProps = {
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   onGoogleLogin: () => void;
+  onForgotPassword: () => void;
 };
 
-export const LoginForm = ({ isLoading, setIsLoading, onGoogleLogin }: LoginFormProps) => {
+export const LoginForm = ({ 
+  isLoading, 
+  setIsLoading, 
+  onGoogleLogin,
+  onForgotPassword 
+}: LoginFormProps) => {
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -63,17 +70,6 @@ export const LoginForm = ({ isLoading, setIsLoading, onGoogleLogin }: LoginFormP
 
       if (!data.user) {
         throw new Error("No user data returned");
-      }
-
-      // Check if user has a profile
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", data.user.id)
-        .single();
-
-      if (profileError && profileError.code !== "PGRST116") {
-        throw profileError;
       }
 
       toast({
@@ -129,6 +125,16 @@ export const LoginForm = ({ isLoading, setIsLoading, onGoogleLogin }: LoginFormP
               </FormItem>
             )}
           />
+          <div className="flex justify-end">
+            <Button
+              variant="link"
+              type="button"
+              className="px-0"
+              onClick={onForgotPassword}
+            >
+              Forgot password?
+            </Button>
+          </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
