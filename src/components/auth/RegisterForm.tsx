@@ -31,7 +31,9 @@ export const RegisterForm = ({
   });
 
   const handleRegister = async (values: RegisterFormData) => {
+    if (isLoading) return; // Prevent multiple submissions
     setIsLoading(true);
+    
     try {
       // First check if username exists
       const usernameExists = await checkUsernameExists(values.username);
@@ -41,7 +43,6 @@ export const RegisterForm = ({
           description: "Username already exists",
           variant: "destructive",
         });
-        setIsLoading(false);
         return;
       }
 
@@ -53,7 +54,6 @@ export const RegisterForm = ({
           description: "Email already exists",
           variant: "destructive",
         });
-        setIsLoading(false);
         return;
       }
 
@@ -69,7 +69,26 @@ export const RegisterForm = ({
         },
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error("Auth error:", authError);
+        
+        // Handle rate limiting error
+        if (authError.message?.includes("rate_limit") || authError.status === 429) {
+          toast({
+            title: "Too Many Attempts",
+            description: "Please wait a moment before trying again.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        toast({
+          title: "Error",
+          description: authError.message,
+          variant: "destructive",
+        });
+        return;
+      }
 
       if (!authData.user) {
         throw new Error("Failed to create user");
