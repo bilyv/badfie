@@ -44,10 +44,19 @@ export const LoginForm = ({
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setIsLoading(true);
     try {
-      // First check if the email is confirmed
-      const { data: userData } = await supabase.auth.admin.listUsers();
-      const user = userData?.users.find(u => u.email === values.email);
+      // First check if the user exists and is confirmed
+      const { data: { user }, error: getUserError } = await supabase.auth.getUser(values.email);
       
+      if (getUserError) {
+        console.error("Error getting user:", getUserError);
+        toast({
+          title: "Error",
+          description: "An error occurred while trying to log in.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       if (user && !user.email_confirmed_at) {
         toast({
           title: "Email Not Verified",
@@ -58,26 +67,22 @@ export const LoginForm = ({
         return;
       }
 
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
-      if (error) {
-        if (error.message === "Invalid login credentials") {
+      if (signInError) {
+        if (signInError.message === "Invalid login credentials") {
           toast({
             title: "Login Failed",
             description: "Incorrect email or password. Please try again.",
             variant: "destructive",
           });
         } else {
-          throw error;
+          throw signInError;
         }
         return;
-      }
-
-      if (!data.user) {
-        throw new Error("No user data returned");
       }
 
       toast({
