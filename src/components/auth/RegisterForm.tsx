@@ -94,7 +94,18 @@ export const RegisterForm = ({
         throw new Error("Failed to create user");
       }
 
-      // Create profile
+      // Wait for the session to be established
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        console.error("Session error:", sessionError);
+        throw new Error("Failed to establish session");
+      }
+
+      // Create profile with the established session
       const { error: profileError } = await supabase
         .from("profiles")
         .insert({
