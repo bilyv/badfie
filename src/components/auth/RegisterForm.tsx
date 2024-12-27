@@ -73,24 +73,23 @@ export const RegisterForm = ({
         throw new Error("Failed to create user");
       }
 
-      // Create profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert({
-          id: authData.user.id,
-          username: values.username,
-          email: values.email,
-        });
+      // Wait for session to be established
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Create profile using the established session
+      const { error: profileError } = await supabase.from("profiles").insert({
+        id: authData.user.id,
+        username: values.username,
+        email: values.email,
+      }).select().single();
 
       if (profileError) throw profileError;
 
       // Create business
-      const { error: businessError } = await supabase
-        .from("businesses")
-        .insert({
-          name: values.businessName,
-          owner_id: authData.user.id,
-        });
+      const { error: businessError } = await supabase.from("businesses").insert({
+        name: values.businessName,
+        owner_id: authData.user.id,
+      });
 
       if (businessError) throw businessError;
 
@@ -99,6 +98,7 @@ export const RegisterForm = ({
         description: "Registration successful! Please check your email to verify your account.",
       });
     } catch (error: any) {
+      console.error("Registration error:", error);
       toast({
         title: "Error",
         description: error.message,
