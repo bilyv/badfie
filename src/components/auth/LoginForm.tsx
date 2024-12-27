@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
+import { SocialLogin } from "./SocialLogin";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -27,11 +27,11 @@ type LoginFormProps = {
   onForgotPassword: () => void;
 };
 
-export const LoginForm = ({ 
-  isLoading, 
-  setIsLoading, 
+export const LoginForm = ({
+  isLoading,
+  setIsLoading,
   onGoogleLogin,
-  onForgotPassword 
+  onForgotPassword,
 }: LoginFormProps) => {
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -44,19 +44,27 @@ export const LoginForm = ({
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setIsLoading(true);
     try {
+      // First check if the email is confirmed
+      const { data: userData } = await supabase.auth.admin.listUsers();
+      const user = userData?.users.find(u => u.email === values.email);
+      
+      if (user && !user.email_confirmed_at) {
+        toast({
+          title: "Email Not Verified",
+          description: "Please check your email and verify your account before logging in.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
       if (error) {
-        if (error.message === "Email not confirmed") {
-          toast({
-            title: "Email Not Verified",
-            description: "Please check your email and click the verification link before logging in.",
-            variant: "destructive",
-          });
-        } else if (error.message === "Invalid login credentials") {
+        if (error.message === "Invalid login credentials") {
           toast({
             title: "Login Failed",
             description: "Incorrect email or password. Please try again.",
@@ -76,6 +84,7 @@ export const LoginForm = ({
         description: "Successfully logged in",
       });
     } catch (error: any) {
+      console.error("Login error:", error);
       toast({
         title: "Error",
         description: error.message,
@@ -141,26 +150,7 @@ export const LoginForm = ({
         </form>
       </Form>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-
-      <Button
-        variant="outline"
-        type="button"
-        className="w-full"
-        onClick={onGoogleLogin}
-        disabled={isLoading}
-      >
-        {isLoading ? "Please wait..." : "Sign in with Google"}
-      </Button>
+      <SocialLogin onGoogleLogin={onGoogleLogin} isLoading={isLoading} />
     </div>
   );
 };
