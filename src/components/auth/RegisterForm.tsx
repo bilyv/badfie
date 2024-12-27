@@ -1,27 +1,13 @@
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { SocialLogin } from "./SocialLogin";
 import { checkEmailExists, checkUsernameExists } from "./validation";
-
-const registerSchema = z.object({
-  businessName: z.string().min(2, "Business name must be at least 2 characters"),
-  username: z.string().min(2, "Username must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
+import { RegisterFormFields } from "./RegisterFormFields";
+import { registerSchema, type RegisterFormData } from "./validation/registerSchema";
 
 type RegisterFormProps = {
   isLoading: boolean;
@@ -34,7 +20,7 @@ export const RegisterForm = ({
   setIsLoading,
   onGoogleLogin,
 }: RegisterFormProps) => {
-  const form = useForm({
+  const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       businessName: "",
@@ -44,7 +30,7 @@ export const RegisterForm = ({
     },
   });
 
-  const handleRegister = async (values: z.infer<typeof registerSchema>) => {
+  const handleRegister = async (values: RegisterFormData) => {
     setIsLoading(true);
     try {
       // First check if username exists
@@ -127,76 +113,7 @@ export const RegisterForm = ({
     <div className="space-y-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="businessName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Business Name</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Enter your business name" 
-                    {...field}
-                    autoComplete="organization"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Choose a username" 
-                    {...field}
-                    autoComplete="username"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    {...field}
-                    autoComplete="email"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Choose a password"
-                    {...field}
-                    autoComplete="new-password"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <RegisterFormFields form={form} />
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Creating Account..." : "Create Account"}
           </Button>
