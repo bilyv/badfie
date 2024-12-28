@@ -43,6 +43,7 @@ export const RegisterForm = ({
           description: "Username already exists",
           variant: "destructive",
         });
+        setIsLoading(false);
         return;
       }
 
@@ -54,6 +55,7 @@ export const RegisterForm = ({
           description: "Email already exists",
           variant: "destructive",
         });
+        setIsLoading(false);
         return;
       }
 
@@ -93,45 +95,47 @@ export const RegisterForm = ({
         throw new Error("Failed to create user");
       }
 
-      // Get the current session after signup
-      const { data: sessionData } = await supabase.auth.getSession();
-      
-      if (!sessionData.session) {
-        // Wait for session to be established (max 3 attempts)
-        for (let i = 0; i < 3; i++) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const { data: retrySession } = await supabase.auth.getSession();
-          if (retrySession.session) {
-            break;
-          }
-        }
-      }
-
-      // Create profile using the established session
+      // Create profile
       const { error: profileError } = await supabase
         .from("profiles")
-        .insert({
-          id: authData.user.id,
-          username: values.username,
-          email: values.email,
-        });
+        .insert([
+          {
+            id: authData.user.id,
+            username: values.username,
+            email: values.email,
+          }
+        ]);
 
       if (profileError) {
         console.error("Profile creation error:", profileError);
-        throw new Error("Failed to create profile");
+        // Even if profile creation fails, the user is created, so we should show a different message
+        toast({
+          title: "Partial Success",
+          description: "Account created but profile setup incomplete. Please try logging in.",
+          variant: "default",
+        });
+        return;
       }
 
       // Create business
       const { error: businessError } = await supabase
         .from("businesses")
-        .insert({
-          name: values.businessName,
-          owner_id: authData.user.id,
-        });
+        .insert([
+          {
+            name: values.businessName,
+            owner_id: authData.user.id,
+          }
+        ]);
 
       if (businessError) {
         console.error("Business creation error:", businessError);
-        throw new Error("Failed to create business");
+        // Even if business creation fails, the account exists
+        toast({
+          title: "Partial Success",
+          description: "Account created but business setup incomplete. Please try logging in.",
+          variant: "default",
+        });
+        return;
       }
 
       toast({
@@ -142,7 +146,7 @@ export const RegisterForm = ({
       console.error("Registration error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {
