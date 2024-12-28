@@ -29,6 +29,7 @@ import { Button } from "./ui/button";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const menuItems = [
   {
@@ -91,25 +92,44 @@ export function AppSidebar() {
   useEffect(() => {
     const fetchBusinessName = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data: businesses, error } = await supabase
-            .from('businesses')
-            .select('name')
-            .eq('owner_id', user.id)
-            .single();
-          
-          if (error) {
-            console.error('Error fetching business:', error);
-            return;
-          }
-          
-          if (businesses) {
-            setBusinessName(businesses.name);
-          }
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.error('Error fetching user:', userError);
+          return;
+        }
+
+        if (!user) {
+          console.log('No user found');
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('businesses')
+          .select('name')
+          .eq('owner_id', user.id)
+          .maybeSingle();
+        
+        if (error) {
+          console.error('Error fetching business:', error);
+          toast({
+            title: "Error",
+            description: "Could not fetch business details",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        if (data) {
+          setBusinessName(data.name);
         }
       } catch (error) {
         console.error('Error in fetchBusinessName:', error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
       }
     };
 
