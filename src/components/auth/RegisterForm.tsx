@@ -97,14 +97,12 @@ export const RegisterForm = ({
 
       // Create profile
       const { error: profileError } = await supabase
-        .from("profiles")
-        .insert([
-          {
-            id: authData.user.id,
-            username: values.username,
-            email: values.email,
-          }
-        ]);
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          username: values.username,
+          email: values.email,
+        });
 
       if (profileError) {
         console.error("Profile creation error:", profileError);
@@ -119,13 +117,11 @@ export const RegisterForm = ({
 
       // Create business
       const { error: businessError } = await supabase
-        .from("businesses")
-        .insert([
-          {
-            name: values.businessName,
-            owner_id: authData.user.id,
-          }
-        ]);
+        .from('businesses')
+        .insert({
+          name: values.businessName,
+          owner_id: authData.user.id,
+        });
 
       if (businessError) {
         console.error("Business creation error:", businessError);
