@@ -30,57 +30,19 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const clearSession = async () => {
-      try {
-        // First sign out from Supabase to clear the session
-        await supabase.auth.signOut();
-        
-        // Then clear local storage and session storage
-        localStorage.clear();
-        sessionStorage.clear();
-        
-        setIsAuthenticated(false);
-        
-        toast({
-          title: "Session Expired",
-          description: "Please sign in again",
-          variant: "destructive",
-        });
-      } catch (error) {
-        console.error("Error clearing session:", error);
-      }
-    };
-
     // Check initial session
     const checkSession = async () => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Session check error:", sessionError);
-          await clearSession();
-          return;
-        }
-
-        if (!session) {
-          setIsAuthenticated(false);
-          setIsLoading(false);
-          return;
-        }
-
-        // Verify the session is valid
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError || !user) {
-          console.error("User verification error:", userError);
-          await clearSession();
-          return;
-        }
-
-        setIsAuthenticated(true);
-      } catch (error) {
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsAuthenticated(!!session);
+      } catch (error: any) {
         console.error("Session check error:", error);
-        await clearSession();
+        setIsAuthenticated(false);
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in again",
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -90,31 +52,13 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state change:", event, session);
-      
-      if (event === 'SIGNED_OUT') {
+      if (event === 'TOKEN_REFRESHED') {
+        setIsAuthenticated(true);
+      } else if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        if (!session) {
-          console.error("No session found after sign in");
-          setIsAuthenticated(false);
-          return;
-        }
-
-        try {
-          const { data: { user }, error: userError } = await supabase.auth.getUser();
-          if (userError || !user) {
-            console.error("User verification error:", userError);
-            await clearSession();
-            return;
-          }
-          setIsAuthenticated(true);
-        } catch (error) {
-          console.error("Auth state change error:", error);
-          await clearSession();
-        }
+      } else {
+        setIsAuthenticated(!!session);
       }
-      
       setIsLoading(false);
     });
 

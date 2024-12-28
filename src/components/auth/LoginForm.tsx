@@ -16,7 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { SocialLogin } from "./SocialLogin";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address").trim().toLowerCase(),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
@@ -42,41 +42,22 @@ export const LoginForm = ({
   });
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
-    if (isLoading) return;
-    
     setIsLoading(true);
     try {
-      console.log("Attempting login with email:", values.email);
-      
-      // First, check if the user exists
-      const { data: { user: existingUser }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError && userError.message !== "User not found") {
-        console.error("Error checking user:", userError);
-        toast({
-          title: "Error",
-          description: "An error occurred while checking user status. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Attempt to sign in
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
-      if (error) {
-        console.error("Login error:", error);
-        
-        if (error.message === "Invalid login credentials") {
+      if (signInError) {
+        console.error("Login error:", signInError);
+        if (signInError.message === "Invalid login credentials") {
           toast({
             title: "Login Failed",
-            description: "The email or password you entered is incorrect. Please check your credentials and try again.",
+            description: "Incorrect email or password. Please try again.",
             variant: "destructive",
           });
-        } else if (error.message.includes("Email not confirmed")) {
+        } else if (signInError.message.includes("Email not confirmed")) {
           toast({
             title: "Email Not Verified",
             description: "Please check your email and verify your account before logging in.",
@@ -85,32 +66,21 @@ export const LoginForm = ({
         } else {
           toast({
             title: "Error",
-            description: "An error occurred while trying to log in. Please try again.",
+            description: "An error occurred while trying to log in.",
             variant: "destructive",
           });
         }
         return;
       }
 
-      if (!data.session) {
-        console.error("No session returned after successful login");
-        toast({
-          title: "Error",
-          description: "Failed to establish session. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      console.log("Login successful, session established");
       toast({
         description: "Successfully logged in",
       });
     } catch (error: any) {
-      console.error("Unexpected login error:", error);
+      console.error("Login error:", error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        description: error.message,
         variant: "destructive",
       });
     } finally {
@@ -133,8 +103,6 @@ export const LoginForm = ({
                     placeholder="Enter your email" 
                     {...field} 
                     autoComplete="email"
-                    type="email"
-                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -153,7 +121,6 @@ export const LoginForm = ({
                     placeholder="Enter your password" 
                     {...field}
                     autoComplete="current-password"
-                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -166,7 +133,6 @@ export const LoginForm = ({
               type="button"
               className="px-0"
               onClick={onForgotPassword}
-              disabled={isLoading}
             >
               Forgot password?
             </Button>
