@@ -36,7 +36,7 @@ const plans = [
     name: "Enterprise",
     price: "$300",
     features: [
-      "Enterprise-grade features",
+      "All Pro features",
       "Unlimited stores",
       "Advanced analytics",
       "24/7 support",

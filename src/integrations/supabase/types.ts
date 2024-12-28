@@ -33,6 +33,47 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          business_id: string
+          category: string | null
+          created_at: string
+          id: string
+          name: string
+          price: number
+          quantity: number
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          price: number
+          quantity?: number
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          price?: number
+          quantity?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
