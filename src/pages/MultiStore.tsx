@@ -1,25 +1,79 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Settings } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "@/hooks/use-toast";
 
 const MultiStore = () => {
-  const stores = [
-    {
-      id: 1,
-      name: "Main Store",
-      location: "New York",
-      products: 156,
-      status: "Active",
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newStore, setNewStore] = useState({ name: "", location: "" });
+
+  const { data: stores, refetch } = useQuery({
+    queryKey: ['stores'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('businesses')
+        .select('*')
+        .eq('status', 'active');
+      
+      if (error) {
+        toast({
+          title: "Error fetching stores",
+          description: error.message,
+          variant: "destructive",
+        });
+        return [];
+      }
+      return data || [];
     },
-    {
-      id: 2,
-      name: "Branch Store",
-      location: "Los Angeles",
-      products: 89,
-      status: "Active",
-    },
-  ];
+  });
+
+  const handleCreateStore = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('businesses')
+      .insert([
+        {
+          name: newStore.name,
+          location: newStore.location,
+          owner_id: user.id,
+        }
+      ]);
+
+    if (error) {
+      toast({
+        title: "Error creating store",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Store created",
+      description: "Your new store has been created successfully.",
+    });
+    
+    setNewStore({ name: "", location: "" });
+    setIsDialogOpen(false);
+    refetch();
+  };
 
   return (
     <div className="space-y-6">
@@ -33,15 +87,47 @@ const MultiStore = () => {
       </div>
 
       <div className="flex justify-end">
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
-          Add New Store
-        </Button>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add New Store
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Create New Store</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleCreateStore} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Store Name</Label>
+                <Input
+                  id="name"
+                  value={newStore.name}
+                  onChange={(e) => setNewStore(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter store name"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={newStore.location}
+                  onChange={(e) => setNewStore(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="Enter store location"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full">Create Store</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <ScrollArea className="h-[calc(100vh-16rem)]">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {stores.map((store) => (
+          {stores?.map((store) => (
             <Card key={store.id} className="p-6">
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
@@ -54,10 +140,6 @@ const MultiStore = () => {
                   </Button>
                 </div>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Products</span>
-                    <span>{store.products}</span>
-                  </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Status</span>
                     <span className="text-green-600 dark:text-green-400">{store.status}</span>
