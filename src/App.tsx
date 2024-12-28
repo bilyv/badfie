@@ -30,29 +30,34 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const handleAuthError = async () => {
+    const clearSession = async () => {
       try {
+        // Clear local storage and session storage
+        localStorage.clear();
+        sessionStorage.clear();
+        
         // Clear any existing session data
         await supabase.auth.signOut();
         setIsAuthenticated(false);
+        
         toast({
           title: "Session Expired",
           description: "Please sign in again",
           variant: "destructive",
         });
       } catch (error) {
-        console.error("Error handling auth error:", error);
+        console.error("Error clearing session:", error);
       }
     };
 
     // Check initial session
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error("Session check error:", error);
-          await handleAuthError();
+        if (sessionError) {
+          console.error("Session check error:", sessionError);
+          await clearSession();
           return;
         }
 
@@ -62,18 +67,19 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
           return;
         }
 
-        // Verify the user exists
-        const { error: userError } = await supabase.auth.getUser();
-        if (userError) {
+        // Verify the session is valid
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
           console.error("User verification error:", userError);
-          await handleAuthError();
+          await clearSession();
           return;
         }
 
         setIsAuthenticated(true);
       } catch (error) {
         console.error("Session check error:", error);
-        await handleAuthError();
+        await clearSession();
       } finally {
         setIsLoading(false);
       }
@@ -83,22 +89,28 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state change:", event);
+      console.log("Auth state change:", event, session);
       
       if (event === 'SIGNED_OUT') {
-        setIsAuthenticated(false);
+        await clearSession();
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (!session) {
+          console.error("No session found after sign in");
+          await clearSession();
+          return;
+        }
+
         try {
-          const { error: userError } = await supabase.auth.getUser();
-          if (userError) {
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          if (userError || !user) {
             console.error("User verification error:", userError);
-            await handleAuthError();
+            await clearSession();
             return;
           }
           setIsAuthenticated(true);
         } catch (error) {
           console.error("Auth state change error:", error);
-          await handleAuthError();
+          await clearSession();
         }
       }
       
