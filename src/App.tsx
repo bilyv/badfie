@@ -21,20 +21,56 @@ import DocsStorage from "./pages/DocsStorage";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
+import { toast } from "@/hooks/use-toast";
 
 const queryClient = new QueryClient();
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
+    // Check initial session
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsAuthenticated(!!session);
+      } catch (error: any) {
+        console.error("Session check error:", error);
+        setIsAuthenticated(false);
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in again",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'TOKEN_REFRESHED') {
+        setIsAuthenticated(true);
+      } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        setIsAuthenticated(false);
+      } else {
+        setIsAuthenticated(!!session);
+      }
+      setIsLoading(false);
     });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  if (isAuthenticated === null) {
-    return null; // or a loading spinner
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>;
   }
 
   return isAuthenticated ? children : <Navigate to="/auth" />;
