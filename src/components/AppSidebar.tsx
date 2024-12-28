@@ -91,22 +91,19 @@ export function AppSidebar() {
   useEffect(() => {
     const fetchBusinessName = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data: businesses, error } = await supabase
-            .from('businesses')
-            .select('name')
-            .eq('owner_id', user.id)
-            .single();
-          
-          if (error) {
-            console.error('Error fetching business:', error);
-            return;
-          }
-          
-          if (businesses) {
-            setBusinessName(businesses.name);
-          }
+        const { data: businesses, error } = await supabase
+          .from('businesses')
+          .select('name')
+          .limit(1)
+          .maybeSingle();
+        
+        if (error) {
+          console.error('Error fetching business:', error);
+          return;
+        }
+        
+        if (businesses) {
+          setBusinessName(businesses.name);
         }
       } catch (error) {
         console.error('Error in fetchBusinessName:', error);
