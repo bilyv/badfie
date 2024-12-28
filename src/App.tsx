@@ -32,12 +32,13 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const clearSession = async () => {
       try {
-        // Clear local storage and session storage
+        // First sign out from Supabase to clear the session
+        await supabase.auth.signOut();
+        
+        // Then clear local storage and session storage
         localStorage.clear();
         sessionStorage.clear();
         
-        // Clear any existing session data
-        await supabase.auth.signOut();
         setIsAuthenticated(false);
         
         toast({
@@ -92,11 +93,11 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
       console.log("Auth state change:", event, session);
       
       if (event === 'SIGNED_OUT') {
-        await clearSession();
+        setIsAuthenticated(false);
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         if (!session) {
           console.error("No session found after sign in");
-          await clearSession();
+          setIsAuthenticated(false);
           return;
         }
 
