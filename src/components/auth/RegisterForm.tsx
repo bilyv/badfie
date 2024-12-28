@@ -93,10 +93,21 @@ export const RegisterForm = ({
         throw new Error("Failed to create user");
       }
 
-      // Wait a moment for the session to be established
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Get the current session after signup
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      if (!sessionData.session) {
+        // Wait for session to be established (max 3 attempts)
+        for (let i = 0; i < 3; i++) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const { data: retrySession } = await supabase.auth.getSession();
+          if (retrySession.session) {
+            break;
+          }
+        }
+      }
 
-      // Create profile using the new session
+      // Create profile using the established session
       const { error: profileError } = await supabase
         .from("profiles")
         .insert({
