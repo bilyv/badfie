@@ -12,7 +12,7 @@ import { toast } from "@/hooks/use-toast";
 
 const plans = [
   {
-    name: "Free",
+    name: "Free Trial",
     price: "$0",
     features: [
       "Basic inventory management",
@@ -22,7 +22,7 @@ const plans = [
     ],
   },
   {
-    name: "Basic",
+    name: "Business",
     price: "$150",
     features: [
       "Advanced inventory tracking",
@@ -33,8 +33,8 @@ const plans = [
     ],
   },
   {
-    name: "Pro",
-    price: "$250",
+    name: "Enterprise",
+    price: "$300",
     features: [
       "Enterprise-grade features",
       "Unlimited stores",
@@ -96,7 +96,7 @@ export function PricingPlansDialog({ open, onOpenChange }: PricingPlansDialogPro
               <Button 
                 onClick={() => handleSelectPlan(plan.name)}
                 className="w-full mt-4"
-                variant={plan.name === "Pro" ? "default" : "outline"}
+                variant={plan.name === "Enterprise" ? "default" : "outline"}
               >
                 Select {plan.name} Plan
               </Button>

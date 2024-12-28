@@ -25,8 +25,14 @@ const Auth = () => {
         const isNewUser = event === "SIGNED_IN";
         if (isNewUser) {
           setShowPricingPlans(true);
+          // Auto-close after 8 seconds
+          setTimeout(() => {
+            setShowPricingPlans(false);
+            navigate("/");
+          }, 8000);
+        } else {
+          navigate("/");
         }
-        navigate("/");
       }
     });
 

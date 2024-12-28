@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const menuItems = [
   {
@@ -84,12 +86,32 @@ const menuItems = [
 export function AppSidebar() {
   const location = useLocation();
   const { openUpgradeDialog } = useUpgradeDialog();
+  const [businessName, setBusinessName] = useState("");
+
+  useEffect(() => {
+    const fetchBusinessName = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: business } = await supabase
+          .from('businesses')
+          .select('name')
+          .eq('owner_id', user.id)
+          .single();
+        
+        if (business) {
+          setBusinessName(business.name);
+        }
+      }
+    };
+
+    fetchBusinessName();
+  }, []);
 
   return (
     <Sidebar className="w-64">
       <SidebarHeader className="p-2 flex items-center gap-2 text-sm font-semibold">
         <Package className="h-4 w-4" />
-        <span>Inventory</span>
+        <span>{businessName || "Inventory"}</span>
       </SidebarHeader>
       
       <SidebarContent>
