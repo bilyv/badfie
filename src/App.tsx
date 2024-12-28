@@ -30,19 +30,50 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check initial session
-    const checkSession = async () => {
+    const handleAuthError = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setIsAuthenticated(!!session);
-      } catch (error: any) {
-        console.error("Session check error:", error);
+        // Clear any existing session data
+        await supabase.auth.signOut();
         setIsAuthenticated(false);
         toast({
-          title: "Authentication Error",
+          title: "Session Expired",
           description: "Please sign in again",
           variant: "destructive",
         });
+      } catch (error) {
+        console.error("Error handling auth error:", error);
+      }
+    };
+
+    // Check initial session
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Session check error:", error);
+          await handleAuthError();
+          return;
+        }
+
+        if (!session) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+
+        // Verify the user exists
+        const { error: userError } = await supabase.auth.getUser();
+        if (userError) {
+          console.error("User verification error:", userError);
+          await handleAuthError();
+          return;
+        }
+
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("Session check error:", error);
+        await handleAuthError();
       } finally {
         setIsLoading(false);
       }
@@ -52,13 +83,25 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'TOKEN_REFRESHED') {
-        setIsAuthenticated(true);
-      } else if (event === 'SIGNED_OUT') {
+      console.log("Auth state change:", event);
+      
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
         setIsAuthenticated(false);
-      } else {
-        setIsAuthenticated(!!session);
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        try {
+          const { error: userError } = await supabase.auth.getUser();
+          if (userError) {
+            console.error("User verification error:", userError);
+            await handleAuthError();
+            return;
+          }
+          setIsAuthenticated(true);
+        } catch (error) {
+          console.error("Auth state change error:", error);
+          await handleAuthError();
+        }
       }
+      
       setIsLoading(false);
     });
 
