@@ -16,7 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { SocialLogin } from "./SocialLogin";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string().email("Invalid email address").trim().toLowerCase(),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
@@ -48,6 +48,20 @@ export const LoginForm = ({
     try {
       console.log("Attempting login with email:", values.email);
       
+      // First, check if the user exists
+      const { data: { user: existingUser }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError && userError.message !== "User not found") {
+        console.error("Error checking user:", userError);
+        toast({
+          title: "Error",
+          description: "An error occurred while checking user status. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Attempt to sign in
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
@@ -59,7 +73,7 @@ export const LoginForm = ({
         if (error.message === "Invalid login credentials") {
           toast({
             title: "Login Failed",
-            description: "Incorrect email or password. Please try again.",
+            description: "The email or password you entered is incorrect. Please check your credentials and try again.",
             variant: "destructive",
           });
         } else if (error.message.includes("Email not confirmed")) {
@@ -120,6 +134,7 @@ export const LoginForm = ({
                     {...field} 
                     autoComplete="email"
                     type="email"
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -138,6 +153,7 @@ export const LoginForm = ({
                     placeholder="Enter your password" 
                     {...field}
                     autoComplete="current-password"
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -150,6 +166,7 @@ export const LoginForm = ({
               type="button"
               className="px-0"
               onClick={onForgotPassword}
+              disabled={isLoading}
             >
               Forgot password?
             </Button>
