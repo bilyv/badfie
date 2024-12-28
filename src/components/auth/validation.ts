@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 
-// Create a service role client for admin operations
 const SUPABASE_URL = "https://pgbzxlyxwpsalucwqtjn.supabase.co";
 const serviceRoleClient = createClient<Database>(
   SUPABASE_URL,
@@ -11,7 +10,7 @@ const serviceRoleClient = createClient<Database>(
 
 export const checkEmailExists = async (email: string) => {
   try {
-    const { data, error, count } = await serviceRoleClient
+    const { count, error } = await serviceRoleClient
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('email', email);
@@ -30,7 +29,7 @@ export const checkEmailExists = async (email: string) => {
 
 export const checkUsernameExists = async (username: string) => {
   try {
-    const { data, error, count } = await serviceRoleClient
+    const { count, error } = await serviceRoleClient
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('username', username);

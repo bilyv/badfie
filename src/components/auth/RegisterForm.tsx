@@ -59,7 +59,7 @@ export const RegisterForm = ({
         return;
       }
 
-      // Create auth user with metadata
+      // Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -73,16 +73,6 @@ export const RegisterForm = ({
 
       if (authError) {
         console.error("Auth error:", authError);
-        
-        if (authError.message?.includes("rate_limit") || authError.status === 429) {
-          toast({
-            title: "Too Many Attempts",
-            description: "Please wait a moment before trying again.",
-            variant: "destructive",
-          });
-          return;
-        }
-        
         toast({
           title: "Error",
           description: authError.message,
@@ -95,7 +85,10 @@ export const RegisterForm = ({
         throw new Error("Failed to create user");
       }
 
-      // Create profile
+      // Wait a moment for the auth session to be established
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Create profile using the authenticated session
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -106,11 +99,10 @@ export const RegisterForm = ({
 
       if (profileError) {
         console.error("Profile creation error:", profileError);
-        // Even if profile creation fails, the user is created, so we should show a different message
         toast({
-          title: "Partial Success",
-          description: "Account created but profile setup incomplete. Please try logging in.",
-          variant: "default",
+          title: "Error",
+          description: "Failed to create profile. Please try again.",
+          variant: "destructive",
         });
         return;
       }
@@ -125,11 +117,10 @@ export const RegisterForm = ({
 
       if (businessError) {
         console.error("Business creation error:", businessError);
-        // Even if business creation fails, the account exists
         toast({
-          title: "Partial Success",
-          description: "Account created but business setup incomplete. Please try logging in.",
-          variant: "default",
+          title: "Error",
+          description: "Failed to create business. Please try again.",
+          variant: "destructive",
         });
         return;
       }
