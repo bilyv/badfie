@@ -42,9 +42,7 @@ export const LoginForm = ({
   });
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
-    if (isLoading) return;
     setIsLoading(true);
-    
     try {
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: values.email,
@@ -53,37 +51,22 @@ export const LoginForm = ({
 
       if (signInError) {
         console.error("Login error:", signInError);
-        
-        // Handle specific error cases
-        if (signInError.message === "Email not confirmed") {
-          const { error: resendError } = await supabase.auth.resend({
-            type: 'signup',
-            email: values.email,
-          });
-
-          if (resendError) {
-            toast({
-              title: "Error",
-              description: "Failed to resend verification email. Please try again later.",
-              variant: "destructive",
-            });
-          } else {
-            toast({
-              title: "Email Not Verified",
-              description: "We've sent you a new verification email. Please check your inbox.",
-              variant: "default",
-            });
-          }
-        } else if (signInError.message === "Invalid login credentials") {
+        if (signInError.message === "Invalid login credentials") {
           toast({
             title: "Login Failed",
             description: "Incorrect email or password. Please try again.",
             variant: "destructive",
           });
+        } else if (signInError.message.includes("Email not confirmed")) {
+          toast({
+            title: "Email Not Verified",
+            description: "Please check your email and verify your account before logging in.",
+            variant: "destructive",
+          });
         } else {
           toast({
             title: "Error",
-            description: signInError.message,
+            description: "An error occurred while trying to log in.",
             variant: "destructive",
           });
         }
