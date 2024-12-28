@@ -57,7 +57,7 @@ export const RegisterForm = ({
         return;
       }
 
-      // Create auth user
+      // Create auth user with metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -93,7 +93,10 @@ export const RegisterForm = ({
         throw new Error("Failed to create user");
       }
 
-      // Create profile
+      // Wait a moment for the session to be established
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Create profile using the new session
       const { error: profileError } = await supabase
         .from("profiles")
         .insert({
