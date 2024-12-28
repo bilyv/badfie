@@ -85,10 +85,7 @@ export const RegisterForm = ({
         throw new Error("Failed to create user");
       }
 
-      // Wait a moment for the auth session to be established
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Create profile using the authenticated session
+      // Create profile
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -99,6 +96,8 @@ export const RegisterForm = ({
 
       if (profileError) {
         console.error("Profile creation error:", profileError);
+        // If profile creation fails, we should clean up the auth user
+        await supabase.auth.signOut();
         toast({
           title: "Error",
           description: "Failed to create profile. Please try again.",
@@ -117,6 +116,8 @@ export const RegisterForm = ({
 
       if (businessError) {
         console.error("Business creation error:", businessError);
+        // If business creation fails, we should clean up
+        await supabase.auth.signOut();
         toast({
           title: "Error",
           description: "Failed to create business. Please try again.",
