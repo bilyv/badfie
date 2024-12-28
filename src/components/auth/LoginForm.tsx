@@ -42,22 +42,27 @@ export const LoginForm = ({
   });
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
+    if (isLoading) return;
+    
     setIsLoading(true);
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      console.log("Attempting login with email:", values.email);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
-      if (signInError) {
-        console.error("Login error:", signInError);
-        if (signInError.message === "Invalid login credentials") {
+      if (error) {
+        console.error("Login error:", error);
+        
+        if (error.message === "Invalid login credentials") {
           toast({
             title: "Login Failed",
             description: "Incorrect email or password. Please try again.",
             variant: "destructive",
           });
-        } else if (signInError.message.includes("Email not confirmed")) {
+        } else if (error.message.includes("Email not confirmed")) {
           toast({
             title: "Email Not Verified",
             description: "Please check your email and verify your account before logging in.",
@@ -66,21 +71,32 @@ export const LoginForm = ({
         } else {
           toast({
             title: "Error",
-            description: "An error occurred while trying to log in.",
+            description: "An error occurred while trying to log in. Please try again.",
             variant: "destructive",
           });
         }
         return;
       }
 
+      if (!data.session) {
+        console.error("No session returned after successful login");
+        toast({
+          title: "Error",
+          description: "Failed to establish session. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Login successful, session established");
       toast({
         description: "Successfully logged in",
       });
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Unexpected login error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -103,6 +119,7 @@ export const LoginForm = ({
                     placeholder="Enter your email" 
                     {...field} 
                     autoComplete="email"
+                    type="email"
                   />
                 </FormControl>
                 <FormMessage />
