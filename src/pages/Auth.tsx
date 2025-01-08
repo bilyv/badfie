@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
-import { Package } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { LoginForm } from "@/components/auth/LoginForm";
-import { RegisterForm } from "@/components/auth/RegisterForm";
 import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 import { PricingPlansDialog } from "@/components/PricingPlansDialog";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { AuthHeader } from "@/components/auth/AuthHeader";
+import { AuthFormsContainer } from "@/components/auth/AuthFormsContainer";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -37,11 +35,9 @@ const Auth = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        // Show pricing plans dialog for new users
         const isNewUser = event === "SIGNED_IN";
         if (isNewUser) {
           setShowPricingPlans(true);
-          // Auto-close after 8 seconds
           setTimeout(() => {
             setShowPricingPlans(false);
             navigate("/");
@@ -52,7 +48,6 @@ const Auth = () => {
       }
     });
 
-    // Check if we're in password reset mode
     if (searchParams.get("reset") === "true") {
       setShowForgotPassword(true);
     }
@@ -63,11 +58,7 @@ const Auth = () => {
   }, [navigate, searchParams]);
 
   if (!authChecked) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   const handleGoogleLogin = async () => {
@@ -95,13 +86,10 @@ const Auth = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-md space-y-8">
-          <div className="flex flex-col items-center space-y-2 text-center">
-            <Package className="h-12 w-12 text-primary" />
-            <h1 className="text-2xl font-bold">Reset Password</h1>
-            <p className="text-muted-foreground">
-              Enter your email to reset your password
-            </p>
-          </div>
+          <AuthHeader 
+            title="Reset Password"
+            description="Enter your email to reset your password"
+          />
 
           <Card className="p-6">
             <ForgotPasswordForm />
@@ -122,39 +110,17 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <Package className="h-12 w-12 text-primary" />
-          <h1 className="text-2xl font-bold">Welcome to Inventory</h1>
-          <p className="text-muted-foreground">
-            Sign in to your account to continue
-          </p>
-        </div>
+        <AuthHeader 
+          title="Welcome to Inventory"
+          description="Sign in to your account to continue"
+        />
 
-        <Card className="p-6">
-          <Tabs defaultValue="login" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register Business</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <LoginForm 
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
-                onGoogleLogin={handleGoogleLogin}
-                onForgotPassword={() => setShowForgotPassword(true)}
-              />
-            </TabsContent>
-
-            <TabsContent value="register">
-              <RegisterForm 
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
-                onGoogleLogin={handleGoogleLogin}
-              />
-            </TabsContent>
-          </Tabs>
-        </Card>
+        <AuthFormsContainer 
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          onGoogleLogin={handleGoogleLogin}
+          onForgotPassword={() => setShowForgotPassword(true)}
+        />
       </div>
 
       <PricingPlansDialog 
