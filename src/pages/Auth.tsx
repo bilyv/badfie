@@ -17,9 +17,25 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPricingPlans, setShowPricingPlans] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    const subscription = supabase.auth.onAuthStateChange((event, session) => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         // Show pricing plans dialog for new users
         const isNewUser = event === "SIGNED_IN";
@@ -42,14 +58,26 @@ const Auth = () => {
     }
 
     return () => {
-      subscription.data.subscription.unsubscribe();
+      subscription.unsubscribe();
     };
   }, [navigate, searchParams]);
 
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   const handleGoogleLogin = async () => {
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
+        options: {
+          redirectTo: window.location.origin
+        }
       });
       if (error) throw error;
     } catch (error: any) {
@@ -58,6 +86,8 @@ const Auth = () => {
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
