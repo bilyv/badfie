@@ -1,6 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Package, ArrowDown, DollarSign, CreditCard } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const data = [
   { month: "Jan", sales: 400, stock: 240 },
@@ -12,6 +14,43 @@ const data = [
 ];
 
 const Index = () => {
+  const { data: businessData, isLoading, error } = useQuery({
+    queryKey: ['businesses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('businesses')
+        .select('*')
+        .eq('status', 'active');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    console.error('Error fetching businesses:', error);
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Welcome to your inventory management system</p>
+        </div>
+        
+        <Card className="p-6 bg-red-50 dark:bg-red-900/10">
+          <p className="text-red-600 dark:text-red-400">There was an error loading the dashboard data. Please try again later.</p>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div>
