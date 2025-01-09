@@ -20,9 +20,13 @@ const Index = () => {
       const { data, error } = await supabase
         .from('businesses')
         .select('*')
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .throwOnError();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching businesses:', error);
+        throw error;
+      }
       return data;
     },
   });
