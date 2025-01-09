@@ -36,3 +36,10 @@ export interface CombinedProduct extends BaseProduct {
 }
 
 export type Product = IndividualProduct | CombinedProduct;
+
+export interface DashboardMetric {
+  label: string;
+  value: string | number;
+  change?: string;
+  trend?: 'up' | 'down' | 'neutral';
+}
