@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthFormsContainer } from "@/components/auth/AuthFormsContainer";
+import { Card } from "@/components/ui/card";
 
 const Auth = () => {
   const navigate = useNavigate();
