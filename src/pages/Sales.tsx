@@ -12,55 +12,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ProductFormDialog } from "@/components/products/ProductFormDialog";
-import { useState } from "react";
-import { FilePlus, ListPlus } from "lucide-react";
-import { ProductType } from "@/lib/types";
 
 const Sales = () => {
-  const [isProductFormOpen, setIsProductFormOpen] = useState(false);
-  const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
-
-  const handleOpenProductForm = (type: ProductType) => {
-    setSelectedProductType(type);
-    setIsProductFormOpen(true);
-  };
-
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="space-y-1">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Sales
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Manage your sales and customers
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Button
-            onClick={() => handleOpenProductForm("individual")}
-            className="w-full sm:w-auto bg-primary/90 hover:bg-primary transition-colors"
-          >
-            <FilePlus className="mr-2 h-4 w-4" />
-            Individual Product
-          </Button>
-          <Button
-            onClick={() => handleOpenProductForm("combined")}
-            variant="secondary"
-            className="w-full sm:w-auto bg-secondary/90 hover:bg-secondary transition-colors"
-          >
-            <ListPlus className="mr-2 h-4 w-4" />
-            Combined Product
-          </Button>
-        </div>
+      <div className="space-y-1">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Sales</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Manage your sales and customers</p>
       </div>
-
-      <ProductFormDialog
-        open={isProductFormOpen}
-        onOpenChange={setIsProductFormOpen}
-        productType={selectedProductType}
-      />
 
       <Tabs defaultValue="manage" className="space-y-4">
         <ScrollArea className="w-full">
