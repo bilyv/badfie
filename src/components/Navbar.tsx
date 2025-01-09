@@ -74,8 +74,8 @@ export function Navbar() {
   };
 
   return (
-    <div className="border-b">
-      <div className="flex h-16 items-center px-4">
+    <div className="sticky top-0 z-50 backdrop-blur-sm bg-white/75 dark:bg-gray-900/75 border-b border-gray-200 dark:border-gray-800 transition-all duration-300">
+      <div className="flex h-16 items-center px-4 md:px-6">
         <SidebarTrigger className="mr-4" />
         <div className="ml-auto flex items-center space-x-4">
           <Sheet>
@@ -83,17 +83,17 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative"
+                className="relative hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white animate-pulse">
                     {unreadCount}
                   </span>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[320px]">
+            <SheetContent className="w-[320px] sm:w-[380px] backdrop-blur-lg bg-white/90 dark:bg-gray-900/90">
               <SheetHeader className="space-y-4">
                 <SheetTitle>Notifications</SheetTitle>
                 {unreadCount > 0 && (
@@ -111,7 +111,7 @@ export function Navbar() {
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`flex flex-col space-y-1 border-b pb-4 last:border-0 ${
+                    className={`flex flex-col space-y-1 border-b pb-4 last:border-0 transition-opacity duration-200 ${
                       notification.read ? 'opacity-60' : ''
                     }`}
                   >
@@ -122,7 +122,7 @@ export function Navbar() {
                           variant="ghost"
                           size="sm"
                           onClick={() => markAsRead(notification.id)}
-                          className="h-6 px-2"
+                          className="h-6 px-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
                           <Check className="h-4 w-4" />
                         </Button>
@@ -144,6 +144,7 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            className="hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -152,11 +153,11 @@ export function Navbar() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="hover:bg-gray-100 dark:hover:bg-gray-800">
                 <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 backdrop-blur-lg bg-white/90 dark:bg-gray-900/90">
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">

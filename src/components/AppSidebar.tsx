@@ -86,10 +86,10 @@ export function AppSidebar() {
   const { openUpgradeDialog } = useUpgradeDialog();
 
   return (
-    <Sidebar className="w-64">
-      <SidebarHeader className="p-2 flex items-center gap-2 text-sm font-semibold">
-        <Package className="h-4 w-4" />
-        <span>Inventory</span>
+    <Sidebar className="w-64 backdrop-blur-sm bg-white/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 transition-all duration-300">
+      <SidebarHeader className="p-4 flex items-center gap-2 text-sm font-semibold">
+        <Package className="h-5 w-5" />
+        <span>Inventory Pro</span>
       </SidebarHeader>
       
       <SidebarContent>
@@ -102,9 +102,9 @@ export function AppSidebar() {
                     asChild 
                     tooltip={item.title}
                     isActive={location.pathname === item.path}
-                    className="h-8 text-sm"
+                    className="h-10 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    <Link to={item.path} className="flex items-center gap-3">
+                    <Link to={item.path} className="flex items-center gap-3 px-4">
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>
@@ -116,13 +116,18 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-3 space-y-3">
+      <SidebarFooter className="p-4 border-t border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-2 text-sm">
           <div className="flex-1">
             <p className="font-medium">Business Account</p>
             <p className="text-muted-foreground text-xs">Pro features available</p>
           </div>
-          <Button variant="outline" size="sm" className="gap-1" onClick={openUpgradeDialog}>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-1 hover:bg-gray-100 dark:hover:bg-gray-800" 
+            onClick={openUpgradeDialog}
+          >
             <ArrowUp className="h-4 w-4" />
             Upgrade
           </Button>
