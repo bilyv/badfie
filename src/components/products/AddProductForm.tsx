@@ -7,21 +7,35 @@ import { toast } from "@/hooks/use-toast";
 
 export const AddProductForm = () => {
   const [productType, setProductType] = useState<ProductType>("individual");
-  const [ingredients, setIngredients] = useState<Array<{ id: string; name: string; quantity: number; unit: string }>>([]);
+  const [ingredients, setIngredients] = useState<Array<{ id: string; name: string; quantity: number; unit: string; costPrice: number }>>([]);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   const form = useForm({
     defaultValues: {
       name: "",
       category: "",
-      price: "",
+      description: "",
       quantity: "",
+      costPrice: "",
+      sellingPrice: "",
     },
   });
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const addIngredient = () => {
     setIngredients([
       ...ingredients,
-      { id: Date.now().toString(), name: "", quantity: 0, unit: "units" },
+      { id: Date.now().toString(), name: "", quantity: 0, unit: "units", costPrice: 0 },
     ]);
   };
 
@@ -41,6 +55,7 @@ export const AddProductForm = () => {
     const productData = {
       ...data,
       type: productType,
+      imageUrl: imagePreview,
       ...(productType === "combined" && { ingredients }),
     };
 
@@ -63,6 +78,8 @@ export const AddProductForm = () => {
           addIngredient={addIngredient}
           removeIngredient={removeIngredient}
           updateIngredient={updateIngredient}
+          onImageUpload={handleImageUpload}
+          imagePreview={imagePreview}
         />
       </form>
     </Form>

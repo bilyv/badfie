@@ -12,6 +12,7 @@ export interface Ingredient {
   name: string;
   quantity: number;
   unit: string;
+  costPrice: number;
 }
 
 export type ProductType = 'individual' | 'combined';
@@ -19,7 +20,8 @@ export type ProductType = 'individual' | 'combined';
 export interface BaseProduct {
   id: string;
   name: string;
-  price: number;
+  description: string;
+  imageUrl: string;
   category: string;
   type: ProductType;
   lastUpdated: string;
@@ -28,11 +30,14 @@ export interface BaseProduct {
 export interface IndividualProduct extends BaseProduct {
   type: 'individual';
   quantity: number;
+  costPrice: number;
+  sellingPrice: number;
 }
 
 export interface CombinedProduct extends BaseProduct {
   type: 'combined';
   ingredients: Ingredient[];
+  sellingPrice: number;
 }
 
 export type Product = IndividualProduct | CombinedProduct;
