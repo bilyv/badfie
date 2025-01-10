@@ -6,47 +6,36 @@ import { Package, PackagePlus } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { useState } from "react";
 import { ProductType } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+
+// Sample data - will be replaced with actual database integration later
+const sampleProducts = [
+  {
+    id: "1",
+    name: "Sample Product 1",
+    category: "Electronics",
+    price: 99.99,
+    quantity: 50,
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "2",
+    name: "Sample Product 2",
+    category: "Furniture",
+    price: 199.99,
+    quantity: 25,
+    created_at: new Date().toISOString()
+  }
+];
 
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
-
-  const { data: products, isLoading, error } = useQuery({
-    queryKey: ['products'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  const [products] = useState(sampleProducts);
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
     setDialogOpen(true);
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[200px]">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center text-red-500 p-4">
-        Error loading products. Please try again later.
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -76,15 +65,15 @@ const Products = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {products?.map((product) => (
+                  {products.map((product) => (
                     <TableRow key={product.id} className="hover:bg-muted/50 transition-colors">
                       <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell className="hidden md:table-cell">{product.category || '-'}</TableCell>
+                      <TableCell className="hidden md:table-cell">{product.category}</TableCell>
                       <TableCell>${product.price.toFixed(2)}</TableCell>
                       <TableCell className="hidden md:table-cell">{product.quantity}</TableCell>
                     </TableRow>
                   ))}
-                  {products?.length === 0 && (
+                  {products.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                         No products found. Add some products to get started.
