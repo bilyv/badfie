@@ -6,15 +6,47 @@ import { Package, PackagePlus } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { useState } from "react";
 import { ProductType } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
 
+  const { data: products, isLoading, error } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
     setDialogOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[200px]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500 p-4">
+        Error loading products. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -39,23 +71,26 @@ const Products = () => {
                   <TableRow className="bg-muted/50">
                     <TableHead className="w-[200px]">Product Name</TableHead>
                     <TableHead className="hidden md:table-cell">Category</TableHead>
-                    <TableHead>Type</TableHead>
                     <TableHead>Price</TableHead>
-                    <TableHead className="hidden md:table-cell">Status</TableHead>
+                    <TableHead className="hidden md:table-cell">Quantity</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow className="hover:bg-muted/50 transition-colors">
-                    <TableCell className="font-medium">Product A</TableCell>
-                    <TableCell className="hidden md:table-cell">Electronics</TableCell>
-                    <TableCell>Individual</TableCell>
-                    <TableCell>$299.99</TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        In Stock
-                      </span>
-                    </TableCell>
-                  </TableRow>
+                  {products?.map((product) => (
+                    <TableRow key={product.id} className="hover:bg-muted/50 transition-colors">
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell className="hidden md:table-cell">{product.category || '-'}</TableCell>
+                      <TableCell>${product.price.toFixed(2)}</TableCell>
+                      <TableCell className="hidden md:table-cell">{product.quantity}</TableCell>
+                    </TableRow>
+                  ))}
+                  {products?.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                        No products found. Add some products to get started.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </div>
