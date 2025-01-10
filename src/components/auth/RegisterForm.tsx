@@ -2,10 +2,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { SocialLogin } from "./SocialLogin";
-import { checkEmailExists, checkUsernameExists } from "./validation";
 import { RegisterFormFields } from "./RegisterFormFields";
 import { registerSchema, type RegisterFormData } from "./validation/registerSchema";
 
@@ -35,100 +33,22 @@ export const RegisterForm = ({
     setIsLoading(true);
     
     try {
-      // First check if username exists
-      const usernameExists = await checkUsernameExists(values.username);
-      if (usernameExists) {
-        toast({
-          title: "Error",
-          description: "Username already exists",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Then check if email exists
-      const emailExists = await checkEmailExists(values.email);
-      if (emailExists) {
-        toast({
-          title: "Error",
-          description: "Email already exists",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          data: {
-            username: values.username,
-            business_name: values.businessName,
-          },
-        },
-      });
-
-      if (authError) {
-        console.error("Auth error:", authError);
-        toast({
-          title: "Error",
-          description: authError.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!authData.user) {
-        throw new Error("Failed to create user");
-      }
-
-      // Wait a moment for the auth session to be established
+      // Simulate registration delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Create profile using the authenticated session
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          username: values.username,
-          email: values.email,
-        });
-
-      if (profileError) {
-        console.error("Profile creation error:", profileError);
-        toast({
-          title: "Error",
-          description: "Failed to create profile. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Create business
-      const { error: businessError } = await supabase
-        .from('businesses')
-        .insert({
-          name: values.businessName,
-          owner_id: authData.user.id,
-        });
-
-      if (businessError) {
-        console.error("Business creation error:", businessError);
-        toast({
-          title: "Error",
-          description: "Failed to create business. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
+      
+      // Store user data in localStorage for development
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', values.email);
+      localStorage.setItem('username', values.username);
+      localStorage.setItem('businessName', values.businessName);
 
       toast({
         title: "Success",
-        description: "Registration successful! Please check your email to verify your account.",
+        description: "Registration successful! You can now log in.",
       });
+      
+      // Redirect to login page
+      window.location.href = '/auth?mode=login';
     } catch (error: any) {
       console.error("Registration error:", error);
       toast({

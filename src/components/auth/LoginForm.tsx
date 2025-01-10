@@ -11,7 +11,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { SocialLogin } from "./SocialLogin";
 
@@ -44,43 +43,24 @@ export const LoginForm = ({
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setIsLoading(true);
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password,
-      });
-
-      if (signInError) {
-        console.error("Login error:", signInError);
-        if (signInError.message === "Invalid login credentials") {
-          toast({
-            title: "Login Failed",
-            description: "Incorrect email or password. Please try again.",
-            variant: "destructive",
-          });
-        } else if (signInError.message.includes("Email not confirmed")) {
-          toast({
-            title: "Email Not Verified",
-            description: "Please check your email and verify your account before logging in.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: "An error occurred while trying to log in.",
-            variant: "destructive",
-          });
-        }
-        return;
-      }
-
+      // Simulate authentication delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // For development, accept any valid email/password
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', values.email);
+      
       toast({
         description: "Successfully logged in",
       });
+      
+      // Redirect to home page
+      window.location.href = '/';
     } catch (error: any) {
       console.error("Login error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "An error occurred while logging in",
         variant: "destructive",
       });
     } finally {
