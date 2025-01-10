@@ -2,7 +2,6 @@ import { Bell, Moon, Sun, User, Check, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -65,8 +64,7 @@ export function Navbar() {
     });
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
     navigate("/auth");
     toast({
       description: "You have been logged out",

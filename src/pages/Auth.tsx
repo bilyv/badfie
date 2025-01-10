@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 import { PricingPlansDialog } from "@/components/PricingPlansDialog";
@@ -16,62 +15,27 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPricingPlans, setShowPricingPlans] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Auth check error:", error);
-      } finally {
-        setAuthChecked(true);
-      }
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        const isNewUser = event === "SIGNED_IN";
-        if (isNewUser) {
-          setShowPricingPlans(true);
-          setTimeout(() => {
-            setShowPricingPlans(false);
-            navigate("/");
-          }, 8000);
-        } else {
-          navigate("/");
-        }
-      }
-    });
-
-    if (searchParams.get("reset") === "true") {
-      setShowForgotPassword(true);
+    // Simulate auth check with local storage
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    if (isLoggedIn) {
+      navigate("/");
     }
+    setIsAuthenticated(true);
+  }, [navigate]);
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, searchParams]);
-
-  if (!authChecked) {
+  if (!isAuthenticated) {
     return <LoadingSpinner />;
   }
 
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-      if (error) throw error;
+      // Simulate Google login
+      localStorage.setItem('isLoggedIn', 'true');
+      navigate("/");
     } catch (error: any) {
       toast({
         title: "Error",

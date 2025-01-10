@@ -11,7 +11,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 
@@ -49,12 +48,8 @@ export const ForgotPasswordForm = () => {
   const handleSendResetLink = async (values: z.infer<typeof emailSchema>) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-        redirectTo: `${window.location.origin}/auth?reset=true`,
-      });
-
-      if (error) throw error;
-
+      // Simulate sending reset link
+      await new Promise(resolve => setTimeout(resolve, 1000));
       toast({
         description: "Password reset link sent to your email",
       });
@@ -73,12 +68,8 @@ export const ForgotPasswordForm = () => {
   const handleResetPassword = async (values: z.infer<typeof resetSchema>) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: values.password,
-      });
-
-      if (error) throw error;
-
+      // Simulate password reset
+      await new Promise(resolve => setTimeout(resolve, 1000));
       toast({
         description: "Password successfully reset",
       });

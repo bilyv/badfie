@@ -12,59 +12,44 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
+
+type Store = {
+  id: number;
+  name: string;
+  location: string;
+  status: 'active' | 'inactive';
+};
 
 const MultiStore = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newStore, setNewStore] = useState({ name: "", location: "" });
-
-  const { data: stores, refetch } = useQuery({
-    queryKey: ['stores'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('businesses')
-        .select('*')
-        .eq('status', 'active');
-      
-      if (error) {
-        toast({
-          title: "Error fetching stores",
-          description: error.message,
-          variant: "destructive",
-        });
-        return [];
-      }
-      return data || [];
+  const [stores, setStores] = useState<Store[]>([
+    {
+      id: 1,
+      name: "Main Store",
+      location: "New York",
+      status: "active"
     },
-  });
+    {
+      id: 2,
+      name: "Branch Store",
+      location: "Los Angeles",
+      status: "active"
+    }
+  ]);
 
-  const handleCreateStore = async (e: React.FormEvent) => {
+  const handleCreateStore = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const newStoreData: Store = {
+      id: stores.length + 1,
+      name: newStore.name,
+      location: newStore.location,
+      status: 'active'
+    };
 
-    const { error } = await supabase
-      .from('businesses')
-      .insert([
-        {
-          name: newStore.name,
-          location: newStore.location,
-          owner_id: user.id,
-        }
-      ]);
-
-    if (error) {
-      toast({
-        title: "Error creating store",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
+    setStores([...stores, newStoreData]);
     toast({
       title: "Store created",
       description: "Your new store has been created successfully.",
@@ -72,7 +57,6 @@ const MultiStore = () => {
     
     setNewStore({ name: "", location: "" });
     setIsDialogOpen(false);
-    refetch();
   };
 
   return (
@@ -127,7 +111,7 @@ const MultiStore = () => {
 
       <ScrollArea className="h-[calc(100vh-16rem)]">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {stores?.map((store) => (
+          {stores.map((store) => (
             <Card key={store.id} className="p-6">
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
