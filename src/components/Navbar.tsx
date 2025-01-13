@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useNavigate } from "react-router-dom";
-import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +22,6 @@ import { toast } from "@/hooks/use-toast";
 export function Navbar() {
   const { setTheme, theme } = useTheme();
   const navigate = useNavigate();
-  const { openUpgradeDialog } = useUpgradeDialog();
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -77,19 +75,6 @@ export function Navbar() {
     <div className="sticky top-0 z-50 backdrop-blur-sm bg-white/75 dark:bg-gray-900/75 border-b border-gray-200 dark:border-gray-800 transition-all duration-300">
       <div className="flex h-16 items-center px-4 md:px-6">
         <SidebarTrigger className="mr-4" />
-        <div className="flex items-center space-x-2">
-          <div className="bg-primary/10 dark:bg-primary/20 px-3 py-1.5 rounded-full">
-            <span className="text-xs font-medium text-primary">Free Trial</span>
-          </div>
-          <Button
-            variant="default"
-            size="sm"
-            className="bg-primary hover:bg-primary/90"
-            onClick={openUpgradeDialog}
-          >
-            Upgrade
-          </Button>
-        </div>
         <div className="ml-auto flex items-center space-x-4">
           <Sheet>
             <SheetTrigger asChild>
