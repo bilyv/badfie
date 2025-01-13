@@ -61,7 +61,6 @@ const App = () => {
                             <Route path="/users" element={<Users />} />
                             <Route path="/docs-storage" element={<DocsStorage />} />
                             <Route path="/settings" element={<Settings />} />
-                            {/* Add catch-all route to redirect to home */}
                             <Route path="*" element={<Navigate to="/" replace />} />
                           </Routes>
                         </div>
