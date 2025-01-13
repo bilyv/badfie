@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-// Sample data
 const initialItems: ItemType[] = [
   {
     id: "1",
@@ -62,32 +61,37 @@ const InventoryList = () => {
   );
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-4 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <SearchBar onSearch={handleSearch} />
-        <Button className="w-full md:w-auto">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Item
-        </Button>
-      </div>
+    <div className="bg-white rounded-lg shadow relative overflow-hidden group">
+      {/* Neon glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 animate-neon-glow blur-xl" />
       
-      <div className="hidden md:flex border-b p-4 text-sm font-medium text-gray-500">
-        <div className="flex-1">Name</div>
-        <div className="flex-1">Price</div>
-        <div className="flex-1">Quantity</div>
-        <div className="flex-1">Last Updated</div>
-        <div className="w-24">Actions</div>
-      </div>
+      <div className="relative z-10">
+        <div className="p-4 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <SearchBar onSearch={handleSearch} />
+          <Button className="w-full md:w-auto">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Item
+          </Button>
+        </div>
+        
+        <div className="hidden md:flex border-b p-4 text-sm font-medium text-gray-500">
+          <div className="flex-1">Name</div>
+          <div className="flex-1">Price</div>
+          <div className="flex-1">Quantity</div>
+          <div className="flex-1">Last Updated</div>
+          <div className="w-24">Actions</div>
+        </div>
 
-      <div className="divide-y">
-        {filteredItems.map((item) => (
-          <InventoryItem
-            key={item.id}
-            item={item}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        ))}
+        <div className="divide-y">
+          {filteredItems.map((item) => (
+            <InventoryItem
+              key={item.id}
+              item={item}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
