@@ -1,6 +1,34 @@
 import { Card } from "@/components/ui/card";
-import { Package, ArrowDown, DollarSign, CreditCard } from "lucide-react";
+import { Package, ArrowDown, DollarSign, CreditCard, BarChart2 } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
+const allMetrics = {
+  default: [
+    { label: "Total Items", value: 2456, change: "+12.5%", trend: "up", icon: Package },
+    { label: "Low Stock", value: 45, change: "-5%", trend: "down", icon: ArrowDown },
+    { label: "Total Value", value: "$124,500", change: "+2.3%", trend: "up", icon: DollarSign },
+    { label: "Pending Payments", value: "$12,450", trend: "neutral", icon: CreditCard },
+  ],
+  profit: [
+    { label: "Net Profit", value: "$45,678", change: "+8.3%", trend: "up", icon: DollarSign },
+    { label: "Gross Profit", value: "$78,900", change: "+5.7%", trend: "up", icon: DollarSign },
+    { label: "Profit Margin", value: "32%", change: "+2.1%", trend: "up", icon: DollarSign },
+    { label: "Operating Profit", value: "$34,567", change: "+4.2%", trend: "up", icon: DollarSign },
+  ],
+  pending: [
+    { label: "Pending Orders", value: 156, change: "+12%", trend: "up", icon: Package },
+    { label: "Pending Shipments", value: 89, change: "-3%", trend: "down", icon: Package },
+    { label: "Pending Payments", value: "$23,456", change: "+15%", trend: "up", icon: DollarSign },
+    { label: "Pending Returns", value: 34, change: "-8%", trend: "down", icon: Package },
+  ]
+};
 
 const data = [
   { month: "Jan", sales: 400, stock: 240 },
@@ -12,61 +40,95 @@ const data = [
 ];
 
 const Index = () => {
+  const [selectedMetric, setSelectedMetric] = useState<keyof typeof allMetrics>("default");
+
+  const currentMetrics = allMetrics[selectedMetric];
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Welcome to your inventory management system</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Dashboard
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            Welcome to your inventory management system
+          </p>
+        </div>
+        
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="icon" className="ml-auto">
+              <BarChart2 className="h-5 w-5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-48" align="end">
+            <div className="space-y-2">
+              <button
+                onClick={() => setSelectedMetric("default")}
+                className={`w-full text-left px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                  selectedMetric === "default" ? "bg-gray-100 dark:bg-gray-800" : ""
+                }`}
+              >
+                Default Metrics
+              </button>
+              <button
+                onClick={() => setSelectedMetric("profit")}
+                className={`w-full text-left px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                  selectedMetric === "profit" ? "bg-gray-100 dark:bg-gray-800" : ""
+                }`}
+              >
+                Profit Metrics
+              </button>
+              <button
+                onClick={() => setSelectedMetric("pending")}
+                className={`w-full text-left px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                  selectedMetric === "pending" ? "bg-gray-100 dark:bg-gray-800" : ""
+                }`}
+              >
+                Pending Items
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <Package className="h-6 w-6 text-blue-700 dark:text-blue-300" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Items</p>
-              <h3 className="text-2xl font-bold">2,456</h3>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-red-100 dark:bg-red-900 rounded-lg">
-              <ArrowDown className="h-6 w-6 text-red-700 dark:text-red-300" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Low Stock</p>
-              <h3 className="text-2xl font-bold">45</h3>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
-              <DollarSign className="h-6 w-6 text-green-700 dark:text-green-300" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
-              <h3 className="text-2xl font-bold">$124,500</h3>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-              <CreditCard className="h-6 w-6 text-purple-700 dark:text-purple-300" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Pending Payments</p>
-              <h3 className="text-2xl font-bold">$12,450</h3>
-            </div>
-          </div>
-        </Card>
+        {currentMetrics.map((metric, index) => {
+          const Icon = metric.icon;
+          return (
+            <Card 
+              key={index} 
+              className="p-6 relative overflow-hidden group transition-all duration-300"
+            >
+              {/* Neon glow effect - dark in light mode, light in dark mode */}
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
+              
+              <div className="relative z-10">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">{metric.label}</p>
+                      <h3 className="text-2xl font-bold mt-1">{metric.value}</h3>
+                    </div>
+                  </div>
+                  {metric.change && (
+                    <span className={`text-sm ${
+                      metric.trend === 'up' ? 'text-green-500' : 
+                      metric.trend === 'down' ? 'text-red-500' : 
+                      'text-gray-500'
+                    }`}>
+                      {metric.change}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </Card>
+          );
+        })}
       </div>
 
       <Card className="p-6">
