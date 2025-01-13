@@ -42,7 +42,7 @@ const App = () => {
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route
-                path="/*"
+                path="/"
                 element={
                   <SidebarProvider>
                     <div className="flex min-h-screen w-full">
@@ -51,7 +51,7 @@ const App = () => {
                         <Navbar />
                         <div className="container py-6">
                           <Routes>
-                            <Route index element={<Index />} />
+                            <Route path="/" element={<Index />} />
                             <Route path="/multi-store" element={<MultiStore />} />
                             <Route path="/products" element={<Products />} />
                             <Route path="/sales" element={<Sales />} />
