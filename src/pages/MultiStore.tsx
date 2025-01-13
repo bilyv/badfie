@@ -112,21 +112,26 @@ const MultiStore = () => {
       <ScrollArea className="h-[calc(100vh-16rem)]">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {stores.map((store) => (
-            <Card key={store.id} className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold">{store.name}</h3>
-                    <p className="text-sm text-muted-foreground">{store.location}</p>
+            <Card key={store.id} className="relative group overflow-hidden">
+              {/* Neon glow effect - dark in light mode, light in dark mode */}
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow blur-xl" />
+              
+              <div className="relative z-10 p-6">
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-semibold">{store.name}</h3>
+                      <p className="text-sm text-muted-foreground">{store.location}</p>
+                    </div>
+                    <Button variant="ghost" size="icon">
+                      <Settings className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button variant="ghost" size="icon">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Status</span>
-                    <span className="text-green-600 dark:text-green-400">{store.status}</span>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Status</span>
+                      <span className="text-green-600 dark:text-green-400">{store.status}</span>
+                    </div>
                   </div>
                 </div>
               </div>

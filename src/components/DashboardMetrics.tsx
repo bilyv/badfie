@@ -15,10 +15,10 @@ const DashboardMetrics = () => {
       {metrics.map((metric, index) => (
         <Card 
           key={index} 
-          className="p-4 hover:shadow-lg transition-shadow relative overflow-hidden group"
+          className="p-4 relative overflow-hidden group"
         >
-          {/* Neon glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 animate-neon-glow blur-xl" />
+          {/* Neon glow effect - dark in light mode, light in dark mode */}
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow blur-xl" />
           
           <div className="relative z-10">
             <div className="flex justify-between items-start">

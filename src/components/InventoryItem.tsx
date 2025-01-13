@@ -11,8 +11,8 @@ interface InventoryItemProps {
 const InventoryItem = ({ item, onEdit, onDelete }: InventoryItemProps) => {
   return (
     <div className="relative group">
-      {/* Neon glow effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 animate-neon-glow blur-xl" />
+      {/* Neon glow effect - dark in light mode, light in dark mode */}
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow blur-xl" />
       
       <div className="relative z-10 flex items-center justify-between p-4 hover:bg-gray-50/80 transition-colors border-b">
         <div className="flex-1 min-w-0">
