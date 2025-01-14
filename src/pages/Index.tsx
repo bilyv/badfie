@@ -1,11 +1,7 @@
 import { Card } from "@/components/ui/card";
-import { Package, ArrowDown, DollarSign, CreditCard, BarChart2 } from "lucide-react";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Package, ArrowDown, DollarSign, CreditCard, BarChart2, LineChart } from "lucide-react";
+import { Bar, BarChart, Line, LineChart as RechartsLineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -30,7 +26,7 @@ const allMetrics = {
   ]
 };
 
-const data = [
+const barData = [
   { month: "Jan", sales: 400, stock: 240 },
   { month: "Feb", sales: 300, stock: 139 },
   { month: "Mar", sales: 200, stock: 980 },
@@ -39,9 +35,17 @@ const data = [
   { month: "Jun", sales: 239, stock: 380 },
 ];
 
+const lineData = [
+  { month: "Jan", revenue: 4000, expenses: 2400 },
+  { month: "Feb", revenue: 3000, expenses: 1398 },
+  { month: "Mar", revenue: 2000, expenses: 9800 },
+  { month: "Apr", revenue: 2780, expenses: 3908 },
+  { month: "May", revenue: 1890, expenses: 4800 },
+  { month: "Jun", revenue: 2390, expenses: 3800 },
+];
+
 const Index = () => {
   const [selectedMetric, setSelectedMetric] = useState<keyof typeof allMetrics>("default");
-
   const currentMetrics = allMetrics[selectedMetric];
 
   return (
@@ -101,7 +105,6 @@ const Index = () => {
               key={index} 
               className="p-6 relative overflow-hidden group transition-all duration-300"
             >
-              {/* Neon glow effect - dark in light mode, light in dark mode */}
               <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
               
               <div className="relative z-10">
@@ -131,19 +134,51 @@ const Index = () => {
         })}
       </div>
 
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Sales & Stock Overview</h3>
-        <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Bar dataKey="sales" fill="#4f46e5" name="Sales" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="stock" fill="#e5e7eb" name="Stock" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Sales & Stock Overview</h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={barData}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="sales" fill="#4f46e5" name="Sales" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="stock" fill="#e5e7eb" name="Stock" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Revenue & Expenses Trend</h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsLineChart data={lineData}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="#4f46e5" 
+                  strokeWidth={2}
+                  dot={{ fill: "#4f46e5" }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="expenses" 
+                  stroke="#ef4444" 
+                  strokeWidth={2}
+                  dot={{ fill: "#ef4444" }}
+                />
+              </RechartsLineChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 };

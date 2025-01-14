@@ -41,7 +41,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route element={
+              <Route path="/" element={
                 <SidebarProvider>
                   <div className="flex min-h-screen w-full">
                     <AppSidebar />
@@ -50,22 +50,23 @@ const App = () => {
                       <div className="container py-6">
                         <Routes>
                           <Route index element={<Index />} />
-                          <Route path="/multi-store" element={<MultiStore />} />
-                          <Route path="/products" element={<Products />} />
-                          <Route path="/sales" element={<Sales />} />
-                          <Route path="/expenses" element={<Expenses />} />
-                          <Route path="/tax" element={<Tax />} />
-                          <Route path="/reports" element={<Reports />} />
-                          <Route path="/users" element={<Users />} />
-                          <Route path="/docs-storage" element={<DocsStorage />} />
-                          <Route path="/settings" element={<Settings />} />
+                          <Route path="multi-store" element={<MultiStore />} />
+                          <Route path="products" element={<Products />} />
+                          <Route path="sales" element={<Sales />} />
+                          <Route path="expenses" element={<Expenses />} />
+                          <Route path="tax" element={<Tax />} />
+                          <Route path="reports" element={<Reports />} />
+                          <Route path="users" element={<Users />} />
+                          <Route path="docs-storage" element={<DocsStorage />} />
+                          <Route path="settings" element={<Settings />} />
+                          <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </div>
                     </main>
                   </div>
                   <UpgradeDialog />
                 </SidebarProvider>
-              } path="/" />
+              } />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
