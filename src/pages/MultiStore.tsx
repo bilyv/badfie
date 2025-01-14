@@ -33,6 +33,7 @@ const MultiStore = () => {
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [newStoreName, setNewStoreName] = useState("");
   const [newStore, setNewStore] = useState({ name: "", location: "", pin: "" });
   const [enteredPin, setEnteredPin] = useState("");
   const [stores, setStores] = useState<Store[]>([
@@ -116,10 +117,12 @@ const MultiStore = () => {
     });
   };
 
-  const handleRenameStore = (store: Store, newName: string) => {
+  const handleRenameStore = useCallback(() => {
+    if (!selectedStore || !newStoreName.trim()) return;
+    
     setStores(prevStores => 
       prevStores.map(s => 
-        s.id === store.id ? { ...s, name: newName } : s
+        s.id === selectedStore.id ? { ...s, name: newStoreName } : s
       )
     );
     toast({
@@ -127,7 +130,8 @@ const MultiStore = () => {
       description: "The store has been renamed successfully.",
     });
     setIsRenameDialogOpen(false);
-  };
+    setNewStoreName("");
+  }, [selectedStore, newStoreName]);
 
   return (
     <div className="space-y-6">
@@ -194,10 +198,8 @@ const MultiStore = () => {
       <ScrollArea className="h-[calc(100vh-16rem)]">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {stores.map((store) => (
-            <Card key={store.id} className="relative group overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
-              
-              <div className="relative z-10 p-6">
+            <Card key={store.id} className="relative group">
+              <div className="p-6">
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div>
@@ -214,6 +216,7 @@ const MultiStore = () => {
                         <DropdownMenuItem
                           onClick={() => {
                             setSelectedStore(store);
+                            setNewStoreName(store.name);
                             setIsRenameDialogOpen(true);
                           }}
                           className="gap-2"
@@ -239,7 +242,7 @@ const MultiStore = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full mt-2 gap-2 hover:bg-primary hover:text-primary-foreground"
+                      className="w-full mt-2 gap-2 transition-all duration-300 hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-800"
                       onClick={() => {
                         setSelectedStore(store);
                         setIsLoginDialogOpen(true);
@@ -294,15 +297,14 @@ const MultiStore = () => {
               <Label htmlFor="newName">New Store Name</Label>
               <Input
                 id="newName"
-                defaultValue={selectedStore?.name}
-                onChange={(e) => {
-                  if (selectedStore) {
-                    handleRenameStore(selectedStore, e.target.value);
-                  }
-                }}
+                value={newStoreName}
+                onChange={(e) => setNewStoreName(e.target.value)}
                 placeholder="Enter new store name"
               />
             </div>
+            <Button onClick={handleRenameStore} className="w-full">
+              Save Changes
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
