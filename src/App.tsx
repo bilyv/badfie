@@ -40,17 +40,17 @@ const Layout = () => {
           <Navbar />
           <div className="container py-6">
             <Routes>
-              <Route index element={<Index />} />
-              <Route path="multi-store" element={<MultiStore />} />
-              <Route path="products" element={<Products />} />
-              <Route path="sales" element={<Sales />} />
-              <Route path="expenses" element={<Expenses />} />
-              <Route path="tax" element={<Tax />} />
-              <Route path="reports" element={<Reports />} />
-              <Route path="users" element={<Users />} />
-              <Route path="docs-storage" element={<DocsStorage />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/" element={<Index />} />
+              <Route path="/multi-store" element={<MultiStore />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/sales" element={<Sales />} />
+              <Route path="/expenses" element={<Expenses />} />
+              <Route path="/tax" element={<Tax />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/docs-storage" element={<DocsStorage />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </main>
@@ -65,9 +65,9 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
           <BrowserRouter>
+            <Toaster />
+            <Sonner />
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/*" element={<Layout />} />
