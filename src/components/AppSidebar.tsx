@@ -87,9 +87,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="w-64 backdrop-blur-sm bg-white/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 transition-all duration-300">
-      <SidebarHeader className="p-4 flex items-center gap-2 text-sm font-semibold">
-        <Package className="h-5 w-5" />
-        <span>Inventory Pro</span>
+      <SidebarHeader className="p-4 flex items-center gap-2 text-sm font-semibold border-b border-gray-200 dark:border-gray-800">
+        <Package className="h-5 w-5 text-primary" />
+        <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+          Inventory Pro
+        </span>
       </SidebarHeader>
       
       <SidebarContent>
@@ -102,11 +104,11 @@ export function AppSidebar() {
                     asChild 
                     tooltip={item.title}
                     isActive={location.pathname === item.path}
-                    className="h-10 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className="h-10 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 group"
                   >
                     <Link to={item.path} className="flex items-center gap-3 px-4">
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <item.icon className="h-4 w-4 transition-colors group-hover:text-primary" />
+                      <span className="transition-colors group-hover:text-primary">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -125,11 +127,11 @@ export function AppSidebar() {
           <Button 
             variant="outline" 
             size="sm" 
-            className="gap-1 hover:bg-gray-100 dark:hover:bg-gray-800" 
+            className="gap-1 hover:bg-gray-100 dark:hover:bg-gray-800 group" 
             onClick={openUpgradeDialog}
           >
-            <ArrowUp className="h-4 w-4" />
-            Upgrade
+            <ArrowUp className="h-4 w-4 transition-colors group-hover:text-primary" />
+            <span className="transition-colors group-hover:text-primary">Upgrade</span>
           </Button>
         </div>
       </SidebarFooter>
