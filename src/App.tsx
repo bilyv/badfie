@@ -29,9 +29,38 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => {
+const Layout = () => {
   const { UpgradeDialog } = useUpgradeDialog();
   
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1">
+          <Navbar />
+          <div className="container py-6">
+            <Routes>
+              <Route index element={<Index />} />
+              <Route path="multi-store" element={<MultiStore />} />
+              <Route path="products" element={<Products />} />
+              <Route path="sales" element={<Sales />} />
+              <Route path="expenses" element={<Expenses />} />
+              <Route path="tax" element={<Tax />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="users" element={<Users />} />
+              <Route path="docs-storage" element={<DocsStorage />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </div>
+        </main>
+      </div>
+      <UpgradeDialog />
+    </SidebarProvider>
+  );
+};
+
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -41,35 +70,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route
-                path="/"
-                element={
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Navbar />
-                        <div className="container py-6">
-                          <Routes>
-                            <Route index element={<Index />} />
-                            <Route path="multi-store" element={<MultiStore />} />
-                            <Route path="products" element={<Products />} />
-                            <Route path="sales" element={<Sales />} />
-                            <Route path="expenses" element={<Expenses />} />
-                            <Route path="tax" element={<Tax />} />
-                            <Route path="reports" element={<Reports />} />
-                            <Route path="users" element={<Users />} />
-                            <Route path="docs-storage" element={<DocsStorage />} />
-                            <Route path="settings" element={<Settings />} />
-                            <Route path="*" element={<Navigate to="/" />} />
-                          </Routes>
-                        </div>
-                      </main>
-                    </div>
-                    <UpgradeDialog />
-                  </SidebarProvider>
-                }
-              />
+              <Route path="/*" element={<Layout />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>

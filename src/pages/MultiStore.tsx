@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Settings } from "lucide-react";
@@ -39,9 +39,18 @@ const MultiStore = () => {
     }
   ]);
 
-  const handleCreateStore = (e: React.FormEvent) => {
+  const handleCreateStore = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!newStore.name || !newStore.location) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const newStoreData: Store = {
       id: stores.length + 1,
       name: newStore.name,
@@ -49,7 +58,7 @@ const MultiStore = () => {
       status: 'active'
     };
 
-    setStores([...stores, newStoreData]);
+    setStores(prevStores => [...prevStores, newStoreData]);
     toast({
       title: "Store created",
       description: "Your new store has been created successfully.",
@@ -57,7 +66,7 @@ const MultiStore = () => {
     
     setNewStore({ name: "", location: "" });
     setIsDialogOpen(false);
-  };
+  }, [newStore, stores.length]);
 
   return (
     <div className="space-y-6">
