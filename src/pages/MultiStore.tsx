@@ -113,7 +113,6 @@ const MultiStore = () => {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {stores.map((store) => (
             <Card key={store.id} className="relative group overflow-hidden">
-              {/* Neon glow effect - dark in light mode, light in dark mode */}
               <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
               
               <div className="relative z-10 p-6">
