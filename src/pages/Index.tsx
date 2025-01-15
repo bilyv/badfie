@@ -4,7 +4,7 @@ import { Bar, BarChart, Line, LineChart as RechartsLineChart, ResponsiveContaine
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 
 const allMetrics = {
   default: [
@@ -96,18 +96,20 @@ const Index = () => {
   const renderGraph = (graph: GraphType) => {
     return (
       <Card key={graph.id} className="p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-lg">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-500/5 to-gray-700/5 dark:from-blue-300/5 dark:to-purple-300/5 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+        
         <button
           onClick={() => handleRemoveGraph(graph.id)}
-          className="absolute top-3 right-3 p-1.5 rounded-full bg-gray-100/80 dark:bg-gray-800/80 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+          className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-background z-10"
         >
-          <X className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+          <X className="h-4 w-4 text-foreground/60" />
         </button>
-        <h3 className="font-semibold mb-4 text-gray-800 dark:text-gray-200">{graph.title}</h3>
-        <div className="h-[300px] w-full">
+        
+        <h3 className="font-semibold mb-4 text-foreground/80 relative z-10">{graph.title}</h3>
+        <div className="h-[300px] w-full relative z-10">
           <ResponsiveContainer width="100%" height="100%">
             {graph.type === 'bar' ? (
-              <BarChart data={graph.data}>
+              <BarChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
                 <XAxis 
                   dataKey="month" 
                   stroke="currentColor" 
@@ -121,26 +123,28 @@ const Index = () => {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    background: 'rgba(255, 255, 255, 0.95)',
-                    border: 'none',
+                    backgroundColor: 'hsl(var(--background))',
+                    border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                  }} 
+                  }}
                 />
                 <Legend />
                 <Bar 
                   dataKey="sales" 
-                  fill="rgba(136, 132, 216, 0.8)" 
+                  fill="hsl(var(--primary))" 
                   radius={[4, 4, 0, 0]}
+                  opacity={0.8}
                 />
                 <Bar 
                   dataKey="stock" 
-                  fill="rgba(130, 202, 157, 0.8)" 
+                  fill="hsl(var(--secondary))" 
                   radius={[4, 4, 0, 0]}
+                  opacity={0.8}
                 />
               </BarChart>
             ) : (
-              <RechartsLineChart data={graph.data}>
+              <RechartsLineChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
                 <XAxis 
                   dataKey="month" 
                   stroke="currentColor" 
@@ -154,17 +158,17 @@ const Index = () => {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    background: 'rgba(255, 255, 255, 0.95)',
-                    border: 'none',
+                    backgroundColor: 'hsl(var(--background))',
+                    border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                  }} 
+                  }}
                 />
                 <Legend />
                 <Line 
                   type="monotone" 
                   dataKey="revenue" 
-                  stroke="#8884d8" 
+                  stroke="hsl(var(--primary))" 
                   strokeWidth={2}
                   dot={{ strokeWidth: 2 }}
                   activeDot={{ r: 6, strokeWidth: 2 }}
@@ -172,7 +176,7 @@ const Index = () => {
                 <Line 
                   type="monotone" 
                   dataKey="expenses" 
-                  stroke="#82ca9d" 
+                  stroke="hsl(var(--secondary))" 
                   strokeWidth={2}
                   dot={{ strokeWidth: 2 }}
                   activeDot={{ r: 6, strokeWidth: 2 }}
@@ -271,7 +275,7 @@ const Index = () => {
         })}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 relative">
         {activeGraphs.map(graphId => {
           const graph = availableGraphs.find(g => g.id === graphId);
           if (graph) return renderGraph(graph);
@@ -280,7 +284,7 @@ const Index = () => {
         
         <Dialog>
           <DialogTrigger asChild>
-            <Card className="p-6 border-dashed flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group min-h-[400px]">
+            <Card className="p-6 border-dashed flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group min-h-[400px] absolute inset-0 -z-10">
               <div className="flex flex-col items-center gap-3 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
                 <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   <PlusCircle className="h-8 w-8" />

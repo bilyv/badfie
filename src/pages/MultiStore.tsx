@@ -135,7 +135,7 @@ const MultiStore = () => {
     
     setIsRenameDialogOpen(false);
     setNewStoreName("");
-    setSelectedStore(null); // Clear selected store
+    setSelectedStore(null);
   }, [selectedStore, newStoreName]);
 
   return (
