@@ -91,64 +91,7 @@ const Index = () => {
     setActiveGraphs(prev => prev.filter(id => id !== graphId));
   };
 
-  const renderGraph = (graph: GraphType) => {
-    return (
-      <Card key={graph.id} className="p-6 relative group">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-gray-700/20 dark:to-gray-900/20 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity duration-300" />
-        <div className="absolute inset-0 animate-neon-glow dark:animate-neon-glow-dark blur-xl opacity-50" />
-        
-        <div className="relative z-10">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">{graph.title}</h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={() => handleRemoveGraph(graph.id)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              {graph.type === 'bar' ? (
-                <BarChart data={graph.data}>
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="sales" fill="#4f46e5" name="Sales" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="stock" fill="#e5e7eb" name="Stock" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              ) : (
-                <RechartsLineChart data={graph.data}>
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="revenue" 
-                    stroke="#4f46e5" 
-                    strokeWidth={2}
-                    dot={{ fill: "#4f46e5" }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="expenses" 
-                    stroke="#ef4444" 
-                    strokeWidth={2}
-                    dot={{ fill: "#ef4444" }}
-                  />
-                </RechartsLineChart>
-              )}
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </Card>
-    );
-  };
+  const metrics = allMetrics[selectedMetric];
 
   return (
     <div className="space-y-8">
@@ -200,7 +143,7 @@ const Index = () => {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {currentMetrics.map((metric, index) => {
+        {metrics.map((metric, index) => {
           const Icon = metric.icon;
           return (
             <Card 
@@ -236,45 +179,45 @@ const Index = () => {
         })}
       </div>
 
+      <Dialog>
+        <DialogTrigger asChild>
+          <Card className="p-6 border-dashed flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-colors">
+            <PlusCircle className="h-8 w-8 text-muted-foreground" />
+            <span className="ml-2 text-muted-foreground">Add Graph</span>
+          </Card>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Graph</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {availableGraphs
+              .filter(graph => !activeGraphs.includes(graph.id))
+              .map(graph => (
+                <Button
+                  key={graph.id}
+                  variant="outline"
+                  className="justify-start"
+                  onClick={() => {
+                    handleAddGraph(graph.id);
+                    const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
+                    dialogClose?.click();
+                  }}
+                >
+                  {graph.type === 'bar' ? <BarChart2 className="mr-2 h-4 w-4" /> : <LineChart className="mr-2 h-4 w-4" />}
+                  {graph.title}
+                </Button>
+              ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid gap-6 md:grid-cols-2">
         {activeGraphs.map(graphId => {
           const graph = availableGraphs.find(g => g.id === graphId);
           if (graph) return renderGraph(graph);
           return null;
         })}
-        
-        <Dialog>
-          <DialogTrigger asChild>
-            <Card className="p-6 border-dashed flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-colors">
-              <PlusCircle className="h-8 w-8 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">Add Graph</span>
-            </Card>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Graph</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              {availableGraphs
-                .filter(graph => !activeGraphs.includes(graph.id))
-                .map(graph => (
-                  <Button
-                    key={graph.id}
-                    variant="outline"
-                    className="justify-start"
-                    onClick={() => {
-                      handleAddGraph(graph.id);
-                      const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
-                      dialogClose?.click();
-                    }}
-                  >
-                    {graph.type === 'bar' ? <BarChart2 className="mr-2 h-4 w-4" /> : <LineChart className="mr-2 h-4 w-4" />}
-                    {graph.title}
-                  </Button>
-                ))}
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );
