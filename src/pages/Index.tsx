@@ -95,34 +95,88 @@ const Index = () => {
 
   const renderGraph = (graph: GraphType) => {
     return (
-      <Card key={graph.id} className="p-6 relative overflow-hidden group">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
+      <Card key={graph.id} className="p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-500/5 to-gray-700/5 dark:from-blue-300/5 dark:to-purple-300/5 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
         <button
           onClick={() => handleRemoveGraph(graph.id)}
-          className="absolute top-2 right-2 p-1 rounded-full bg-gray-100 dark:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute top-3 right-3 p-1.5 rounded-full bg-gray-100/80 dark:bg-gray-800/80 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700"
         >
-          <X className="h-4 w-4 text-gray-500" />
+          <X className="h-4 w-4 text-gray-500 dark:text-gray-400" />
         </button>
-        <h3 className="font-semibold mb-4">{graph.title}</h3>
+        <h3 className="font-semibold mb-4 text-gray-800 dark:text-gray-200">{graph.title}</h3>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             {graph.type === 'bar' ? (
               <BarChart data={graph.data}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="currentColor" 
+                  strokeOpacity={0.5} 
+                  fontSize={12}
+                />
+                <YAxis 
+                  stroke="currentColor" 
+                  strokeOpacity={0.5} 
+                  fontSize={12}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                  }} 
+                />
                 <Legend />
-                <Bar dataKey="sales" fill="#8884d8" />
-                <Bar dataKey="stock" fill="#82ca9d" />
+                <Bar 
+                  dataKey="sales" 
+                  fill="rgba(136, 132, 216, 0.8)" 
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar 
+                  dataKey="stock" 
+                  fill="rgba(130, 202, 157, 0.8)" 
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             ) : (
               <RechartsLineChart data={graph.data}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="currentColor" 
+                  strokeOpacity={0.5} 
+                  fontSize={12}
+                />
+                <YAxis 
+                  stroke="currentColor" 
+                  strokeOpacity={0.5} 
+                  fontSize={12}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                  }} 
+                />
                 <Legend />
-                <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
-                <Line type="monotone" dataKey="expenses" stroke="#82ca9d" />
+                <Line 
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="#8884d8" 
+                  strokeWidth={2}
+                  dot={{ strokeWidth: 2 }}
+                  activeDot={{ r: 6, strokeWidth: 2 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="expenses" 
+                  stroke="#82ca9d" 
+                  strokeWidth={2}
+                  dot={{ strokeWidth: 2 }}
+                  activeDot={{ r: 6, strokeWidth: 2 }}
+                />
               </RechartsLineChart>
             )}
           </ResponsiveContainer>
@@ -217,45 +271,60 @@ const Index = () => {
         })}
       </div>
 
-      <Dialog>
-        <DialogTrigger asChild>
-          <Card className="p-6 border-dashed flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-colors">
-            <PlusCircle className="h-8 w-8 text-muted-foreground" />
-            <span className="ml-2 text-muted-foreground">Add Graph</span>
-          </Card>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Graph</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {availableGraphs
-              .filter(graph => !activeGraphs.includes(graph.id))
-              .map(graph => (
-                <Button
-                  key={graph.id}
-                  variant="outline"
-                  className="justify-start"
-                  onClick={() => {
-                    handleAddGraph(graph.id);
-                    const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
-                    dialogClose?.click();
-                  }}
-                >
-                  {graph.type === 'bar' ? <BarChart2 className="mr-2 h-4 w-4" /> : <LineChart className="mr-2 h-4 w-4" />}
-                  {graph.title}
-                </Button>
-              ))}
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <div className="grid gap-6 md:grid-cols-2">
         {activeGraphs.map(graphId => {
           const graph = availableGraphs.find(g => g.id === graphId);
           if (graph) return renderGraph(graph);
           return null;
         })}
+        
+        <Dialog>
+          <DialogTrigger asChild>
+            <Card className="p-6 border-dashed flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group min-h-[400px]">
+              <div className="flex flex-col items-center gap-3 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <PlusCircle className="h-8 w-8" />
+                </div>
+                <span className="font-medium">Add Graph</span>
+              </div>
+            </Card>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Graph</DialogTitle>
+              <DialogDescription>
+                Select a graph type to add to your dashboard
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {availableGraphs
+                .filter(graph => !activeGraphs.includes(graph.id))
+                .map(graph => (
+                  <Button
+                    key={graph.id}
+                    variant="outline"
+                    className="justify-start gap-3 h-auto p-4"
+                    onClick={() => {
+                      handleAddGraph(graph.id);
+                      const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
+                      dialogClose?.click();
+                    }}
+                  >
+                    {graph.type === 'bar' ? 
+                      <BarChart2 className="h-5 w-5 text-primary" /> : 
+                      <LineChart className="h-5 w-5 text-primary" />
+                    }
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">{graph.title}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {graph.type === 'bar' ? 'Bar Chart' : 'Line Chart'}
+                      </span>
+                    </div>
+                  </Button>
+                ))}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

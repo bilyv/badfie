@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -100,6 +101,7 @@ const MultiStore = () => {
       });
       setIsLoginDialogOpen(false);
       setEnteredPin("");
+      setSelectedStore(null);
     } else {
       toast({
         title: "Error",
@@ -125,12 +127,15 @@ const MultiStore = () => {
         s.id === selectedStore.id ? { ...s, name: newStoreName } : s
       )
     );
+    
     toast({
       title: "Store renamed",
       description: "The store has been renamed successfully.",
     });
+    
     setIsRenameDialogOpen(false);
     setNewStoreName("");
+    setSelectedStore(null); // Clear selected store
   }, [selectedStore, newStoreName]);
 
   return (
@@ -155,6 +160,9 @@ const MultiStore = () => {
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Create New Store</DialogTitle>
+              <DialogDescription>
+                Fill in the details to create a new store location.
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreateStore} className="space-y-4">
               <div className="space-y-2">
@@ -259,10 +267,19 @@ const MultiStore = () => {
         </div>
       </ScrollArea>
 
-      <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
+      <Dialog open={isLoginDialogOpen} onOpenChange={(open) => {
+        setIsLoginDialogOpen(open);
+        if (!open) {
+          setSelectedStore(null);
+          setEnteredPin("");
+        }
+      }}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Enter Store PIN</DialogTitle>
+            <DialogDescription>
+              Enter the 4-digit PIN for {selectedStore?.name}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -287,10 +304,19 @@ const MultiStore = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
+      <Dialog open={isRenameDialogOpen} onOpenChange={(open) => {
+        setIsRenameDialogOpen(open);
+        if (!open) {
+          setSelectedStore(null);
+          setNewStoreName("");
+        }
+      }}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Rename Store</DialogTitle>
+            <DialogDescription>
+              Enter a new name for {selectedStore?.name}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
