@@ -95,7 +95,7 @@ const Index = () => {
 
   const renderGraph = (graph: GraphType) => {
     return (
-      <Card key={graph.id} className="p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-lg">
+      <Card key={graph.id} className="p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-lg w-full max-w-xl">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
         
         <button
@@ -113,12 +113,12 @@ const Index = () => {
                 <XAxis 
                   dataKey="month" 
                   stroke="currentColor" 
-                  strokeOpacity={0.5} 
+                  strokeOpacity={0.7} 
                   fontSize={12}
                 />
                 <YAxis 
                   stroke="currentColor" 
-                  strokeOpacity={0.5} 
+                  strokeOpacity={0.7} 
                   fontSize={12}
                 />
                 <Tooltip 
@@ -132,15 +132,15 @@ const Index = () => {
                 <Legend />
                 <Bar 
                   dataKey="sales" 
-                  fill="hsl(var(--primary))" 
+                  fill="hsl(221.2 83.2% 53.3%)" 
                   radius={[4, 4, 0, 0]}
-                  opacity={0.8}
+                  opacity={0.9}
                 />
                 <Bar 
                   dataKey="stock" 
-                  fill="hsl(var(--secondary))" 
+                  fill="hsl(217.2 91.2% 59.8%)" 
                   radius={[4, 4, 0, 0]}
-                  opacity={0.8}
+                  opacity={0.9}
                 />
               </BarChart>
             ) : (
@@ -148,12 +148,12 @@ const Index = () => {
                 <XAxis 
                   dataKey="month" 
                   stroke="currentColor" 
-                  strokeOpacity={0.5} 
+                  strokeOpacity={0.7} 
                   fontSize={12}
                 />
                 <YAxis 
                   stroke="currentColor" 
-                  strokeOpacity={0.5} 
+                  strokeOpacity={0.7} 
                   fontSize={12}
                 />
                 <Tooltip 
@@ -168,17 +168,17 @@ const Index = () => {
                 <Line 
                   type="monotone" 
                   dataKey="revenue" 
-                  stroke="hsl(var(--primary))" 
+                  stroke="hsl(221.2 83.2% 53.3%)" 
                   strokeWidth={2}
-                  dot={{ strokeWidth: 2 }}
+                  dot={{ fill: "hsl(221.2 83.2% 53.3%)", strokeWidth: 2 }}
                   activeDot={{ r: 6, strokeWidth: 2 }}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="expenses" 
-                  stroke="hsl(var(--secondary))" 
+                  stroke="hsl(217.2 91.2% 59.8%)" 
                   strokeWidth={2}
-                  dot={{ strokeWidth: 2 }}
+                  dot={{ fill: "hsl(217.2 91.2% 59.8%)", strokeWidth: 2 }}
                   activeDot={{ r: 6, strokeWidth: 2 }}
                 />
               </RechartsLineChart>
@@ -275,60 +275,59 @@ const Index = () => {
         })}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 relative">
-        {activeGraphs.map(graphId => {
-          const graph = availableGraphs.find(g => g.id === graphId);
-          if (graph) return renderGraph(graph);
-          return null;
-        })}
-        
-        <Dialog>
-          <DialogTrigger asChild>
-            <Card className="p-6 border-dashed flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group min-h-[400px] absolute inset-0 -z-10">
-              <div className="flex flex-col items-center gap-3 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
-                <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="flex flex-wrap gap-6">
+          {activeGraphs.map(graphId => {
+            const graph = availableGraphs.find(g => g.id === graphId);
+            if (graph) return renderGraph(graph);
+            return null;
+          })}
+          
+          <Dialog>
+            <DialogTrigger asChild>
+              <Card className="w-24 h-24 flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group rounded-full border-dashed">
+                <div className="flex flex-col items-center gap-2 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
                   <PlusCircle className="h-8 w-8" />
                 </div>
-                <span className="font-medium">Add Graph</span>
+              </Card>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Graph</DialogTitle>
+                <DialogDescription>
+                  Select a graph type to add to your dashboard
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                {availableGraphs
+                  .filter(graph => !activeGraphs.includes(graph.id))
+                  .map(graph => (
+                    <Button
+                      key={graph.id}
+                      variant="outline"
+                      className="justify-start gap-3 h-auto p-4"
+                      onClick={() => {
+                        handleAddGraph(graph.id);
+                        const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
+                        if (dialogClose) dialogClose.click();
+                      }}
+                    >
+                      {graph.type === 'bar' ? 
+                        <BarChart2 className="h-5 w-5 text-primary" /> : 
+                        <LineChart className="h-5 w-5 text-primary" />
+                      }
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">{graph.title}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {graph.type === 'bar' ? 'Bar Chart' : 'Line Chart'}
+                        </span>
+                      </div>
+                    </Button>
+                  ))}
               </div>
-            </Card>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Graph</DialogTitle>
-              <DialogDescription>
-                Select a graph type to add to your dashboard
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              {availableGraphs
-                .filter(graph => !activeGraphs.includes(graph.id))
-                .map(graph => (
-                  <Button
-                    key={graph.id}
-                    variant="outline"
-                    className="justify-start gap-3 h-auto p-4"
-                    onClick={() => {
-                      handleAddGraph(graph.id);
-                      const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
-                      dialogClose?.click();
-                    }}
-                  >
-                    {graph.type === 'bar' ? 
-                      <BarChart2 className="h-5 w-5 text-primary" /> : 
-                      <LineChart className="h-5 w-5 text-primary" />
-                    }
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium">{graph.title}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {graph.type === 'bar' ? 'Bar Chart' : 'Line Chart'}
-                      </span>
-                    </div>
-                  </Button>
-                ))}
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </div>
   );

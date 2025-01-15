@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { MapPin } from "lucide-react";
 
 type Store = {
   id: number;
@@ -206,17 +207,26 @@ const MultiStore = () => {
       <ScrollArea className="h-[calc(100vh-16rem)]">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {stores.map((store) => (
-            <Card key={store.id} className="relative group">
-              <div className="p-6">
+            <Card key={store.id} className="relative group overflow-hidden transition-all duration-300 hover:shadow-lg border-primary/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+              
+              <div className="p-6 relative z-10">
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold">{store.name}</h3>
-                      <p className="text-sm text-muted-foreground">{store.location}</p>
+                    <div className="space-y-1">
+                      <h3 className="font-semibold text-lg tracking-tight">{store.name}</h3>
+                      <p className="text-sm text-muted-foreground flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        {store.location}
+                      </p>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="rounded-full hover:bg-primary/10"
+                        >
                           <Settings className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -242,15 +252,21 @@ const MultiStore = () => {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between items-center">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-muted-foreground">Status</span>
-                      <span className="text-green-600 dark:text-green-400">{store.status}</span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        store.status === 'active' 
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                          : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                      }`}>
+                        {store.status}
+                      </span>
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full mt-2 gap-2 transition-all duration-300 hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      className="w-full gap-2 transition-all duration-300 hover:bg-primary/10 hover:text-primary"
                       onClick={() => {
                         setSelectedStore(store);
                         setIsLoginDialogOpen(true);
