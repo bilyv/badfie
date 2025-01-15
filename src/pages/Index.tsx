@@ -93,6 +93,44 @@ const Index = () => {
 
   const metrics = allMetrics[selectedMetric];
 
+  const renderGraph = (graph: GraphType) => {
+    return (
+      <Card key={graph.id} className="p-6 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
+        <button
+          onClick={() => handleRemoveGraph(graph.id)}
+          className="absolute top-2 right-2 p-1 rounded-full bg-gray-100 dark:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <X className="h-4 w-4 text-gray-500" />
+        </button>
+        <h3 className="font-semibold mb-4">{graph.title}</h3>
+        <div className="h-[300px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            {graph.type === 'bar' ? (
+              <BarChart data={graph.data}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="sales" fill="#8884d8" />
+                <Bar dataKey="stock" fill="#82ca9d" />
+              </BarChart>
+            ) : (
+              <RechartsLineChart data={graph.data}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+                <Line type="monotone" dataKey="expenses" stroke="#82ca9d" />
+              </RechartsLineChart>
+            )}
+          </ResponsiveContainer>
+        </div>
+      </Card>
+    );
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
