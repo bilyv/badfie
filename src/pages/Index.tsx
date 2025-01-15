@@ -1,10 +1,16 @@
 import { Card } from "@/components/ui/card";
 import { Package, ArrowDown, DollarSign, CreditCard, BarChart2, LineChart, PlusCircle, X } from "lucide-react";
-import { Bar, BarChart, Line, LineChart as RechartsLineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { Bar, BarChart, Line, LineChart as RechartsLineChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip, Legend } from "recharts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const allMetrics = {
   default: [
@@ -112,7 +118,7 @@ const Index = () => {
               <BarChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
                 <XAxis dataKey="month" stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
                 <YAxis stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
-                <Tooltip 
+                <RechartsTooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--background))',
                     border: '1px solid hsl(var(--border))',
@@ -128,7 +134,7 @@ const Index = () => {
               <RechartsLineChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
                 <XAxis dataKey="month" stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
                 <YAxis stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
-                <Tooltip 
+                <RechartsTooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--background))',
                     border: '1px solid hsl(var(--border))',
@@ -257,16 +263,18 @@ const Index = () => {
         <Dialog>
           <DialogTrigger asChild>
             <Card className="w-24 h-24 flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group rounded-full border-dashed">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
-                    <PlusCircle className="h-8 w-8" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Add a new graph to your dashboard</p>
-                </TooltipContent>
-              </Tooltip>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
+                      <PlusCircle className="h-8 w-8" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Add a new graph to your dashboard</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </Card>
           </DialogTrigger>
           <DialogContent>
