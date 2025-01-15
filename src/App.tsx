@@ -10,9 +10,11 @@ import { Navbar } from "@/components/Navbar";
 import Index from "./pages/Index";
 import MultiStore from "./pages/MultiStore";
 import Products from "./pages/Products";
+import Services from "./pages/Services";
 import Sales from "./pages/Sales";
 import Expenses from "./pages/Expenses";
 import Tax from "./pages/Tax";
+import Reminders from "./pages/Reminders";
 import Reports from "./pages/Reports";
 import Users from "./pages/Users";
 import DocsStorage from "./pages/DocsStorage";
@@ -43,9 +45,11 @@ const Layout = () => {
               <Route index element={<Index />} />
               <Route path="multi-store" element={<MultiStore />} />
               <Route path="products" element={<Products />} />
+              <Route path="services" element={<Services />} />
               <Route path="sales" element={<Sales />} />
               <Route path="expenses" element={<Expenses />} />
               <Route path="tax" element={<Tax />} />
+              <Route path="reminders" element={<Reminders />} />
               <Route path="reports" element={<Reports />} />
               <Route path="users" element={<Users />} />
               <Route path="docs-storage" element={<DocsStorage />} />
