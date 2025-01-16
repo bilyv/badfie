@@ -128,7 +128,7 @@ const Services = () => {
                       </div>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      <Badge variant="success">Available</Badge>
+                      <Badge variant="default">Available</Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="outline" size="sm">Manage</Button>
@@ -152,7 +152,7 @@ const Services = () => {
                       </div>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      <Badge variant="success">Available</Badge>
+                      <Badge variant="default">Available</Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="outline" size="sm">Manage</Button>
