@@ -73,8 +73,11 @@ const App = () => {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
             <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Index />} />
+                <Route path="*" element={<Layout />} />
+              </Route>
               <Route path="/auth" element={<Auth />} />
-              <Route path="/*" element={<Layout />} />
             </Routes>
             <Toaster />
             <Sonner />
