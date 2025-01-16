@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { MessageCircle, Send } from "lucide-react";
 
 const Users = () => {
   return (
@@ -14,10 +17,11 @@ const Users = () => {
       </div>
       
       <Tabs defaultValue="all-users" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 lg:max-w-[600px]">
+        <TabsList className="grid w-full grid-cols-1 md:grid-cols-4 lg:max-w-[800px]">
           <TabsTrigger value="all-users">All Users</TabsTrigger>
           <TabsTrigger value="add-user">Add User</TabsTrigger>
           <TabsTrigger value="roles">Roles & Permissions</TabsTrigger>
+          <TabsTrigger value="chat">Chat</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all-users" className="mt-6">
@@ -118,6 +122,62 @@ const Users = () => {
                     <p className="text-sm text-gray-500">Basic access rights</p>
                   </div>
                   <Button variant="outline">Edit Permissions</Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="chat" className="mt-6">
+          <Card className="p-6">
+            <div className="grid md:grid-cols-[300px,1fr] gap-6">
+              <div className="border rounded-lg p-4">
+                <div className="space-y-4">
+                  <Input placeholder="Search users..." />
+                  <ScrollArea className="h-[500px]">
+                    <div className="space-y-2">
+                      {["John Doe", "Jane Smith", "Mike Johnson", "Sarah Williams"].map((user) => (
+                        <Button
+                          key={user}
+                          variant="ghost"
+                          className="w-full justify-start gap-2"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                          {user}
+                        </Button>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </div>
+              <div className="flex flex-col h-[600px]">
+                <div className="border-b p-4">
+                  <h3 className="font-medium">Chat with John Doe</h3>
+                </div>
+                <ScrollArea className="flex-1 p-4">
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      <div className="bg-primary text-primary-foreground rounded-lg p-3 max-w-[80%]">
+                        Hello! How can I help you today?
+                      </div>
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <div className="bg-muted rounded-lg p-3 max-w-[80%]">
+                        I have a question about my account settings.
+                      </div>
+                    </div>
+                  </div>
+                </ScrollArea>
+                <div className="border-t p-4">
+                  <div className="flex gap-2">
+                    <Textarea 
+                      placeholder="Type your message..." 
+                      className="min-h-[80px]"
+                    />
+                    <Button className="shrink-0">
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

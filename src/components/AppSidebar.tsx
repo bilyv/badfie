@@ -13,7 +13,8 @@ import {
   Folder,
   Bell,
   Wrench,
-  Bot
+  Bot,
+  Link2
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -41,6 +42,11 @@ const menuItems = [
     title: "Multi-Store",
     path: "/multi-store",
     icon: Database,
+  },
+  {
+    title: "Connect",
+    path: "/connect",
+    icon: Link2,
   },
   {
     title: "Products",
@@ -113,18 +119,18 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="h-[calc(100vh-12rem)] overflow-y-auto">
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
                     tooltip={item.title}
                     isActive={location.pathname === item.path}
-                    className="h-10 text-sm transition-all duration-300 hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className="h-12 text-sm transition-all duration-300 hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
                     <Link to={item.path} className="flex items-center gap-3 px-4">
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <item.icon className="h-5 w-5" />
+                      <span className="flex-1">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
