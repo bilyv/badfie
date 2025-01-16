@@ -56,7 +56,7 @@ const Layout = () => {
               <Route path="docs-storage" element={<DocsStorage />} />
               <Route path="ai-adviser" element={<AIAdviser />} />
               <Route path="settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </main>
