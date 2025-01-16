@@ -42,7 +42,7 @@ const Layout = () => {
           <Navbar />
           <div className="container py-6">
             <Routes>
-              <Route index element={<Index />} />
+              <Route path="" element={<Index />} />
               <Route path="multi-store" element={<MultiStore />} />
               <Route path="products" element={<Products />} />
               <Route path="services" element={<Services />} />
@@ -54,7 +54,7 @@ const Layout = () => {
               <Route path="users" element={<Users />} />
               <Route path="docs-storage" element={<DocsStorage />} />
               <Route path="settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="" replace />} />
             </Routes>
           </div>
         </main>
