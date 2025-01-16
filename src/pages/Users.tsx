@@ -43,11 +43,13 @@ const Users = () => {
           <Card className="p-6">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <Input 
-                  className="max-w-xs" 
-                  placeholder="Search users..." 
-                  startIcon={<Search className="h-4 w-4" />}
-                />
+                <div className="relative max-w-xs">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                  <Input 
+                    className="pl-10" 
+                    placeholder="Search users..." 
+                  />
+                </div>
                 <Button variant="outline">Export Users</Button>
               </div>
               <div className="grid gap-4">
