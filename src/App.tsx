@@ -18,6 +18,7 @@ import Reminders from "./pages/Reminders";
 import Reports from "./pages/Reports";
 import Users from "./pages/Users";
 import DocsStorage from "./pages/DocsStorage";
+import AIAdviser from "./pages/AIAdviser";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
@@ -53,6 +54,7 @@ const Layout = () => {
               <Route path="reports" element={<Reports />} />
               <Route path="users" element={<Users />} />
               <Route path="docs-storage" element={<DocsStorage />} />
+              <Route path="ai-adviser" element={<AIAdviser />} />
               <Route path="settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="" replace />} />
             </Routes>

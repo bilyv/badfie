@@ -10,7 +10,10 @@ import {
   Package,
   ArrowUp,
   Database,
-  Folder
+  Folder,
+  Bell,
+  Wrench,
+  Robot
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -45,6 +48,11 @@ const menuItems = [
     icon: ShoppingBag,
   },
   {
+    title: "Services",
+    path: "/services",
+    icon: Wrench,
+  },
+  {
     title: "Sales",
     path: "/sales",
     icon: ChartBar,
@@ -60,6 +68,11 @@ const menuItems = [
     icon: Percent,
   },
   {
+    title: "Reminders",
+    path: "/reminders",
+    icon: Bell,
+  },
+  {
     title: "Reports",
     path: "/reports",
     icon: FileText,
@@ -73,6 +86,11 @@ const menuItems = [
     title: "Docs Storage",
     path: "/docs-storage",
     icon: Folder,
+  },
+  {
+    title: "AI Adviser",
+    path: "/ai-adviser",
+    icon: Robot,
   },
   {
     title: "Settings",
