@@ -43,7 +43,7 @@ const Layout = () => {
           <Navbar />
           <div className="container py-6">
             <Routes>
-              <Route path="" element={<Index />} />
+              <Route index element={<Index />} />
               <Route path="multi-store" element={<MultiStore />} />
               <Route path="products" element={<Products />} />
               <Route path="services" element={<Services />} />
