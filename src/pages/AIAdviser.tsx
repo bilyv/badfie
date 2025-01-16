@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Robot, Send } from "lucide-react";
+import { Bot, Send } from "lucide-react";
 import { useState } from "react";
 
 const AIAdviser = () => {
@@ -22,7 +22,7 @@ const AIAdviser = () => {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
-              <Robot className="h-5 w-5 text-primary" />
+              <Bot className="h-5 w-5 text-primary" />
             </div>
             <h2 className="text-lg font-semibold">Ask your business question</h2>
           </div>

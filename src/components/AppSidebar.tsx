@@ -13,7 +13,7 @@ import {
   Folder,
   Bell,
   Wrench,
-  Robot
+  Bot
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -90,7 +90,7 @@ const menuItems = [
   {
     title: "AI Adviser",
     path: "/ai-adviser",
-    icon: Robot,
+    icon: Bot,
   },
   {
     title: "Settings",
