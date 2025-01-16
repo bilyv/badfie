@@ -5,7 +5,7 @@ import {
   DollarSign, 
   Percent, 
   FileText, 
-  Users, 
+  Users,
   Settings,
   Package,
   ArrowUp,
@@ -13,7 +13,10 @@ import {
   Folder,
   Bell,
   Wrench,
-  Bot
+  Bot,
+  Edit2,
+  X,
+  Link2
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -30,8 +33,10 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-const menuItems = [
+const defaultMenuItems = [
   {
     title: "Dashboard",
     path: "/",
@@ -41,6 +46,16 @@ const menuItems = [
     title: "Multi-Store",
     path: "/multi-store",
     icon: Database,
+  },
+  {
+    title: "Connect",
+    path: "/connect",
+    icon: Link2,
+  },
+  {
+    title: "Users",
+    path: "/users",
+    icon: Users,
   },
   {
     title: "Products",
@@ -78,11 +93,6 @@ const menuItems = [
     icon: FileText,
   },
   {
-    title: "Users",
-    path: "/users",
-    icon: Users,
-  },
-  {
     title: "Docs Storage",
     path: "/docs-storage",
     icon: Folder,
@@ -102,29 +112,85 @@ const menuItems = [
 export function AppSidebar() {
   const location = useLocation();
   const { openUpgradeDialog } = useUpgradeDialog();
+  const [isEditing, setIsEditing] = useState(false);
+  const [menuItems, setMenuItems] = useState(defaultMenuItems);
+  const [draggedItem, setDraggedItem] = useState<number | null>(null);
+
+  const handleDragStart = (index: number) => {
+    if (!isEditing) return;
+    setDraggedItem(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (!isEditing || draggedItem === null) return;
+
+    const newMenuItems = [...menuItems];
+    const draggedItemContent = newMenuItems[draggedItem];
+    newMenuItems.splice(draggedItem, 1);
+    newMenuItems.splice(index, 0, draggedItemContent);
+    setMenuItems(newMenuItems);
+    setDraggedItem(index);
+  };
+
+  const handleRemoveItem = (indexToRemove: number) => {
+    setMenuItems(menuItems.filter((_, index) => index !== indexToRemove));
+  };
 
   return (
     <Sidebar className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800">
-      <SidebarHeader className="p-4 flex items-center gap-2 text-sm font-semibold border-b border-gray-200 dark:border-gray-800">
-        <Package className="h-5 w-5" />
-        <span>Inventory Pro</span>
+      <SidebarHeader className="p-4 flex items-center justify-between text-sm font-semibold border-b border-gray-200 dark:border-gray-800">
+        <div className="flex items-center gap-2">
+          <Package className="h-5 w-5" />
+          <span>Inventory Pro</span>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => setIsEditing(!isEditing)}
+        >
+          <Edit2 className="h-4 w-4" />
+        </Button>
       </SidebarHeader>
       
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {menuItems.map((item, index) => (
+                <SidebarMenuItem 
+                  key={item.title}
+                  draggable={isEditing}
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  className={cn(
+                    isEditing && "cursor-move",
+                    isEditing && "animate-[wiggle_0.3s_ease-in-out_infinite]"
+                  )}
+                >
                   <SidebarMenuButton 
                     asChild 
                     tooltip={item.title}
                     isActive={location.pathname === item.path}
-                    className="h-10 text-sm transition-all duration-300 hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className="h-10 text-sm transition-all duration-300 hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-800 group"
                   >
                     <Link to={item.path} className="flex items-center gap-3 px-4">
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
+                      {isEditing && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 ml-auto opacity-0 group-hover:opacity-100"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleRemoveItem(index);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

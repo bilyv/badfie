@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Navbar } from "@/components/Navbar";
 import Index from "./pages/Index";
 import MultiStore from "./pages/MultiStore";
+import Connect from "./pages/Connect";
 import Products from "./pages/Products";
 import Services from "./pages/Services";
 import Sales from "./pages/Sales";
@@ -45,6 +46,7 @@ const Layout = () => {
             <Routes>
               <Route index element={<Index />} />
               <Route path="multi-store" element={<MultiStore />} />
+              <Route path="connect" element={<Connect />} />
               <Route path="products" element={<Products />} />
               <Route path="services" element={<Services />} />
               <Route path="sales" element={<Sales />} />

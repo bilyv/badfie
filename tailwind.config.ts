@@ -96,13 +96,18 @@ export default {
             boxShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3)',
             opacity: '1'
           }
+        },
+        'wiggle': {
+          '0%, 100%': { transform: 'rotate(-1deg)' },
+          '50%': { transform: 'rotate(1deg)' }
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'neon-glow': 'neon-pulse 2s ease-in-out infinite',
-        'neon-glow-dark': 'neon-pulse-dark 2s ease-in-out infinite'
+        'neon-glow-dark': 'neon-pulse-dark 2s ease-in-out infinite',
+        'wiggle': 'wiggle 0.3s ease-in-out infinite'
       }
     }
   },

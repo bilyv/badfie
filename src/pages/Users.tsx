@@ -4,27 +4,50 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { Send, Search } from "lucide-react";
 
 const Users = () => {
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [messageInput, setMessageInput] = useState("");
+
+  const handleSendMessage = () => {
+    if (!messageInput.trim()) return;
+    // Here you would implement the actual message sending logic
+    console.log(`Sending message to ${selectedUser}: ${messageInput}`);
+    setMessageInput("");
+  };
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">User Management</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage users and their permissions</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
+          User Management
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
+          Manage users and their permissions
+        </p>
       </div>
       
       <Tabs defaultValue="all-users" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 lg:max-w-[600px]">
+        <TabsList className="grid w-full grid-cols-1 md:grid-cols-4 lg:max-w-[800px]">
           <TabsTrigger value="all-users">All Users</TabsTrigger>
           <TabsTrigger value="add-user">Add User</TabsTrigger>
           <TabsTrigger value="roles">Roles & Permissions</TabsTrigger>
+          <TabsTrigger value="messages">Messages</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all-users" className="mt-6">
           <Card className="p-6">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <Input className="max-w-xs" placeholder="Search users..." />
+                <Input 
+                  className="max-w-xs" 
+                  placeholder="Search users..." 
+                  startIcon={<Search className="h-4 w-4" />}
+                />
                 <Button variant="outline">Export Users</Button>
               </div>
               <div className="grid gap-4">
@@ -119,6 +142,62 @@ const Users = () => {
                   </div>
                   <Button variant="outline">Edit Permissions</Button>
                 </div>
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="messages" className="mt-6">
+          <Card className="p-6">
+            <div className="grid md:grid-cols-[300px_1fr] gap-6">
+              <div className="space-y-4">
+                <Input placeholder="Search users..." />
+                <ScrollArea className="h-[500px] border rounded-lg">
+                  <div className="space-y-2 p-2">
+                    {["John Doe", "Jane Smith", "Alice Johnson", "Bob Wilson"].map((user) => (
+                      <Button
+                        key={user}
+                        variant={selectedUser === user ? "secondary" : "ghost"}
+                        className="w-full justify-start"
+                        onClick={() => setSelectedUser(user)}
+                      >
+                        {user}
+                      </Button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+              
+              <div className="flex flex-col h-[500px] border rounded-lg">
+                {selectedUser ? (
+                  <>
+                    <div className="p-4 border-b">
+                      <h3 className="font-medium">{selectedUser}</h3>
+                    </div>
+                    <ScrollArea className="flex-1 p-4">
+                      <div className="space-y-4">
+                        {/* Message history would go here */}
+                      </div>
+                    </ScrollArea>
+                    <div className="p-4 border-t">
+                      <div className="flex gap-2">
+                        <Textarea
+                          placeholder="Type your message..."
+                          value={messageInput}
+                          onChange={(e) => setMessageInput(e.target.value)}
+                          className="min-h-[80px]"
+                        />
+                        <Button onClick={handleSendMessage}>
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-muted-foreground">
+                    Select a user to start messaging
+                  </div>
+                )}
               </div>
             </div>
           </Card>
