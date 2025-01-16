@@ -21,7 +21,6 @@ import DocsStorage from "./pages/DocsStorage";
 import AIAdviser from "./pages/AIAdviser";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
-import Connect from "./pages/Connect";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 
 const queryClient = new QueryClient({
@@ -57,7 +56,6 @@ const Layout = () => {
               <Route path="docs-storage" element={<DocsStorage />} />
               <Route path="ai-adviser" element={<AIAdviser />} />
               <Route path="settings" element={<Settings />} />
-              <Route path="connect" element={<Connect />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
