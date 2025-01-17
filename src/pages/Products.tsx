@@ -2,35 +2,40 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus } from "lucide-react";
+import { Package, PackagePlus, Link2 } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ProductType } from "@/lib/types";
 
-// Sample data - will be replaced with actual database integration later
-const sampleProducts = [
+const integrations = [
   {
-    id: "1",
-    name: "Sample Product 1",
-    category: "Electronics",
-    price: 99.99,
-    quantity: 50,
-    created_at: new Date().toISOString()
+    name: "Shopify",
+    description: "Connect your Shopify store to sync products and orders",
+    icon: "🛍️",
   },
   {
-    id: "2",
-    name: "Sample Product 2",
-    category: "Furniture",
-    price: 199.99,
-    quantity: 25,
-    created_at: new Date().toISOString()
-  }
+    name: "WooCommerce",
+    description: "Integrate with WooCommerce to manage your inventory",
+    icon: "🛒",
+  },
+  {
+    name: "Amazon",
+    description: "Connect to Amazon Marketplace for seamless selling",
+    icon: "📦",
+  },
+  {
+    name: "Etsy",
+    description: "Sync your Etsy shop with our inventory system",
+    icon: "🎨",
+  },
 ];
 
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [connectDialogOpen, setConnectDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
-  const [products] = useState(sampleProducts);
+  const [products] = useState([]); // Sample empty state for products
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -48,9 +53,10 @@ const Products = () => {
       
       <Card className="p-6">
         <Tabs defaultValue="inventory" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="add-products">Add Products</TabsTrigger>
+            <TabsTrigger value="connect" onClick={() => setConnectDialogOpen(true)}>Connect</TabsTrigger>
           </TabsList>
 
           <TabsContent value="inventory" className="space-y-4">
@@ -65,14 +71,6 @@ const Products = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {products.map((product) => (
-                    <TableRow key={product.id} className="hover:bg-muted/50 transition-colors">
-                      <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell className="hidden md:table-cell">{product.category}</TableCell>
-                      <TableCell>${product.price.toFixed(2)}</TableCell>
-                      <TableCell className="hidden md:table-cell">{product.quantity}</TableCell>
-                    </TableRow>
-                  ))}
                   {products.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
@@ -138,6 +136,33 @@ const Products = () => {
         onOpenChange={setDialogOpen}
         productType={selectedProductType}
       />
+
+      <Dialog open={connectDialogOpen} onOpenChange={setConnectDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Connect to E-commerce Platforms</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-6 mt-4">
+            {integrations.map((integration) => (
+              <Card key={integration.name} className="p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <div className="text-2xl mb-2">{integration.icon}</div>
+                    <h3 className="font-semibold">{integration.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {integration.description}
+                    </p>
+                  </div>
+                  <Button variant="outline" className="shrink-0">
+                    <Link2 className="h-4 w-4 mr-2" />
+                    Connect
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

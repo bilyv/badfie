@@ -15,8 +15,7 @@ import {
   Wrench,
   Bot,
   Edit2,
-  X,
-  Link2
+  X
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -46,11 +45,6 @@ const defaultMenuItems = [
     title: "Multi-Store",
     path: "/multi-store",
     icon: Database,
-  },
-  {
-    title: "Connect",
-    path: "/connect",
-    icon: Link2,
   },
   {
     title: "Users",
