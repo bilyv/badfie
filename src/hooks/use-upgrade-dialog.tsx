@@ -7,32 +7,53 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const plans = [
   {
-    name: "Pro",
-    price: "$29/month",
+    name: "Free Plan",
+    price: "$0",
     features: [
-      "Unlimited products",
-      "Advanced analytics",
-      "Priority support",
-      "Custom branding",
-      "API access",
-      "Multiple users",
+      "Basic inventory management",
+      "Single store",
+      "Limited reports",
+      "Email support",
     ],
   },
   {
-    name: "Enterprise",
-    price: "$99/month",
+    name: "Starter",
+    price: "$80/month",
     features: [
-      "All Pro features",
-      "Dedicated account manager",
+      "Advanced inventory tracking",
+      "Up to 2 stores",
+      "Basic analytics",
+      "Priority support",
+      "Basic integrations",
+    ],
+  },
+  {
+    name: "Basic",
+    price: "$150/month",
+    features: [
+      "All Starter features",
+      "Up to 5 stores",
+      "Advanced analytics",
+      "24/7 support",
+      "API access",
+      "Custom branding",
+    ],
+  },
+  {
+    name: "Pro",
+    price: "$300/month",
+    features: [
+      "All Basic features",
+      "Unlimited stores",
+      "Custom analytics",
+      "Dedicated support",
       "Custom integrations",
-      "SLA guarantee",
-      "Advanced security",
-      "Custom reporting",
+      "White labeling",
     ],
   },
 ];
@@ -46,25 +67,28 @@ export function useUpgradeDialog() {
   const handleUpgrade = (planName: string) => {
     toast({
       title: "Subscription Updated",
-      description: `Successfully subscribed to ${planName} plan.`,
+      description: `Successfully subscribed to ${planName}.`,
     });
     closeUpgradeDialog();
   };
 
   const UpgradeDialog = () => (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[900px] w-[95vw] max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-sm border-none shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Upgrade Your Plan</DialogTitle>
-          <DialogDescription>
-            Choose the plan that best fits your business needs
+          <DialogTitle className="text-2xl flex items-center gap-2 justify-center">
+            <Sparkles className="h-6 w-6 text-primary" />
+            Choose Your Plan
+          </DialogTitle>
+          <DialogDescription className="text-center">
+            Select the plan that best fits your business needs
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-6 py-4 md:grid-cols-2">
+        <div className="grid gap-6 py-4 md:grid-cols-4">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className="flex flex-col gap-4 rounded-lg border p-6 hover:border-primary transition-colors"
+              className="flex flex-col gap-4 rounded-lg border p-6 hover:border-primary transition-all duration-300 hover:scale-105 bg-card/50"
             >
               <div>
                 <h4 className="text-xl font-semibold">{plan.name}</h4>
@@ -81,7 +105,7 @@ export function useUpgradeDialog() {
               <Button 
                 onClick={() => handleUpgrade(plan.name)}
                 className="w-full mt-4"
-                variant={plan.name === "Enterprise" ? "default" : "outline"}
+                variant={plan.name === "Pro" ? "default" : "outline"}
               >
                 Get Started
               </Button>
