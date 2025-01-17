@@ -35,7 +35,7 @@ const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [connectDialogOpen, setConnectDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
-  const [products] = useState([]); // Sample empty state for products
+  const [products] = useState([]);
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -53,10 +53,9 @@ const Products = () => {
       
       <Card className="p-6">
         <Tabs defaultValue="inventory" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="add-products">Add Products</TabsTrigger>
-            <TabsTrigger value="connect" onClick={() => setConnectDialogOpen(true)}>Connect</TabsTrigger>
           </TabsList>
 
           <TabsContent value="inventory" className="space-y-4">
@@ -84,7 +83,7 @@ const Products = () => {
           </TabsContent>
 
           <TabsContent value="add-products" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="p-3 bg-primary/10 rounded-full">
@@ -123,6 +122,27 @@ const Products = () => {
                   >
                     <PackagePlus className="mr-2 h-4 w-4" />
                     Add Combined Product
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <Link2 className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-lg">Connect Store</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Connect and sync with your e-commerce platforms
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setConnectDialogOpen(true)}
+                    className="w-full sm:w-auto"
+                  >
+                    <Link2 className="mr-2 h-4 w-4" />
+                    Connect Store
                   </Button>
                 </div>
               </Card>
