@@ -7,7 +7,6 @@ import {
   FileText, 
   Users,
   Settings,
-  Package,
   Database,
   Folder,
   Bell,
@@ -16,7 +15,9 @@ import {
   Edit2,
   ChevronDown,
   ChevronUp,
-  Link2
+  Package,
+  Store,
+  Brain
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -45,12 +46,7 @@ const defaultMenuItems = [
   {
     title: "Multi-Store",
     path: "/multi-store",
-    icon: Database,
-  },
-  {
-    title: "Users",
-    path: "/users",
-    icon: Users,
+    icon: Store,
   },
   {
     title: "Products",
@@ -68,11 +64,6 @@ const defaultMenuItems = [
     icon: ChartBar,
   },
   {
-    title: "Expenses",
-    path: "/expenses",
-    icon: DollarSign,
-  },
-  {
     title: "Tax",
     path: "/tax",
     icon: Percent,
@@ -83,14 +74,19 @@ const defaultMenuItems = [
     icon: Bell,
   },
   {
-    title: "Analytics",
+    title: "Insights",
     isFolder: true,
-    icon: Folder,
+    icon: Brain,
     items: [
       {
         title: "Reports",
         path: "/reports",
         icon: FileText,
+      },
+      {
+        title: "Expenses",
+        path: "/expenses",
+        icon: DollarSign,
       },
       {
         title: "AI Adviser",
@@ -105,37 +101,23 @@ const defaultMenuItems = [
     icon: Folder,
   },
   {
+    title: "Users",
+    path: "/users",
+    icon: Users,
+  },
+  {
     title: "Settings",
     path: "/settings",
     icon: Settings,
   },
 ];
 
-const disabledTabs = [
-  {
-    title: "Advanced Analytics",
-    icon: ChartBar,
-    description: "Access detailed business analytics and insights"
-  },
-  {
-    title: "Custom Reports",
-    icon: FileText,
-    description: "Create and customize your own reports"
-  },
-  {
-    title: "AI Predictions",
-    icon: Bot,
-    description: "Get AI-powered business predictions"
-  }
-];
-
 export function AppSidebar() {
   const location = useLocation();
   const { openUpgradeDialog } = useUpgradeDialog();
   const [isEditing, setIsEditing] = useState(false);
-  const [menuItems, setMenuItems] = useState(defaultMenuItems);
+  const [menuItems] = useState(defaultMenuItems);
   const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
-  const [selectedDisabledTab, setSelectedDisabledTab] = useState<string | null>(null);
 
   const toggleFolder = (folderTitle: string) => {
     setExpandedFolders(prev => 
@@ -143,10 +125,6 @@ export function AppSidebar() {
         ? prev.filter(title => title !== folderTitle)
         : [...prev, folderTitle]
     );
-  };
-
-  const handleDisabledTabClick = (title: string) => {
-    setSelectedDisabledTab(prev => prev === title ? null : title);
   };
 
   return (
@@ -157,6 +135,18 @@ export function AppSidebar() {
           <span>Inventory Pro</span>
         </div>
       </SidebarHeader>
+
+      <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-800">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="w-full justify-between"
+          onClick={() => setIsEditing(!isEditing)}
+        >
+          <span>Show Disabled Features</span>
+          <Edit2 className="h-4 w-4" />
+        </Button>
+      </div>
       
       <SidebarContent>
         <SidebarGroup>
@@ -219,61 +209,15 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-gray-200 dark:border-gray-800">
-        <div className="space-y-4">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="w-full justify-between"
-            onClick={() => setIsEditing(!isEditing)}
-          >
-            <span>Show Disabled Features</span>
-            <Edit2 className="h-4 w-4" />
-          </Button>
-
-          {isEditing && (
-            <div className="space-y-2 pt-2 border-t border-gray-200 dark:border-gray-800">
-              {disabledTabs.map((tab) => (
-                <div key={tab.title} className="relative">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      "w-full justify-start gap-3 transition-all duration-300",
-                      selectedDisabledTab === tab.title && "scale-105"
-                    )}
-                    onClick={() => handleDisabledTabClick(tab.title)}
-                  >
-                    <tab.icon className="h-4 w-4" />
-                    {selectedDisabledTab === tab.title ? (
-                      <div className="text-left">
-                        <p className="font-medium">{tab.title}</p>
-                        <p className="text-xs text-muted-foreground">{tab.description}</p>
-                      </div>
-                    ) : (
-                      <span>{tab.title}</span>
-                    )}
-                  </Button>
-                </div>
-              ))}
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full mt-2" 
-                onClick={openUpgradeDialog}
-              >
-                Upgrade to Pro
-              </Button>
-            </div>
-          )}
-
-          <div className="flex items-center gap-2 text-sm">
-            <div className="flex-1">
-              <p className="font-medium">Business Account</p>
-              <p className="text-muted-foreground text-xs">Pro features available</p>
-            </div>
-          </div>
-        </div>
+      <SidebarFooter className="p-4 mt-auto border-t border-gray-200 dark:border-gray-800">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="w-full bg-primary/5 hover:bg-primary/10 border-primary/10"
+          onClick={openUpgradeDialog}
+        >
+          Upgrade to Pro
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );
