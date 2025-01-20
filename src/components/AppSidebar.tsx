@@ -39,7 +39,6 @@ import {
 import { Button } from "./ui/button";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 
 const defaultMenuItems = [
@@ -145,14 +144,16 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
       
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8 absolute right-4 top-16"
-        onClick={() => setIsEditing(!isEditing)}
-      >
-        <Edit2 className="h-4 w-4" />
-      </Button>
+      <div className="p-2 border-b border-gray-200 dark:border-gray-800">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 ml-auto block"
+          onClick={() => setIsEditing(!isEditing)}
+        >
+          <Edit2 className="h-4 w-4" />
+        </Button>
+      </div>
 
       <SidebarContent>
         <SidebarGroup>

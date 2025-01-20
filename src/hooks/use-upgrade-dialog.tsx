@@ -1,13 +1,7 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles } from "lucide-react";
+import { Check, DollarSign } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const plans = [
@@ -77,12 +71,9 @@ export function useUpgradeDialog() {
       <DialogContent className="sm:max-w-[900px] w-[95vw] max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-sm border-none shadow-lg">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-2 justify-center">
-            <Sparkles className="h-6 w-6 text-primary" />
+            <DollarSign className="h-6 w-6 text-primary" />
             Choose Your Plan
           </DialogTitle>
-          <DialogDescription className="text-center">
-            Select the plan that best fits your business needs
-          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4 md:grid-cols-4">
           {plans.map((plan) => (

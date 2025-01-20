@@ -253,7 +253,7 @@ const Index = () => {
         })}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 auto-rows-fr">
         {activeGraphs.map(graphId => {
           const graph = availableGraphs.find(g => g.id === graphId);
           if (graph) return renderGraph(graph);
