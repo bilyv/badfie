@@ -253,66 +253,68 @@ const Index = () => {
         })}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 auto-rows-fr">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {activeGraphs.map(graphId => {
           const graph = availableGraphs.find(g => g.id === graphId);
           if (graph) return renderGraph(graph);
           return null;
         })}
         
-        <Dialog>
-          <DialogTrigger asChild>
-            <Card className="w-24 h-24 flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group rounded-full border-dashed">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
-                      <PlusCircle className="h-8 w-8" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Add a new graph to your dashboard</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </Card>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Graph</DialogTitle>
-              <DialogDescription>
-                Select a graph type to add to your dashboard
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              {availableGraphs
-                .filter(graph => !activeGraphs.includes(graph.id))
-                .map(graph => (
-                  <Button
-                    key={graph.id}
-                    variant="outline"
-                    className="justify-start gap-3 h-auto p-4"
-                    onClick={() => {
-                      handleAddGraph(graph.id);
-                      const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
-                      if (dialogClose) dialogClose.click();
-                    }}
-                  >
-                    {graph.type === 'bar' ? 
-                      <BarChart2 className="h-5 w-5 text-primary" /> : 
-                      <LineChart className="h-5 w-5 text-primary" />
-                    }
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium">{graph.title}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {graph.type === 'bar' ? 'Bar Chart' : 'Line Chart'}
-                      </span>
-                    </div>
-                  </Button>
-                ))}
-            </div>
-          </DialogContent>
-        </Dialog>
+        {activeGraphs.length < availableGraphs.length && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Card className="w-24 h-24 flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group rounded-full border-dashed">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
+                        <PlusCircle className="h-8 w-8" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add a new graph to your dashboard</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Card>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Graph</DialogTitle>
+                <DialogDescription>
+                  Select a graph type to add to your dashboard
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                {availableGraphs
+                  .filter(graph => !activeGraphs.includes(graph.id))
+                  .map(graph => (
+                    <Button
+                      key={graph.id}
+                      variant="outline"
+                      className="justify-start gap-3 h-auto p-4"
+                      onClick={() => {
+                        handleAddGraph(graph.id);
+                        const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
+                        if (dialogClose) dialogClose.click();
+                      }}
+                    >
+                      {graph.type === 'bar' ? 
+                        <BarChart2 className="h-5 w-5 text-primary" /> : 
+                        <LineChart className="h-5 w-5 text-primary" />
+                      }
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">{graph.title}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {graph.type === 'bar' ? 'Bar Chart' : 'Line Chart'}
+                        </span>
+                      </div>
+                    </Button>
+                  ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );

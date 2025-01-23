@@ -21,7 +21,8 @@ import {
   PieChart,
   Lightbulb,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  X
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -142,18 +143,15 @@ export function AppSidebar() {
           <Package className="h-5 w-5" />
           <span>Inventory Pro</span>
         </div>
-      </SidebarHeader>
-      
-      <div className="p-2 border-b border-gray-200 dark:border-gray-800">
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 ml-auto block"
+          className="h-8 w-8"
           onClick={() => setIsEditing(!isEditing)}
         >
           <Edit2 className="h-4 w-4" />
         </Button>
-      </div>
+      </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
@@ -168,7 +166,7 @@ export function AppSidebar() {
                   >
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
-                        className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group"
                       >
                         <div className="flex items-center gap-3">
                           <item.icon className="h-4 w-4" />
@@ -187,11 +185,16 @@ export function AppSidebar() {
                           <SidebarMenuButton
                             asChild
                             isActive={location.pathname === subItem.path}
-                            className="pl-9 transition-all duration-300 hover:scale-105"
+                            className="pl-9 transition-all duration-300 hover:scale-105 group"
                           >
-                            <Link to={subItem.path} className="flex items-center gap-3">
-                              <subItem.icon className="h-4 w-4" />
-                              <span>{subItem.title}</span>
+                            <Link to={subItem.path} className="flex items-center justify-between w-full pr-2">
+                              <div className="flex items-center gap-3">
+                                <subItem.icon className="h-4 w-4" />
+                                <span>{subItem.title}</span>
+                              </div>
+                              {isEditing && (
+                                <X className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity animate-wiggle" />
+                              )}
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -203,11 +206,16 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={location.pathname === item.path}
-                      className="transition-all duration-300 hover:scale-105"
+                      className="transition-all duration-300 hover:scale-105 group"
                     >
-                      <Link to={item.path} className="flex items-center gap-3 px-4">
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                      <Link to={item.path} className="flex items-center justify-between w-full px-4">
+                        <div className="flex items-center gap-3">
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </div>
+                        {isEditing && (
+                          <X className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity animate-wiggle" />
+                        )}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
