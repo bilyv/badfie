@@ -27,14 +27,16 @@ export const SidebarMenuList = ({ items: initialItems, isEditing }: SidebarMenuL
       return (
         <>
           <SidebarMenuItemComponent
-            title={item.group}
+            group={item.group}
             icon={item.icon}
             isEditing={isEditing}
           />
-          {item.items?.map((subItem, subIndex) => (
+          {item.items?.map((subItem) => (
             <SidebarMenuItemComponent
               key={subItem.title}
-              {...subItem}
+              title={subItem.title}
+              path={subItem.path}
+              icon={subItem.icon}
               isEditing={isEditing}
               className="ml-4"
             />
@@ -45,7 +47,9 @@ export const SidebarMenuList = ({ items: initialItems, isEditing }: SidebarMenuL
     
     return (
       <SidebarMenuItemComponent
-        {...item}
+        title={item.title}
+        path={item.path}
+        icon={item.icon}
         isEditing={isEditing}
       />
     );
