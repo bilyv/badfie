@@ -4,43 +4,30 @@ import {
   ChartBar,
   DollarSign,
   Percent,
-  FileText,
   Users,
   Settings,
-  Package,
-  ArrowUp,
-  Database,
-  Folder,
   Bell,
-  Wrench,
   Bot,
-  Edit2,
   Link2,
   Building2,
   Receipt,
   PieChart,
-  Lightbulb,
-  ChevronDown,
-  ChevronRight,
-  X
+  Wrench,
+  Folder
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarFooter,
-  SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 import { useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+import { SidebarHeader } from "./sidebar/SidebarHeader";
+import { SidebarMenuList } from "./sidebar/SidebarMenu";
+import { ArrowUp } from "lucide-react";
 
 const defaultMenuItems = [
   {
@@ -100,7 +87,7 @@ const defaultMenuItems = [
       {
         title: "AI Adviser",
         path: "/ai-adviser",
-        icon: Lightbulb,
+        icon: Bot,
       },
     ],
   },
@@ -122,106 +109,23 @@ const defaultMenuItems = [
 ];
 
 export function AppSidebar() {
-  const location = useLocation();
   const { openUpgradeDialog } = useUpgradeDialog();
   const [isEditing, setIsEditing] = useState(false);
-  const [menuItems, setMenuItems] = useState(defaultMenuItems);
-  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
-
-  const toggleGroup = (groupName: string) => {
-    setExpandedGroups(prev => 
-      prev.includes(groupName) 
-        ? prev.filter(g => g !== groupName)
-        : [...prev, groupName]
-    );
-  };
 
   return (
     <Sidebar className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl">
-      <SidebarHeader className="p-4 flex items-center justify-between text-sm font-semibold border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center gap-2">
-          <Package className="h-5 w-5" />
-          <span>Inventory Pro</span>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => setIsEditing(!isEditing)}
-        >
-          <Edit2 className="h-4 w-4" />
-        </Button>
-      </SidebarHeader>
+      <SidebarHeader 
+        isEditing={isEditing}
+        onEditToggle={() => setIsEditing(!isEditing)}
+      />
 
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item, index) => (
-                'group' in item ? (
-                  <Collapsible
-                    key={item.group}
-                    open={expandedGroups.includes(item.group)}
-                    onOpenChange={() => toggleGroup(item.group)}
-                  >
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton
-                        className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.group}</span>
-                        </div>
-                        {expandedGroups.includes(item.group) ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4" />
-                        )}
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      {item.items.map((subItem) => (
-                        <SidebarMenuItem key={subItem.title}>
-                          <SidebarMenuButton
-                            asChild
-                            isActive={location.pathname === subItem.path}
-                            className="pl-9 transition-all duration-300 hover:scale-105 group"
-                          >
-                            <Link to={subItem.path} className="flex items-center justify-between w-full pr-2">
-                              <div className="flex items-center gap-3">
-                                <subItem.icon className="h-4 w-4" />
-                                <span>{subItem.title}</span>
-                              </div>
-                              {isEditing && (
-                                <X className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity animate-wiggle" />
-                              )}
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </CollapsibleContent>
-                  </Collapsible>
-                ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={location.pathname === item.path}
-                      className="transition-all duration-300 hover:scale-105 group"
-                    >
-                      <Link to={item.path} className="flex items-center justify-between w-full px-4">
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </div>
-                        {isEditing && (
-                          <X className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity animate-wiggle" />
-                        )}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              ))}
-            </SidebarMenu>
+            <SidebarMenuList 
+              items={defaultMenuItems}
+              isEditing={isEditing}
+            />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
