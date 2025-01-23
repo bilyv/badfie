@@ -2,14 +2,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
 import { SidebarMenuItemComponent } from "./SidebarMenuItem";
 import { useState } from "react";
-
-interface MenuItem {
-  title: string;
-  path: string;
-  icon: any;
-  group?: string;
-  items?: MenuItem[];
-}
+import type { MenuItem } from "@/lib/types";
 
 interface SidebarMenuListProps {
   items: MenuItem[];
@@ -29,6 +22,35 @@ export const SidebarMenuList = ({ items: initialItems, isEditing }: SidebarMenuL
     setMenuItems(newItems);
   };
 
+  const renderMenuItem = (item: MenuItem) => {
+    if ('group' in item) {
+      return (
+        <>
+          <SidebarMenuItemComponent
+            title={item.group}
+            icon={item.icon}
+            isEditing={isEditing}
+          />
+          {item.items?.map((subItem, subIndex) => (
+            <SidebarMenuItemComponent
+              key={subItem.title}
+              {...subItem}
+              isEditing={isEditing}
+              className="ml-4"
+            />
+          ))}
+        </>
+      );
+    }
+    
+    return (
+      <SidebarMenuItemComponent
+        {...item}
+        isEditing={isEditing}
+      />
+    );
+  };
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="sidebar-menu">
@@ -39,8 +61,8 @@ export const SidebarMenuList = ({ items: initialItems, isEditing }: SidebarMenuL
           >
             {menuItems.map((item, index) => (
               <Draggable
-                key={item.title}
-                draggableId={item.title}
+                key={'group' in item ? item.group : item.title}
+                draggableId={'group' in item ? item.group : item.title}
                 index={index}
                 isDragDisabled={!isEditing}
               >
@@ -50,13 +72,7 @@ export const SidebarMenuList = ({ items: initialItems, isEditing }: SidebarMenuL
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    <SidebarMenuItemComponent
-                      title={item.title}
-                      path={item.path}
-                      icon={item.icon}
-                      isEditing={isEditing}
-                      isDragging={snapshot.isDragging}
-                    />
+                    {renderMenuItem(item)}
                   </SidebarMenuItem>
                 )}
               </Draggable>

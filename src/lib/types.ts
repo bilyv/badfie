@@ -48,3 +48,16 @@ export interface DashboardMetric {
   change?: string;
   trend?: 'up' | 'down' | 'neutral';
 }
+
+export interface BaseMenuItem {
+  icon: React.ComponentType;
+  title?: string;
+  path?: string;
+  group?: string;
+  items?: MenuItem[];
+}
+
+export type MenuItem = (
+  | (Required<Pick<BaseMenuItem, 'title' | 'path' | 'icon'>>)
+  | (Required<Pick<BaseMenuItem, 'group' | 'icon' | 'items'>>)
+);

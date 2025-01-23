@@ -13,7 +13,8 @@ import {
   Receipt,
   PieChart,
   Wrench,
-  Folder
+  Folder,
+  ArrowUp
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,9 +28,9 @@ import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 import { useState } from "react";
 import { SidebarHeader } from "./sidebar/SidebarHeader";
 import { SidebarMenuList } from "./sidebar/SidebarMenu";
-import { ArrowUp } from "lucide-react";
+import type { MenuItem } from "@/lib/types";
 
-const defaultMenuItems = [
+const defaultMenuItems: MenuItem[] = [
   {
     title: "Dashboard",
     path: "/",

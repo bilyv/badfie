@@ -5,10 +5,11 @@ import { cn } from "@/lib/utils";
 
 interface SidebarMenuItemProps {
   title: string;
-  path: string;
-  icon: LucideIcon;
+  path?: string;
+  icon: React.ComponentType;
   isEditing: boolean;
   isDragging?: boolean;
+  className?: string;
 }
 
 export const SidebarMenuItemComponent = ({ 
@@ -16,25 +17,35 @@ export const SidebarMenuItemComponent = ({
   path, 
   icon: Icon,
   isEditing,
-  isDragging
+  isDragging,
+  className
 }: SidebarMenuItemProps) => {
   const location = useLocation();
-  const isActive = location.pathname === path;
+  const isActive = path ? location.pathname === path : false;
+
+  const content = (
+    <div className="flex items-center gap-3 w-full px-4">
+      <Icon className="h-4 w-4" />
+      <span>{title}</span>
+    </div>
+  );
 
   return (
     <SidebarMenuButton
-      asChild
+      asChild={!!path}
       isActive={isActive}
       className={cn(
         "transition-all duration-300 hover:scale-105 group",
         isEditing && "animate-wiggle",
-        isDragging && "opacity-50"
+        isDragging && "opacity-50",
+        className
       )}
     >
-      <Link to={path} className="flex items-center gap-3 w-full px-4">
-        <Icon className="h-4 w-4" />
-        <span>{title}</span>
-      </Link>
+      {path ? (
+        <Link to={path}>{content}</Link>
+      ) : (
+        content
+      )}
     </SidebarMenuButton>
   );
 };
