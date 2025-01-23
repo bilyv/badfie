@@ -4,8 +4,8 @@ import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
 interface SidebarMenuItemProps {
-  title?: string;  // Make title optional since group items use 'group' instead
-  group?: string;  // Add group property
+  title?: string;
+  group?: string;
   path?: string;
   icon: React.ComponentType;
   isEditing: boolean;

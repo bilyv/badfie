@@ -2,7 +2,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
 import { SidebarMenuItemComponent } from "./SidebarMenuItem";
 import { useState } from "react";
-import type { MenuItem } from "@/lib/types";
+import type { MenuItem, GroupedMenuItem } from "@/lib/types";
 
 interface SidebarMenuListProps {
   items: MenuItem[];
@@ -24,14 +24,15 @@ export const SidebarMenuList = ({ items: initialItems, isEditing }: SidebarMenuL
 
   const renderMenuItem = (item: MenuItem) => {
     if ('group' in item) {
+      const groupedItem = item as GroupedMenuItem;
       return (
         <>
           <SidebarMenuItemComponent
-            group={item.group}
-            icon={item.icon}
+            group={groupedItem.group}
+            icon={groupedItem.icon}
             isEditing={isEditing}
           />
-          {item.items?.map((subItem) => (
+          {groupedItem.items?.map((subItem) => (
             <SidebarMenuItemComponent
               key={subItem.title}
               title={subItem.title}
