@@ -1,5 +1,6 @@
 import { Package, Edit2, Move, Ban } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,

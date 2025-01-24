@@ -30,7 +30,7 @@ export const SidebarMenuItemComponent = ({
   const isActive = path ? location.pathname === path : false;
   const displayText = title || group;
 
-  const content = (
+  const buttonContent = (
     <div className="flex items-center justify-between w-full px-4">
       <div className="flex items-center gap-3">
         <Icon className="h-4 w-4" />
@@ -51,22 +51,24 @@ export const SidebarMenuItemComponent = ({
     </div>
   );
 
+  const combinedClassName = cn(
+    "transition-all duration-300 hover:scale-105 group relative",
+    isEditing && !isDisabling && "animate-wiggle",
+    isDisabling && "animate-pulse text-red-500",
+    isDragging && "opacity-50",
+    className
+  );
+
   return (
     <SidebarMenuButton
       asChild={!!path}
       isActive={isActive}
-      className={cn(
-        "transition-all duration-300 hover:scale-105 group relative",
-        isEditing && !isDisabling && "animate-wiggle",
-        isDisabling && "animate-pulse text-red-500",
-        isDragging && "opacity-50",
-        className
-      )}
+      className={combinedClassName}
     >
       {path ? (
-        <Link to={path}>{content}</Link>
+        <Link to={path}>{buttonContent}</Link>
       ) : (
-        content
+        buttonContent
       )}
     </SidebarMenuButton>
   );
