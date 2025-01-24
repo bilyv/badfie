@@ -11,7 +11,6 @@ import {
   Link2,
   Building2,
   Receipt,
-  PieChart,
   Wrench,
   Folder,
   ArrowUp
@@ -72,25 +71,19 @@ const defaultMenuItems: MenuItem[] = [
     icon: Bell,
   },
   {
-    group: "Insights",
-    icon: PieChart,
-    items: [
-      {
-        title: "Reports",
-        path: "/reports",
-        icon: ChartBar,
-      },
-      {
-        title: "Expenses",
-        path: "/expenses",
-        icon: DollarSign,
-      },
-      {
-        title: "AI Adviser",
-        path: "/ai-adviser",
-        icon: Bot,
-      },
-    ],
+    title: "Reports",
+    path: "/reports",
+    icon: ChartBar,
+  },
+  {
+    title: "Expenses",
+    path: "/expenses",
+    icon: DollarSign,
+  },
+  {
+    title: "AI Adviser",
+    path: "/ai-adviser",
+    icon: Bot,
   },
   {
     title: "Docs Storage",
@@ -112,20 +105,43 @@ const defaultMenuItems: MenuItem[] = [
 export function AppSidebar() {
   const { openUpgradeDialog } = useUpgradeDialog();
   const [isEditing, setIsEditing] = useState(false);
+  const [isDisabling, setIsDisabling] = useState(false);
+  const [menuItems, setMenuItems] = useState(defaultMenuItems);
+
+  const handleDisableItem = (itemTitle: string) => {
+    setMenuItems(prev => prev.filter(item => 
+      'title' in item && item.title !== itemTitle
+    ));
+  };
+
+  const handlePositionToggle = () => {
+    setIsEditing(true);
+    setIsDisabling(false);
+  };
+
+  const handleDisableToggle = () => {
+    setIsDisabling(prev => !prev);
+    setIsEditing(false);
+  };
 
   return (
     <Sidebar className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl">
       <SidebarHeader 
         isEditing={isEditing}
+        isDisabling={isDisabling}
         onEditToggle={() => setIsEditing(!isEditing)}
+        onPositionToggle={handlePositionToggle}
+        onDisableToggle={handleDisableToggle}
       />
 
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenuList 
-              items={defaultMenuItems}
+              items={menuItems}
               isEditing={isEditing}
+              isDisabling={isDisabling}
+              onDisableItem={handleDisableItem}
             />
           </SidebarGroupContent>
         </SidebarGroup>

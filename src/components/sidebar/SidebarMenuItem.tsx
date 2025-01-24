@@ -1,4 +1,4 @@
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,8 @@ interface SidebarMenuItemProps {
   icon: React.ComponentType;
   isEditing: boolean;
   isDragging?: boolean;
+  isDisabling?: boolean;
+  onDisable?: () => void;
   className?: string;
 }
 
@@ -20,6 +22,8 @@ export const SidebarMenuItemComponent = ({
   icon: Icon,
   isEditing,
   isDragging,
+  isDisabling,
+  onDisable,
   className
 }: SidebarMenuItemProps) => {
   const location = useLocation();
@@ -27,9 +31,23 @@ export const SidebarMenuItemComponent = ({
   const displayText = title || group;
 
   const content = (
-    <div className="flex items-center gap-3 w-full px-4">
-      <Icon className="h-4 w-4" />
-      <span>{displayText}</span>
+    <div className="flex items-center justify-between w-full px-4">
+      <div className="flex items-center gap-3">
+        <Icon className="h-4 w-4" />
+        <span>{displayText}</span>
+      </div>
+      {isDisabling && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDisable?.();
+          }}
+          className="p-1 hover:bg-red-500 hover:text-white rounded-full"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 
@@ -38,8 +56,9 @@ export const SidebarMenuItemComponent = ({
       asChild={!!path}
       isActive={isActive}
       className={cn(
-        "transition-all duration-300 hover:scale-105 group",
-        isEditing && "animate-wiggle",
+        "transition-all duration-300 hover:scale-105 group relative",
+        isEditing && !isDisabling && "animate-wiggle",
+        isDisabling && "animate-pulse text-red-500",
         isDragging && "opacity-50",
         className
       )}
