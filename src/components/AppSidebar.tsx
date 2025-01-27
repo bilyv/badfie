@@ -14,7 +14,7 @@ import {
   Wrench,
   Folder,
   ArrowUp,
-  LineChart
+  FolderOpen
 } from "lucide-react";
 import {
   Sidebar,
@@ -73,7 +73,7 @@ const defaultMenuItems: MenuItem[] = [
   },
   {
     group: "Insights",
-    icon: LineChart,
+    icon: FolderOpen,
     items: [
       {
         title: "Reports",
@@ -114,6 +114,7 @@ export function AppSidebar() {
   const [isEditing, setIsEditing] = useState(false);
   const [isDisabling, setIsDisabling] = useState(false);
   const [menuItems, setMenuItems] = useState(defaultMenuItems);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleDisableItem = (itemTitle: string) => {
     setMenuItems(prev => prev.filter(item => 
@@ -132,7 +133,15 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl">
+    <Sidebar 
+      className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setIsEditing(false);
+        setIsDisabling(false);
+      }}
+    >
       <SidebarHeader 
         isEditing={isEditing}
         isDisabling={isDisabling}
@@ -146,8 +155,8 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenuList 
               items={menuItems}
-              isEditing={isEditing}
-              isDisabling={isDisabling}
+              isEditing={isEditing && isHovered}
+              isDisabling={isDisabling && isHovered}
               onDisableItem={handleDisableItem}
             />
           </SidebarGroupContent>
