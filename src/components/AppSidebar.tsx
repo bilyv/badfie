@@ -22,7 +22,8 @@ import {
   Lightbulb,
   ChevronDown,
   ChevronRight,
-  X
+  X,
+  UserRound
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -139,9 +140,15 @@ export function AppSidebar() {
   return (
     <Sidebar className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl">
       <SidebarHeader className="p-4 flex items-center justify-between text-sm font-semibold border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center gap-2">
-          <Package className="h-5 w-5" />
-          <span>Inventory Pro</span>
+        <div className="flex items-start gap-2">
+          <div className="relative">
+            <UserRound className="h-8 w-8 text-primary" />
+            <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 animate-neon-glow dark:animate-neon-glow-dark border-2 border-white dark:border-gray-900" />
+          </div>
+          <div className="flex flex-col items-start">
+            <span className="text-sm font-medium">Brian</span>
+            <span className="text-xs text-muted-foreground">Workspace</span>
+          </div>
         </div>
         <Button
           variant="ghost"
