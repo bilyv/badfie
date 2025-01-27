@@ -59,7 +59,7 @@ export const SidebarMenuItemComponent = ({
     className
   );
 
-  return (
+  const ButtonComponent = (
     <SidebarMenuButton
       asChild={!!path}
       isActive={isActive}
@@ -72,4 +72,6 @@ export const SidebarMenuItemComponent = ({
       )}
     </SidebarMenuButton>
   );
+
+  return ButtonComponent;
 };

@@ -13,8 +13,7 @@ import {
   Receipt,
   Wrench,
   Folder,
-  ArrowUp,
-  FolderOpen
+  ArrowUp
 } from "lucide-react";
 import {
   Sidebar,
@@ -72,25 +71,19 @@ const defaultMenuItems: MenuItem[] = [
     icon: Bell,
   },
   {
-    group: "Insights",
-    icon: FolderOpen,
-    items: [
-      {
-        title: "Reports",
-        path: "/reports",
-        icon: ChartBar,
-      },
-      {
-        title: "AI Adviser",
-        path: "/ai-adviser",
-        icon: Bot,
-      }
-    ]
+    title: "Reports",
+    path: "/reports",
+    icon: ChartBar,
   },
   {
     title: "Expenses",
     path: "/expenses",
     icon: DollarSign,
+  },
+  {
+    title: "AI Adviser",
+    path: "/ai-adviser",
+    icon: Bot,
   },
   {
     title: "Docs Storage",
@@ -114,7 +107,6 @@ export function AppSidebar() {
   const [isEditing, setIsEditing] = useState(false);
   const [isDisabling, setIsDisabling] = useState(false);
   const [menuItems, setMenuItems] = useState(defaultMenuItems);
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleDisableItem = (itemTitle: string) => {
     setMenuItems(prev => prev.filter(item => 
@@ -133,15 +125,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar 
-      className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setIsEditing(false);
-        setIsDisabling(false);
-      }}
-    >
+    <Sidebar className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl">
       <SidebarHeader 
         isEditing={isEditing}
         isDisabling={isDisabling}
@@ -155,8 +139,8 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenuList 
               items={menuItems}
-              isEditing={isEditing && isHovered}
-              isDisabling={isDisabling && isHovered}
+              isEditing={isEditing}
+              isDisabling={isDisabling}
               onDisableItem={handleDisableItem}
             />
           </SidebarGroupContent>
