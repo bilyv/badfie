@@ -16,7 +16,7 @@ interface SidebarMenuItemProps {
   className?: string;
 }
 
-export const SidebarMenuItemComponent = ({ 
+export const SidebarMenuItemComponent: React.FC<SidebarMenuItemProps> = ({ 
   title, 
   group,
   path, 
@@ -26,7 +26,7 @@ export const SidebarMenuItemComponent = ({
   isDisabling,
   onDisable,
   className
-}: SidebarMenuItemProps) => {
+}) => {
   const location = useLocation();
   const isActive = path ? location.pathname === path : false;
   const displayText = title || group;
