@@ -2,6 +2,7 @@ import { LucideIcon, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface SidebarMenuItemProps {
   title?: string;
@@ -29,6 +30,7 @@ export const SidebarMenuItemComponent = ({
   const location = useLocation();
   const isActive = path ? location.pathname === path : false;
   const displayText = title || group;
+  const [isHovered, setIsHovered] = useState(false);
 
   const buttonContent = (
     <div className="flex items-center justify-between w-full px-4">
@@ -53,7 +55,7 @@ export const SidebarMenuItemComponent = ({
 
   const combinedClassName = cn(
     "transition-all duration-300 hover:scale-105 group relative",
-    isEditing && !isDisabling && "animate-wiggle",
+    isEditing && !isDisabling && isHovered && "animate-[wiggle_0.3s_ease-in-out]",
     isDisabling && "animate-pulse text-red-500",
     isDragging && "opacity-50",
     className
@@ -64,6 +66,8 @@ export const SidebarMenuItemComponent = ({
       asChild={!!path}
       isActive={isActive}
       className={combinedClassName}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {path ? (
         <Link to={path}>{buttonContent}</Link>
