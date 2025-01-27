@@ -1,11 +1,10 @@
 import { Card } from "@/components/ui/card";
-import { Package, ArrowDown, DollarSign, CreditCard, BarChart2, LineChart, PlusCircle, X, Edit2 } from "lucide-react";
+import { Package, ArrowDown, DollarSign, CreditCard, BarChart2, LineChart, PlusCircle, X } from "lucide-react";
 import { Bar, BarChart, Line, LineChart as RechartsLineChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip, Legend } from "recharts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
   Tooltip,
   TooltipContent,
@@ -89,7 +88,6 @@ const availableGraphs: GraphType[] = [
 const Index = () => {
   const [selectedMetric, setSelectedMetric] = useState<keyof typeof allMetrics>("default");
   const [activeGraphs, setActiveGraphs] = useState<string[]>(['sales-stock', 'revenue-expenses']);
-  const [isEditing, setIsEditing] = useState(false);
 
   const handleAddGraph = (graphId: string) => {
     setActiveGraphs(prev => [...prev, graphId]);
@@ -99,94 +97,73 @@ const Index = () => {
     setActiveGraphs(prev => prev.filter(id => id !== graphId));
   };
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-    
-    const items = Array.from(activeGraphs);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    
-    setActiveGraphs(items);
-  };
-
   const metrics = allMetrics[selectedMetric];
 
-  const renderGraph = (graph: GraphType, index: number) => {
+  const renderGraph = (graph: GraphType) => {
     return (
-      <Draggable key={graph.id} draggableId={graph.id} index={index} isDragDisabled={!isEditing}>
-        {(provided) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            className={`w-full lg:w-[calc(50%-1rem)] ${isEditing ? 'animate-wiggle' : ''}`}
-          >
-            <Card className="p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-lg h-full">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
-              
-              <button
-                onClick={() => handleRemoveGraph(graph.id)}
-                className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-background z-10"
-              >
-                <X className="h-4 w-4 text-foreground/60" />
-              </button>
-              
-              <h3 className="font-semibold mb-4 text-foreground/80 relative z-10">{graph.title}</h3>
-              <div className="h-[300px] w-full relative z-10">
-                <ResponsiveContainer width="100%" height="100%">
-                  {graph.type === 'bar' ? (
-                    <BarChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
-                      <XAxis dataKey="month" stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
-                      <YAxis stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
-                      <RechartsTooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--background))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                        }}
-                      />
-                      <Legend />
-                      <Bar dataKey="sales" fill="#22c55e" radius={[4, 4, 0, 0]} opacity={0.9} />
-                      <Bar dataKey="stock" fill="#ea384c" radius={[4, 4, 0, 0]} opacity={0.9} />
-                    </BarChart>
-                  ) : (
-                    <RechartsLineChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
-                      <XAxis dataKey="month" stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
-                      <YAxis stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
-                      <RechartsTooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--background))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                        }}
-                      />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="revenue" 
-                        stroke="#22c55e" 
-                        strokeWidth={2}
-                        dot={{ fill: "#22c55e", strokeWidth: 2 }}
-                        activeDot={{ r: 6, strokeWidth: 2 }}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="expenses" 
-                        stroke="#ea384c" 
-                        strokeWidth={2}
-                        dot={{ fill: "#ea384c", strokeWidth: 2 }}
-                        activeDot={{ r: 6, strokeWidth: 2 }}
-                      />
-                    </RechartsLineChart>
-                  )}
-                </ResponsiveContainer>
-              </div>
-            </Card>
-          </div>
-        )}
-      </Draggable>
+      <Card key={graph.id} className="p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+        
+        <button
+          onClick={() => handleRemoveGraph(graph.id)}
+          className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-background z-10"
+        >
+          <X className="h-4 w-4 text-foreground/60" />
+        </button>
+        
+        <h3 className="font-semibold mb-4 text-foreground/80 relative z-10">{graph.title}</h3>
+        <div className="h-[300px] w-full relative z-10">
+          <ResponsiveContainer width="100%" height="100%">
+            {graph.type === 'bar' ? (
+              <BarChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
+                <XAxis dataKey="month" stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
+                <YAxis stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
+                <RechartsTooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+                <Legend />
+                <Bar dataKey="sales" fill="#22c55e" radius={[4, 4, 0, 0]} opacity={0.9} />
+                <Bar dataKey="stock" fill="#ea384c" radius={[4, 4, 0, 0]} opacity={0.9} />
+              </BarChart>
+            ) : (
+              <RechartsLineChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
+                <XAxis dataKey="month" stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
+                <YAxis stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
+                <RechartsTooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="#22c55e" 
+                  strokeWidth={2}
+                  dot={{ fill: "#22c55e", strokeWidth: 2 }}
+                  activeDot={{ r: 6, strokeWidth: 2 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="expenses" 
+                  stroke="#ea384c" 
+                  strokeWidth={2}
+                  dot={{ fill: "#ea384c", strokeWidth: 2 }}
+                  activeDot={{ r: 6, strokeWidth: 2 }}
+                />
+              </RechartsLineChart>
+            )}
+          </ResponsiveContainer>
+        </div>
+      </Card>
     );
   };
 
@@ -202,52 +179,41 @@ const Index = () => {
           </p>
         </div>
         
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setIsEditing(!isEditing)}
-            className={`${isEditing ? 'bg-primary/10' : ''}`}
-          >
-            <Edit2 className="h-5 w-5" />
-          </Button>
-          
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="icon">
-                <BarChart2 className="h-5 w-5" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-48" align="end">
-              <div className="space-y-2">
-                <button
-                  onClick={() => setSelectedMetric("default")}
-                  className={`w-full text-left px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 ${
-                    selectedMetric === "default" ? "bg-gray-100 dark:bg-gray-800" : ""
-                  }`}
-                >
-                  Default Metrics
-                </button>
-                <button
-                  onClick={() => setSelectedMetric("profit")}
-                  className={`w-full text-left px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 ${
-                    selectedMetric === "profit" ? "bg-gray-100 dark:bg-gray-800" : ""
-                  }`}
-                >
-                  Profit Metrics
-                </button>
-                <button
-                  onClick={() => setSelectedMetric("pending")}
-                  className={`w-full text-left px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 ${
-                    selectedMetric === "pending" ? "bg-gray-100 dark:bg-gray-800" : ""
-                  }`}
-                >
-                  Pending Items
-                </button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="icon" className="ml-auto">
+              <BarChart2 className="h-5 w-5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-48" align="end">
+            <div className="space-y-2">
+              <button
+                onClick={() => setSelectedMetric("default")}
+                className={`w-full text-left px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                  selectedMetric === "default" ? "bg-gray-100 dark:bg-gray-800" : ""
+                }`}
+              >
+                Default Metrics
+              </button>
+              <button
+                onClick={() => setSelectedMetric("profit")}
+                className={`w-full text-left px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                  selectedMetric === "profit" ? "bg-gray-100 dark:bg-gray-800" : ""
+                }`}
+              >
+                Profit Metrics
+              </button>
+              <button
+                onClick={() => setSelectedMetric("pending")}
+                className={`w-full text-left px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                  selectedMetric === "pending" ? "bg-gray-100 dark:bg-gray-800" : ""
+                }`}
+              >
+                Pending Items
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -287,80 +253,69 @@ const Index = () => {
         })}
       </div>
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="graphs" direction="horizontal">
-          {(provided) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              className="flex flex-wrap gap-6"
-            >
-              {activeGraphs.map((graphId, index) => {
-                const graph = availableGraphs.find(g => g.id === graphId);
-                if (graph) return renderGraph(graph, index);
-                return null;
-              })}
-              {provided.placeholder}
-              
-              {activeGraphs.length < availableGraphs.length && (
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Card className="w-24 h-24 flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group rounded-full border-dashed">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="flex flex-col items-center gap-2 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
-                              <PlusCircle className="h-8 w-8" />
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Add a new graph to your dashboard</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </Card>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add New Graph</DialogTitle>
-                      <DialogDescription>
-                        Select a graph type to add to your dashboard
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      {availableGraphs
-                        .filter(graph => !activeGraphs.includes(graph.id))
-                        .map(graph => (
-                          <Button
-                            key={graph.id}
-                            variant="outline"
-                            className="justify-start gap-3 h-auto p-4"
-                            onClick={() => {
-                              handleAddGraph(graph.id);
-                              const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
-                              if (dialogClose) dialogClose.click();
-                            }}
-                          >
-                            {graph.type === 'bar' ? 
-                              <BarChart2 className="h-5 w-5 text-primary" /> : 
-                              <LineChart className="h-5 w-5 text-primary" />
-                            }
-                            <div className="flex flex-col items-start">
-                              <span className="font-medium">{graph.title}</span>
-                              <span className="text-sm text-muted-foreground">
-                                {graph.type === 'bar' ? 'Bar Chart' : 'Line Chart'}
-                              </span>
-                            </div>
-                          </Button>
-                        ))}
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              )}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {activeGraphs.map(graphId => {
+          const graph = availableGraphs.find(g => g.id === graphId);
+          if (graph) return renderGraph(graph);
+          return null;
+        })}
+        
+        {activeGraphs.length < availableGraphs.length && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Card className="w-24 h-24 flex items-center justify-center cursor-pointer hover:bg-accent/50 transition-all duration-300 group rounded-full border-dashed">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground group-hover:scale-110 transition-transform duration-300">
+                        <PlusCircle className="h-8 w-8" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add a new graph to your dashboard</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Card>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Graph</DialogTitle>
+                <DialogDescription>
+                  Select a graph type to add to your dashboard
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                {availableGraphs
+                  .filter(graph => !activeGraphs.includes(graph.id))
+                  .map(graph => (
+                    <Button
+                      key={graph.id}
+                      variant="outline"
+                      className="justify-start gap-3 h-auto p-4"
+                      onClick={() => {
+                        handleAddGraph(graph.id);
+                        const dialogClose = document.querySelector('[data-dialog-close]') as HTMLButtonElement;
+                        if (dialogClose) dialogClose.click();
+                      }}
+                    >
+                      {graph.type === 'bar' ? 
+                        <BarChart2 className="h-5 w-5 text-primary" /> : 
+                        <LineChart className="h-5 w-5 text-primary" />
+                      }
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">{graph.title}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {graph.type === 'bar' ? 'Bar Chart' : 'Line Chart'}
+                        </span>
+                      </div>
+                    </Button>
+                  ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
     </div>
   );
 };
