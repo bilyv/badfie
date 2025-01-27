@@ -2,21 +2,14 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
 import { SidebarMenuItemComponent } from "./SidebarMenuItem";
 import { useState } from "react";
-import type { MenuItem } from "@/lib/types";
+import type { MenuItem, GroupedMenuItem } from "@/lib/types";
 
 interface SidebarMenuListProps {
   items: MenuItem[];
   isEditing: boolean;
-  isDisabling: boolean;
-  onDisableItem?: (title: string) => void;
 }
 
-export const SidebarMenuList = ({ 
-  items: initialItems, 
-  isEditing,
-  isDisabling,
-  onDisableItem 
-}: SidebarMenuListProps) => {
+export const SidebarMenuList = ({ items: initialItems, isEditing }: SidebarMenuListProps) => {
   const [menuItems, setMenuItems] = useState(initialItems);
 
   const handleDragEnd = (result: any) => {
@@ -30,19 +23,37 @@ export const SidebarMenuList = ({
   };
 
   const renderMenuItem = (item: MenuItem) => {
-    if ('title' in item) {
+    if ('group' in item) {
+      const groupedItem = item as GroupedMenuItem;
       return (
-        <SidebarMenuItemComponent
-          title={item.title}
-          path={item.path}
-          icon={item.icon}
-          isEditing={isEditing}
-          isDisabling={isDisabling}
-          onDisable={() => onDisableItem?.(item.title)}
-        />
+        <>
+          <SidebarMenuItemComponent
+            group={groupedItem.group}
+            icon={groupedItem.icon}
+            isEditing={isEditing}
+          />
+          {groupedItem.items?.map((subItem) => (
+            <SidebarMenuItemComponent
+              key={subItem.title}
+              title={subItem.title}
+              path={subItem.path}
+              icon={subItem.icon}
+              isEditing={isEditing}
+              className="ml-4"
+            />
+          ))}
+        </>
       );
     }
-    return null;
+    
+    return (
+      <SidebarMenuItemComponent
+        title={item.title}
+        path={item.path}
+        icon={item.icon}
+        isEditing={isEditing}
+      />
+    );
   };
 
   return (
@@ -55,10 +66,10 @@ export const SidebarMenuList = ({
           >
             {menuItems.map((item, index) => (
               <Draggable
-                key={'title' in item ? item.title : index.toString()}
-                draggableId={'title' in item ? item.title : index.toString()}
+                key={'group' in item ? item.group : item.title}
+                draggableId={'group' in item ? item.group : item.title}
                 index={index}
-                isDragDisabled={!isEditing || isDisabling}
+                isDragDisabled={!isEditing}
               >
                 {(provided, snapshot) => (
                   <SidebarMenuItem

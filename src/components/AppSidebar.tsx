@@ -11,10 +11,10 @@ import {
   Link2,
   Building2,
   Receipt,
+  PieChart,
   Wrench,
   Folder,
-  ArrowUp,
-  FolderOpen
+  ArrowUp
 } from "lucide-react";
 import {
   Sidebar,
@@ -73,7 +73,7 @@ const defaultMenuItems: MenuItem[] = [
   },
   {
     group: "Insights",
-    icon: FolderOpen,
+    icon: PieChart,
     items: [
       {
         title: "Reports",
@@ -81,16 +81,16 @@ const defaultMenuItems: MenuItem[] = [
         icon: ChartBar,
       },
       {
+        title: "Expenses",
+        path: "/expenses",
+        icon: DollarSign,
+      },
+      {
         title: "AI Adviser",
         path: "/ai-adviser",
         icon: Bot,
-      }
-    ]
-  },
-  {
-    title: "Expenses",
-    path: "/expenses",
-    icon: DollarSign,
+      },
+    ],
   },
   {
     title: "Docs Storage",
@@ -112,52 +112,20 @@ const defaultMenuItems: MenuItem[] = [
 export function AppSidebar() {
   const { openUpgradeDialog } = useUpgradeDialog();
   const [isEditing, setIsEditing] = useState(false);
-  const [isDisabling, setIsDisabling] = useState(false);
-  const [menuItems, setMenuItems] = useState(defaultMenuItems);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleDisableItem = (itemTitle: string) => {
-    setMenuItems(prev => prev.filter(item => 
-      'title' in item && item.title !== itemTitle
-    ));
-  };
-
-  const handlePositionToggle = () => {
-    setIsEditing(true);
-    setIsDisabling(false);
-  };
-
-  const handleDisableToggle = () => {
-    setIsDisabling(prev => !prev);
-    setIsEditing(false);
-  };
 
   return (
-    <Sidebar 
-      className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setIsEditing(false);
-        setIsDisabling(false);
-      }}
-    >
+    <Sidebar className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl">
       <SidebarHeader 
         isEditing={isEditing}
-        isDisabling={isDisabling}
         onEditToggle={() => setIsEditing(!isEditing)}
-        onPositionToggle={handlePositionToggle}
-        onDisableToggle={handleDisableToggle}
       />
 
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenuList 
-              items={menuItems}
-              isEditing={isEditing && isHovered}
-              isDisabling={isDisabling && isHovered}
-              onDisableItem={handleDisableItem}
+              items={defaultMenuItems}
+              isEditing={isEditing}
             />
           </SidebarGroupContent>
         </SidebarGroup>
