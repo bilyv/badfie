@@ -13,7 +13,8 @@ import {
   Receipt,
   Wrench,
   Folder,
-  ArrowUp
+  ArrowUp,
+  LineChart
 } from "lucide-react";
 import {
   Sidebar,
@@ -71,19 +72,25 @@ const defaultMenuItems: MenuItem[] = [
     icon: Bell,
   },
   {
-    title: "Reports",
-    path: "/reports",
-    icon: ChartBar,
+    group: "Insights",
+    icon: LineChart,
+    items: [
+      {
+        title: "Reports",
+        path: "/reports",
+        icon: ChartBar,
+      },
+      {
+        title: "AI Adviser",
+        path: "/ai-adviser",
+        icon: Bot,
+      }
+    ]
   },
   {
     title: "Expenses",
     path: "/expenses",
     icon: DollarSign,
-  },
-  {
-    title: "AI Adviser",
-    path: "/ai-adviser",
-    icon: Bot,
   },
   {
     title: "Docs Storage",
