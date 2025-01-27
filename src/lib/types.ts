@@ -51,16 +51,13 @@ export interface DashboardMetric {
 
 export interface BaseMenuItem {
   icon: React.ComponentType;
+  title?: string;
+  path?: string;
+  group?: string;
+  items?: MenuItem[];
 }
 
-export interface RegularMenuItem extends BaseMenuItem {
-  title: string;
-  path: string;
-}
-
-export interface GroupedMenuItem extends BaseMenuItem {
-  group: string;
-  items: RegularMenuItem[];
-}
-
-export type MenuItem = RegularMenuItem | GroupedMenuItem;
+export type MenuItem = (
+  | (Required<Pick<BaseMenuItem, 'title' | 'path' | 'icon'>>)
+  | (Required<Pick<BaseMenuItem, 'group' | 'icon' | 'items'>>)
+);
