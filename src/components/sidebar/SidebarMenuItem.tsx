@@ -13,7 +13,7 @@ interface SidebarMenuItemProps {
   isDragging?: boolean;
   isDisabling?: boolean;
   onDisable?: () => void;
-  className?: string;  // Added className to the interface
+  className?: string;
 }
 
 export const SidebarMenuItemComponent = ({ 
@@ -61,7 +61,7 @@ export const SidebarMenuItemComponent = ({
     className
   );
 
-  const ButtonComponent = (
+  return (
     <SidebarMenuButton
       asChild={!!path}
       isActive={isActive}
@@ -76,6 +76,4 @@ export const SidebarMenuItemComponent = ({
       )}
     </SidebarMenuButton>
   );
-
-  return ButtonComponent;
 };
