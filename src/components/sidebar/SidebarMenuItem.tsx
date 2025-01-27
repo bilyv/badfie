@@ -2,7 +2,6 @@ import { LucideIcon, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 interface SidebarMenuItemProps {
   title?: string;
@@ -16,7 +15,7 @@ interface SidebarMenuItemProps {
   className?: string;
 }
 
-export const SidebarMenuItemComponent: React.FC<SidebarMenuItemProps> = ({ 
+export const SidebarMenuItemComponent = ({ 
   title, 
   group,
   path, 
@@ -26,13 +25,12 @@ export const SidebarMenuItemComponent: React.FC<SidebarMenuItemProps> = ({
   isDisabling,
   onDisable,
   className
-}) => {
+}: SidebarMenuItemProps) => {
   const location = useLocation();
   const isActive = path ? location.pathname === path : false;
   const displayText = title || group;
-  const [isHovered, setIsHovered] = useState(false);
 
-  const buttonContent = (
+  const content = (
     <div className="flex items-center justify-between w-full px-4">
       <div className="flex items-center gap-3">
         <Icon className="h-4 w-4" />
@@ -53,26 +51,22 @@ export const SidebarMenuItemComponent: React.FC<SidebarMenuItemProps> = ({
     </div>
   );
 
-  const combinedClassName = cn(
-    "transition-all duration-300 hover:scale-105 group relative",
-    isEditing && !isDisabling && isHovered && "animate-[wiggle_0.3s_ease-in-out]",
-    isDisabling && "animate-pulse text-red-500",
-    isDragging && "opacity-50",
-    className
-  );
-
   return (
     <SidebarMenuButton
       asChild={!!path}
       isActive={isActive}
-      className={combinedClassName}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={cn(
+        "transition-all duration-300 hover:scale-105 group relative",
+        isEditing && !isDisabling && "animate-wiggle",
+        isDisabling && "animate-pulse text-red-500",
+        isDragging && "opacity-50",
+        className
+      )}
     >
       {path ? (
-        <Link to={path}>{buttonContent}</Link>
+        <Link to={path}>{content}</Link>
       ) : (
-        buttonContent
+        content
       )}
     </SidebarMenuButton>
   );
