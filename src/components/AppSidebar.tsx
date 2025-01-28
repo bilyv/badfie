@@ -27,6 +27,7 @@ import {
   Move,
   MinusCircle
 } from "lucide-react";
+import type { LucideProps } from 'lucide-react'; // Add this import for LucideProps
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -49,7 +50,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -172,10 +173,10 @@ export function AppSidebar() {
     );
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const {active, over} = event;
     
-    if (active.id !== over.id) {
+    if (active && over && active.id !== over.id) {
       setMenuItems((items) => {
         const oldIndex = items.findIndex(item => 
           'title' in item ? item.title === active.id : item.group === active.id
@@ -205,9 +206,9 @@ export function AppSidebar() {
       transition,
     };
 
-    return (
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-        {'title' in item ? (
+    if ('title' in item) {
+      return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
@@ -237,69 +238,73 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-        ) : (
-          <Collapsible
-            open={expandedGroups.includes(item.group)}
-            onOpenChange={() => toggleGroup(item.group)}
-          >
-            <CollapsibleTrigger asChild>
-              <SidebarMenuButton
-                className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group"
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.group}</span>
-                </div>
-                {expandedGroups.includes(item.group) ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </SidebarMenuButton>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              {item.items.map((subItem) => (
-                <SidebarMenuItem key={subItem.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname === subItem.path}
-                    className="pl-9 transition-all duration-300 hover:scale-105 group"
-                  >
-                    <Link to={subItem.path} className="flex items-center justify-between w-full pr-2">
-                      <div className="flex items-center gap-3">
-                        <subItem.icon className="h-4 w-4" />
-                        <span>{subItem.title}</span>
-                      </div>
-                      {isDisabling && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 opacity-0 group-hover:opacity-100"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setMenuItems(prev => {
-                              return prev.map(menuItem => {
-                                if ('group' in menuItem && menuItem.group === item.group) {
-                                  return {
-                                    ...menuItem,
-                                    items: menuItem.items.filter(i => i.title !== subItem.title)
-                                  };
-                                }
-                                return menuItem;
-                              });
+        </div>
+      );
+    }
+
+    return (
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <Collapsible
+          open={expandedGroups.includes(item.group)}
+          onOpenChange={() => toggleGroup(item.group)}
+        >
+          <CollapsibleTrigger asChild>
+            <SidebarMenuButton
+              className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group"
+            >
+              <div className="flex items-center gap-3">
+                <item.icon className="h-4 w-4" />
+                <span>{item.group}</span>
+              </div>
+              {expandedGroups.includes(item.group) ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </SidebarMenuButton>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            {item.items.map((subItem) => (
+              <SidebarMenuItem key={subItem.title}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === subItem.path}
+                  className="pl-9 transition-all duration-300 hover:scale-105 group"
+                >
+                  <Link to={subItem.path} className="flex items-center justify-between w-full pr-2">
+                    <div className="flex items-center gap-3">
+                      <subItem.icon className="h-4 w-4" />
+                      <span>{subItem.title}</span>
+                    </div>
+                    {isDisabling && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setMenuItems(prev => {
+                            return prev.map(menuItem => {
+                              if ('group' in menuItem && menuItem.group === item.group) {
+                                return {
+                                  ...menuItem,
+                                  items: menuItem.items.filter(i => i.title !== subItem.title)
+                                };
+                              }
+                              return menuItem;
                             });
-                          }}
-                        >
-                          <MinusCircle className="h-4 w-4 text-destructive" />
-                        </Button>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </CollapsibleContent>
-          </Collapsible>
-        )}
+                          });
+                        }}
+                      >
+                        <MinusCircle className="h-4 w-4 text-destructive" />
+                      </Button>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     );
   };
