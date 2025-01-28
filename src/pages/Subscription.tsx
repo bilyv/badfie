@@ -1,10 +1,11 @@
+import { Card } from "@/components/ui/card";
 import { Check, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
 const plans = [
   {
-    name: "Free Plan",
+    name: "Free Trial",
     price: "$0",
     features: [
       "Basic inventory management",
@@ -14,70 +15,56 @@ const plans = [
     ],
   },
   {
-    name: "Starter",
-    price: "$80/month",
+    name: "Business",
+    price: "$150",
     features: [
       "Advanced inventory tracking",
-      "Up to 2 stores",
-      "Basic analytics",
+      "Up to 3 stores",
+      "Detailed analytics",
       "Priority support",
-      "Basic integrations",
-    ],
-  },
-  {
-    name: "Basic",
-    price: "$150/month",
-    features: [
-      "All Starter features",
-      "Up to 5 stores",
-      "Advanced analytics",
-      "24/7 support",
-      "API access",
       "Custom branding",
     ],
   },
   {
-    name: "Pro",
-    price: "$300/month",
+    name: "Enterprise",
+    price: "$300",
     features: [
-      "All Basic features",
+      "All Pro features",
       "Unlimited stores",
-      "Custom analytics",
-      "Dedicated support",
+      "Advanced analytics",
+      "24/7 support",
+      "API access",
       "Custom integrations",
-      "White labeling",
     ],
   },
 ];
 
 export default function Subscription() {
-  const handleSubscribe = (planName: string) => {
+  const handleSelectPlan = (planName: string) => {
     toast({
-      title: "Subscription Updated",
-      description: `Successfully subscribed to ${planName}.`,
+      title: "Plan Selected",
+      description: `You have selected the ${planName} plan.`,
     });
   };
 
   return (
     <div className="container mx-auto py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-2">
-          <DollarSign className="h-8 w-8 text-primary" />
-          Choose Your Plan
-        </h1>
-        <p className="text-muted-foreground">
-          Select the plan that best fits your business needs
-        </p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-4">
+      <h1 className="text-3xl font-bold text-center mb-2">Choose Your Plan</h1>
+      <p className="text-muted-foreground text-center mb-8">
+        Select the plan that best fits your business needs
+      </p>
+      
+      <div className="grid gap-6 md:grid-cols-3">
         {plans.map((plan) => (
-          <div
+          <Card
             key={plan.name}
-            className="flex flex-col gap-4 rounded-lg border p-6 hover:border-primary transition-all duration-300 hover:scale-105 bg-card/50 backdrop-blur-sm"
+            className="flex flex-col gap-4 p-6 hover:border-primary transition-all duration-300 hover:scale-105"
           >
             <div>
-              <h4 className="text-xl font-semibold">{plan.name}</h4>
+              <h4 className="text-xl font-semibold flex items-center gap-2">
+                <DollarSign className="h-5 w-5" />
+                {plan.name}
+              </h4>
               <p className="text-2xl font-bold mt-2">{plan.price}</p>
             </div>
             <ul className="space-y-3 flex-1">
@@ -89,13 +76,13 @@ export default function Subscription() {
               ))}
             </ul>
             <Button 
-              onClick={() => handleSubscribe(plan.name)}
+              onClick={() => handleSelectPlan(plan.name)}
               className="w-full mt-4"
-              variant={plan.name === "Pro" ? "default" : "outline"}
+              variant={plan.name === "Enterprise" ? "default" : "outline"}
             >
               Get Started
             </Button>
-          </div>
+          </Card>
         ))}
       </div>
     </div>
