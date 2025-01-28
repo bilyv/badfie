@@ -138,26 +138,28 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="w-64 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl transition-colors duration-300">
-      <SidebarHeader className="p-4 flex items-center justify-between text-sm font-semibold border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <UserRound className="h-8 w-8 text-primary" />
-            <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 animate-neon-glow dark:animate-neon-glow-dark border-2 border-white dark:border-gray-900" />
+    <Sidebar className="w-64 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl transition-all duration-300">
+      <SidebarHeader className="p-4 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <UserRound className="h-8 w-8 text-primary" />
+              <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 animate-neon-glow dark:animate-neon-glow-dark border-2 border-white dark:border-gray-900" />
+            </div>
+            <div className="flex flex-col items-start">
+              <span className="text-sm font-medium">Brian</span>
+              <span className="text-xs text-muted-foreground">Workspace</span>
+            </div>
           </div>
-          <div className="flex flex-col items-start">
-            <span className="text-sm font-medium">Brian</span>
-            <span className="text-xs text-muted-foreground">Workspace</span>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 transition-all duration-300 hover:scale-105"
+            onClick={() => setIsEditing(!isEditing)}
+          >
+            <Edit2 className="h-4 w-4" />
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 transition-transform hover:scale-105"
-          onClick={() => setIsEditing(!isEditing)}
-        >
-          <Edit2 className="h-4 w-4" />
-        </Button>
       </SidebarHeader>
 
       <SidebarContent>
