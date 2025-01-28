@@ -81,7 +81,7 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="relative hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300"
               >
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
@@ -142,16 +142,16 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            className="hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300"
           >
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all duration-500 dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all duration-500 dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-gray-100 dark:hover:bg-gray-800">
+              <Button variant="ghost" size="icon" className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300">
                 <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>

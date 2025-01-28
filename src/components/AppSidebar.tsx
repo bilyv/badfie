@@ -138,7 +138,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="w-64 bg-background/75 dark:bg-gray-900/75 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl">
+    <Sidebar className="w-64 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl transition-colors duration-300">
       <SidebarHeader className="p-4 flex items-center justify-between text-sm font-semibold border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-2">
           <div className="relative">
@@ -153,7 +153,7 @@ export function AppSidebar() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 transition-transform hover:scale-105"
           onClick={() => setIsEditing(!isEditing)}
         >
           <Edit2 className="h-4 w-4" />
