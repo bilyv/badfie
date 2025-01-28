@@ -23,6 +23,7 @@ import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import Connect from "./pages/Connect";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
+import { Suspense } from "react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,23 +44,25 @@ const Layout = () => {
         <main className="flex-1">
           <Navbar />
           <div className="container py-6">
-            <Routes>
-              <Route index element={<Index />} />
-              <Route path="multi-store" element={<MultiStore />} />
-              <Route path="connect" element={<Connect />} />
-              <Route path="products" element={<Products />} />
-              <Route path="services" element={<Services />} />
-              <Route path="sales" element={<Sales />} />
-              <Route path="expenses" element={<Expenses />} />
-              <Route path="tax" element={<Tax />} />
-              <Route path="reminders" element={<Reminders />} />
-              <Route path="reports" element={<Reports />} />
-              <Route path="users" element={<Users />} />
-              <Route path="docs-storage" element={<DocsStorage />} />
-              <Route path="ai-adviser" element={<AIAdviser />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+            <Suspense fallback={<div>Loading...</div>}>
+              <Routes>
+                <Route index element={<Index />} />
+                <Route path="multi-store" element={<MultiStore />} />
+                <Route path="connect" element={<Connect />} />
+                <Route path="products" element={<Products />} />
+                <Route path="services" element={<Services />} />
+                <Route path="sales" element={<Sales />} />
+                <Route path="expenses" element={<Expenses />} />
+                <Route path="tax" element={<Tax />} />
+                <Route path="reminders" element={<Reminders />} />
+                <Route path="reports" element={<Reports />} />
+                <Route path="users" element={<Users />} />
+                <Route path="docs-storage" element={<DocsStorage />} />
+                <Route path="ai-adviser" element={<AIAdviser />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
           </div>
         </main>
       </div>
