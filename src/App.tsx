@@ -22,7 +22,7 @@ import AIAdviser from "./pages/AIAdviser";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import Connect from "./pages/Connect";
-import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
+import Subscription from "./pages/Subscription";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,8 +34,6 @@ const queryClient = new QueryClient({
 });
 
 const Layout = () => {
-  const { UpgradeDialog } = useUpgradeDialog();
-  
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -58,12 +56,12 @@ const Layout = () => {
               <Route path="docs-storage" element={<DocsStorage />} />
               <Route path="ai-adviser" element={<AIAdviser />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="subscription" element={<Subscription />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </main>
       </div>
-      <UpgradeDialog />
     </SidebarProvider>
   );
 };

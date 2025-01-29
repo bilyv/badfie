@@ -124,7 +124,7 @@ const defaultMenuItems = [
 
 export function AppSidebar() {
   const location = useLocation();
-  const { openUpgradeDialog } = useUpgradeDialog();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [menuItems, setMenuItems] = useState(defaultMenuItems);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
@@ -139,7 +139,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="w-64 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl transition-all duration-300">
-      <SidebarHeader className="p-4 border-b border-gray-200 dark:border-gray-800">
+      <SidebarHeader className="p-4 border-b border-gray-200/60 dark:border-gray-800/60 bg-transparent backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -235,12 +235,12 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-gray-200 dark:border-gray-800">
+      <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60">
         <Button 
           variant="outline" 
           size="sm"
           className="w-full gap-2 bg-background/50 backdrop-blur-sm border-dashed hover:border-primary transition-all duration-300 hover:scale-105"
-          onClick={openUpgradeDialog}
+          onClick={() => navigate('/subscription')}
         >
           <ArrowUp className="h-4 w-4" />
           <span>Upgrade Plan</span>
