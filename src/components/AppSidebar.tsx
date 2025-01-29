@@ -19,14 +19,15 @@ import {
   Building2,
   Receipt,
   PieChart,
+  Lightbulb,
   ChevronDown,
   ChevronRight,
   X,
   UserRound,
-  GripVertical,
-  MinusCircle
+  Move,
+  Ban
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -40,83 +41,90 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button";
-import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger 
-} from "./ui/dropdown-menu";
-
-interface MenuItem {
-  title: string;
-  path: string;
-  icon: any;
-  group?: string;
-  items?: MenuItem[];
-}
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const defaultMenuItems = [
   {
     title: "Dashboard",
     path: "/",
     icon: LayoutDashboard,
+    id: "dashboard"
   },
   {
     title: "Multi-Store",
     path: "/multi-store",
     icon: Building2,
+    id: "multi-store"
   },
   {
     title: "Connect",
     path: "/connect",
     icon: Link2,
+    id: "connect"
   },
   {
     title: "Products",
     path: "/products",
     icon: ShoppingBag,
+    id: "products"
   },
   {
     title: "Services",
     path: "/services",
     icon: Wrench,
+    id: "services"
   },
   {
     title: "Sales",
     path: "/sales",
     icon: Receipt,
+    id: "sales"
   },
   {
     title: "Tax",
     path: "/tax",
     icon: Percent,
+    id: "tax"
   },
   {
     title: "Reminders",
     path: "/reminders",
     icon: Bell,
+    id: "reminders"
   },
   {
     group: "Insights",
     icon: PieChart,
+    id: "insights",
     items: [
       {
         title: "Reports",
         path: "/reports",
         icon: ChartBar,
+        id: "reports"
       },
       {
         title: "Expenses",
         path: "/expenses",
         icon: DollarSign,
+        id: "expenses"
       },
       {
         title: "AI Adviser",
         path: "/ai-adviser",
-        icon: Bot,
+        icon: Lightbulb,
+        id: "ai-adviser"
       },
     ],
   },
@@ -124,26 +132,72 @@ const defaultMenuItems = [
     title: "Docs Storage",
     path: "/docs-storage",
     icon: Folder,
+    id: "docs-storage"
   },
   {
     title: "Users",
     path: "/users",
     icon: Users,
+    id: "users"
   },
   {
     title: "Settings",
     path: "/settings",
     icon: Settings,
+    id: "settings"
   },
 ];
 
+const SortableMenuItem = ({ item, isEditing, onRemove }: any) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <SidebarMenuItem key={item.title}>
+        <SidebarMenuButton
+          asChild
+          className={`transition-all duration-300 hover:scale-105 group ${isEditing ? 'animate-wiggle' : ''}`}
+        >
+          <Link to={item.path} className="flex items-center justify-between w-full px-4">
+            <div className="flex items-center gap-3">
+              <item.icon className="h-4 w-4" />
+              <span>{item.title}</span>
+            </div>
+            {isEditing && (
+              <X 
+                className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onRemove(item.id);
+                }}
+              />
+            )}
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </div>
+  );
+};
+
 export function AppSidebar() {
   const location = useLocation();
-  const { openUpgradeDialog } = useUpgradeDialog();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const [editMode, setEditMode] = useState<'position' | 'disable' | null>(null);
   const [menuItems, setMenuItems] = useState(defaultMenuItems);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
-  const [editMode, setEditMode] = useState<'position' | 'disable' | null>(null);
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups(prev => 
@@ -153,34 +207,26 @@ export function AppSidebar() {
     );
   };
 
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    e.dataTransfer.setData('text/plain', index.toString());
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    const dragIndex = Number(e.dataTransfer.getData('text/plain'));
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
     
-    if (dragIndex === dropIndex) return;
-
-    const newItems = [...menuItems];
-    const [draggedItem] = newItems.splice(dragIndex, 1);
-    newItems.splice(dropIndex, 0, draggedItem);
-    
-    setMenuItems(newItems);
+    if (over && active.id !== over.id) {
+      setMenuItems((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
-  const handleDisableItem = (index: number) => {
-    setMenuItems(prev => prev.filter((_, i) => i !== index));
+  const handleRemoveItem = (itemId: string) => {
+    setMenuItems(prev => prev.filter(item => item.id !== itemId));
   };
 
   return (
     <Sidebar className="w-64 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60 border-r border-gray-200 dark:border-gray-800 rounded-tr-xl rounded-br-xl transition-all duration-300">
-      <SidebarHeader className="p-4 border-b border-gray-200 dark:border-gray-800">
+      <SidebarHeader className="p-4 border-b border-gray-200 dark:border-gray-800 bg-transparent">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -202,20 +248,20 @@ export function AppSidebar() {
                 <Edit2 className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent>
               <DropdownMenuItem onClick={() => {
                 setIsEditing(true);
                 setEditMode('position');
               }}>
-                <GripVertical className="mr-2 h-4 w-4" />
-                Position
+                <Move className="mr-2 h-4 w-4" />
+                <span>Position</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 setIsEditing(true);
                 setEditMode('disable');
               }}>
-                <MinusCircle className="mr-2 h-4 w-4" />
-                Disable
+                <Ban className="mr-2 h-4 w-4" />
+                <span>Disable</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -226,119 +272,58 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item, index) => (
-                'group' in item ? (
-                  <Collapsible
-                    key={item.group}
-                    open={expandedGroups.includes(item.group)}
-                    onOpenChange={() => toggleGroup(item.group)}
-                  >
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton
-                        className={`w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group ${editMode === 'position' || editMode === 'disable' ? 'animate-vibrate' : ''}`}
-                        draggable={editMode === 'position'}
-                        onDragStart={(e) => handleDragStart(e, index)}
-                        onDragOver={handleDragOver}
-                        onDrop={(e) => handleDrop(e, index)}
+              <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={menuItems.map(item => item.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {menuItems.map((item) => (
+                    'group' in item ? (
+                      <Collapsible
+                        key={item.group}
+                        open={expandedGroups.includes(item.group)}
+                        onOpenChange={() => toggleGroup(item.group)}
                       >
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.group}</span>
-                        </div>
-                        <div className="flex items-center">
-                          {editMode === 'disable' && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-4 w-4 mr-2"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDisableItem(index);
-                              }}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          )}
-                          {expandedGroups.includes(item.group) ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
-                        </div>
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      {item.items?.map((subItem, subIndex) => (
-                        <SidebarMenuItem key={subItem.title}>
+                        <CollapsibleTrigger asChild>
                           <SidebarMenuButton
-                            asChild
-                            isActive={location.pathname === subItem.path}
-                            className={`pl-9 transition-all duration-300 hover:scale-105 group ${editMode === 'position' || editMode === 'disable' ? 'animate-vibrate' : ''}`}
-                            draggable={editMode === 'position'}
-                            onDragStart={(e) => handleDragStart(e, index)}
-                            onDragOver={handleDragOver}
-                            onDrop={(e) => handleDrop(e, index)}
+                            className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group"
                           >
-                            <Link to={subItem.path} className="flex items-center justify-between w-full pr-2">
-                              <div className="flex items-center gap-3">
-                                <subItem.icon className="h-4 w-4" />
-                                <span>{subItem.title}</span>
-                              </div>
-                              {editMode === 'disable' && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleDisableItem(index);
-                                  }}
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              )}
-                            </Link>
+                            <div className="flex items-center gap-3">
+                              <item.icon className="h-4 w-4" />
+                              <span>{item.group}</span>
+                            </div>
+                            {expandedGroups.includes(item.group) ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
                           </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </CollapsibleContent>
-                  </Collapsible>
-                ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={location.pathname === item.path}
-                      className={`transition-all duration-300 hover:scale-105 group ${editMode === 'position' || editMode === 'disable' ? 'animate-vibrate' : ''}`}
-                      draggable={editMode === 'position'}
-                      onDragStart={(e) => handleDragStart(e, index)}
-                      onDragOver={handleDragOver}
-                      onDrop={(e) => handleDrop(e, index)}
-                    >
-                      <Link to={item.path} className="flex items-center justify-between w-full px-4">
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </div>
-                        {editMode === 'disable' && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleDisableItem(index);
-                            }}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        )}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              ))}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          {item.items.map((subItem) => (
+                            <SortableMenuItem
+                              key={subItem.id}
+                              item={subItem}
+                              isEditing={isEditing}
+                              onRemove={handleRemoveItem}
+                            />
+                          ))}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ) : (
+                      <SortableMenuItem
+                        key={item.id}
+                        item={item}
+                        isEditing={isEditing}
+                        onRemove={handleRemoveItem}
+                      />
+                    )
+                  ))}
+                </SortableContext>
+              </DndContext>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -349,7 +334,7 @@ export function AppSidebar() {
           variant="outline" 
           size="sm"
           className="w-full gap-2 bg-background/50 backdrop-blur-sm border-dashed hover:border-primary transition-all duration-300 hover:scale-105"
-          onClick={openUpgradeDialog}
+          onClick={() => navigate('/subscription')}
         >
           <ArrowUp className="h-4 w-4" />
           <span>Upgrade Plan</span>
