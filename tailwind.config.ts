@@ -18,9 +18,6 @@ export default {
       }
     },
     extend: {
-      fontFamily: {
-        outfit: ['Outfit', 'sans-serif'],
-      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -103,6 +100,13 @@ export default {
         'wiggle': {
           '0%, 100%': { transform: 'rotate(-1deg)' },
           '50%': { transform: 'rotate(1deg)' }
+        },
+        'vibrate': {
+          '0%, 100%': { transform: 'translate(0)' },
+          '20%': { transform: 'translate(-2px, 2px)' },
+          '40%': { transform: 'translate(-2px, -2px)' },
+          '60%': { transform: 'translate(2px, 2px)' },
+          '80%': { transform: 'translate(2px, -2px)' }
         }
       },
       animation: {
@@ -110,7 +114,8 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'neon-glow': 'neon-pulse 2s ease-in-out infinite',
         'neon-glow-dark': 'neon-pulse-dark 2s ease-in-out infinite',
-        'wiggle': 'wiggle 0.3s ease-in-out infinite'
+        'wiggle': 'wiggle 0.3s ease-in-out infinite',
+        'vibrate': 'vibrate 0.3s ease-in-out infinite'
       }
     }
   },
