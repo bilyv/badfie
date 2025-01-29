@@ -19,11 +19,12 @@ import {
   Building2,
   Receipt,
   PieChart,
-  Lightbulb,
   ChevronDown,
   ChevronRight,
   X,
-  UserRound
+  UserRound,
+  GripVertical,
+  MinusCircle
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -42,6 +43,20 @@ import { Button } from "./ui/button";
 import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from "./ui/dropdown-menu";
+
+interface MenuItem {
+  title: string;
+  path: string;
+  icon: any;
+  group?: string;
+  items?: MenuItem[];
+}
 
 const defaultMenuItems = [
   {
@@ -101,7 +116,7 @@ const defaultMenuItems = [
       {
         title: "AI Adviser",
         path: "/ai-adviser",
-        icon: Lightbulb,
+        icon: Bot,
       },
     ],
   },
@@ -128,6 +143,7 @@ export function AppSidebar() {
   const [isEditing, setIsEditing] = useState(false);
   const [menuItems, setMenuItems] = useState(defaultMenuItems);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
+  const [editMode, setEditMode] = useState<'position' | 'disable' | null>(null);
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups(prev => 
@@ -135,6 +151,31 @@ export function AppSidebar() {
         ? prev.filter(g => g !== groupName)
         : [...prev, groupName]
     );
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('text/plain', index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const dragIndex = Number(e.dataTransfer.getData('text/plain'));
+    
+    if (dragIndex === dropIndex) return;
+
+    const newItems = [...menuItems];
+    const [draggedItem] = newItems.splice(dragIndex, 1);
+    newItems.splice(dropIndex, 0, draggedItem);
+    
+    setMenuItems(newItems);
+  };
+
+  const handleDisableItem = (index: number) => {
+    setMenuItems(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -151,14 +192,33 @@ export function AppSidebar() {
               <span className="text-xs text-muted-foreground">Workspace</span>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 transition-all duration-300 hover:scale-105"
-            onClick={() => setIsEditing(!isEditing)}
-          >
-            <Edit2 className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 transition-all duration-300 hover:scale-105"
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => {
+                setIsEditing(true);
+                setEditMode('position');
+              }}>
+                <GripVertical className="mr-2 h-4 w-4" />
+                Position
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                setIsEditing(true);
+                setEditMode('disable');
+              }}>
+                <MinusCircle className="mr-2 h-4 w-4" />
+                Disable
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </SidebarHeader>
 
@@ -175,34 +235,68 @@ export function AppSidebar() {
                   >
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
-                        className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group"
+                        className={`w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group ${editMode === 'position' || editMode === 'disable' ? 'animate-vibrate' : ''}`}
+                        draggable={editMode === 'position'}
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, index)}
                       >
                         <div className="flex items-center gap-3">
                           <item.icon className="h-4 w-4" />
                           <span>{item.group}</span>
                         </div>
-                        {expandedGroups.includes(item.group) ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4" />
-                        )}
+                        <div className="flex items-center">
+                          {editMode === 'disable' && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-4 w-4 mr-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDisableItem(index);
+                              }}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          )}
+                          {expandedGroups.includes(item.group) ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
+                        </div>
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
-                      {item.items.map((subItem) => (
+                      {item.items?.map((subItem, subIndex) => (
                         <SidebarMenuItem key={subItem.title}>
                           <SidebarMenuButton
                             asChild
                             isActive={location.pathname === subItem.path}
-                            className="pl-9 transition-all duration-300 hover:scale-105 group"
+                            className={`pl-9 transition-all duration-300 hover:scale-105 group ${editMode === 'position' || editMode === 'disable' ? 'animate-vibrate' : ''}`}
+                            draggable={editMode === 'position'}
+                            onDragStart={(e) => handleDragStart(e, index)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, index)}
                           >
                             <Link to={subItem.path} className="flex items-center justify-between w-full pr-2">
                               <div className="flex items-center gap-3">
                                 <subItem.icon className="h-4 w-4" />
                                 <span>{subItem.title}</span>
                               </div>
-                              {isEditing && (
-                                <X className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity animate-wiggle" />
+                              {editMode === 'disable' && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDisableItem(index);
+                                  }}
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
                               )}
                             </Link>
                           </SidebarMenuButton>
@@ -215,15 +309,30 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={location.pathname === item.path}
-                      className="transition-all duration-300 hover:scale-105 group"
+                      className={`transition-all duration-300 hover:scale-105 group ${editMode === 'position' || editMode === 'disable' ? 'animate-vibrate' : ''}`}
+                      draggable={editMode === 'position'}
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, index)}
                     >
                       <Link to={item.path} className="flex items-center justify-between w-full px-4">
                         <div className="flex items-center gap-3">
                           <item.icon className="h-4 w-4" />
                           <span>{item.title}</span>
                         </div>
-                        {isEditing && (
-                          <X className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity animate-wiggle" />
+                        {editMode === 'disable' && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleDisableItem(index);
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
                         )}
                       </Link>
                     </SidebarMenuButton>
