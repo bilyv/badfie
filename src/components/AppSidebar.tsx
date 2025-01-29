@@ -53,23 +53,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-type BaseMenuItem = {
-  icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>;
-}
-
-type RegularMenuItem = BaseMenuItem & {
-  title: string;
-  path: string;
-}
-
-type GroupMenuItem = BaseMenuItem & {
-  group: string;
-  items: RegularMenuItem[];
-}
-
-type MenuItem = RegularMenuItem | GroupMenuItem;
-
-const defaultMenuItems: MenuItem[] = [
+const defaultMenuItems = [
   {
     title: "Dashboard",
     path: "/",
@@ -152,7 +136,7 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(defaultMenuItems);
+  const [menuItems, setMenuItems] = useState(defaultMenuItems);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [isReordering, setIsReordering] = useState(false);
   const [isDisabling, setIsDisabling] = useState(false);
@@ -189,16 +173,14 @@ export function AppSidebar() {
     }
   };
 
-  const SortableMenuItem = ({ item }: { item: MenuItem }) => {
+  const SortableMenuItem = ({ item }: { item: any }) => {
     const {
       attributes,
       listeners,
       setNodeRef,
       transform,
       transition,
-    } = useSortable({
-      id: 'title' in item ? item.title : item.group
-    });
+    } = useSortable({id: 'title' in item ? item.title : item.group});
     
     const style = {
       transform: CSS.Transform.toString(transform),
@@ -258,7 +240,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              {item.items.map((subItem) => (
+              {item.items.map((subItem: any) => (
                 <SidebarMenuItem key={subItem.title}>
                   <SidebarMenuButton
                     asChild
@@ -282,7 +264,7 @@ export function AppSidebar() {
                                 if ('group' in menuItem && menuItem.group === item.group) {
                                   return {
                                     ...menuItem,
-                                    items: menuItem.items.filter(i => i.title !== subItem.title)
+                                    items: menuItem.items.filter((i: any) => i.title !== subItem.title)
                                   };
                                 }
                                 return menuItem;
