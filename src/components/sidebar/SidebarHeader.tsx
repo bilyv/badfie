@@ -1,5 +1,5 @@
 
-import { Edit2, GripHorizontal, MinusCircle, UserRound, X } from "lucide-react";
+import { Edit2, GripHorizontal, MinusCircle, Sparkles } from "lucide-react";
 import { Button } from "../ui/button";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
@@ -19,13 +19,11 @@ export const SidebarHeader = ({
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <div className="relative">
-          <UserRound className="h-8 w-8 text-primary" />
-          <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 animate-neon-glow dark:animate-neon-glow-dark border-2 border-white dark:border-gray-900" />
-        </div>
+        <Sparkles className="h-6 w-6 text-primary animate-pulse" />
         <div className="flex flex-col items-start">
-          <span className="text-sm font-medium">Brian</span>
-          <span className="text-xs text-muted-foreground">Workspace</span>
+          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-primary bg-300% animate-gradient">
+            Toolimark
+          </span>
         </div>
       </div>
       <div className="flex gap-2">
@@ -48,7 +46,7 @@ export const SidebarHeader = ({
             setEditMode(null);
           }}
         >
-          {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
+          <Edit2 className="h-4 w-4" />
         </Button>
       </div>
     </div>
