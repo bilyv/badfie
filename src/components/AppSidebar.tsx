@@ -1,5 +1,5 @@
 
-import { ArrowUp } from "lucide-react";
+import { UserRound } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -23,7 +23,6 @@ export function AppSidebar() {
   const [menuItems, setMenuItems] = useState(defaultMenuItems);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [itemToDisable, setItemToDisable] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups(prev => 
@@ -92,15 +91,16 @@ export function AppSidebar() {
         </SidebarContent>
 
         <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60">
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="w-full gap-2 bg-background/50 backdrop-blur-sm border-dashed hover:border-primary transition-all duration-300 hover:scale-105"
-            onClick={() => navigate('/subscription')}
-          >
-            <ArrowUp className="h-4 w-4" />
-            <span>Upgrade Plan</span>
-          </Button>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <UserRound className="h-8 w-8 text-primary" />
+              <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 animate-neon-glow dark:animate-neon-glow-dark border-2 border-white dark:border-gray-900" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">Brian Thompson</span>
+              <span className="text-xs text-muted-foreground">Personal Workspace</span>
+            </div>
+          </div>
         </SidebarFooter>
       </Sidebar>
 
