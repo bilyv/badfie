@@ -1,6 +1,8 @@
 
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { UserRound } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,7 +14,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
-import { UserRound } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -26,7 +27,6 @@ import { defaultMenuItems } from "./sidebar/defaultMenuItems";
 import { SidebarHeader as CustomSidebarHeader } from "./sidebar/SidebarHeader";
 import { SidebarMenuComponent } from "./sidebar/SidebarMenu";
 import { SidebarMenuItem } from "./sidebar/types";
-import { useLocation } from "react-router-dom";
 
 export function AppSidebar() {
   const location = useLocation();
@@ -118,8 +118,11 @@ export function AppSidebar() {
         </SidebarContent>
 
         <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60">
-          <div className="flex items-center gap-2">
-            <UserRound className="h-6 w-6 text-primary animate-pulse" />
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <UserRound className="h-8 w-8 text-primary" />
+              <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 animate-neon-glow dark:animate-neon-glow-dark border-2 border-white dark:border-gray-900" />
+            </div>
             <div className="flex flex-col items-start">
               <span className="text-sm font-medium">Brian</span>
               <span className="text-xs text-muted-foreground">Workspace</span>
