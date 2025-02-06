@@ -1,6 +1,4 @@
 
-import { ArrowUp } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useState } from "react";
 import {
@@ -14,7 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
-import { Button } from "./ui/button";
+import { UserRound } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -28,10 +26,10 @@ import { defaultMenuItems } from "./sidebar/defaultMenuItems";
 import { SidebarHeader as CustomSidebarHeader } from "./sidebar/SidebarHeader";
 import { SidebarMenuComponent } from "./sidebar/SidebarMenu";
 import { SidebarMenuItem } from "./sidebar/types";
+import { useLocation } from "react-router-dom";
 
 export function AppSidebar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [editMode, setEditMode] = useState<'position' | 'disable' | null>(null);
   const [menuItems, setMenuItems] = useState<SidebarMenuItem[]>(defaultMenuItems);
@@ -120,15 +118,13 @@ export function AppSidebar() {
         </SidebarContent>
 
         <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60">
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="w-full gap-2 bg-background/50 backdrop-blur-sm border-dashed hover:border-primary transition-all duration-300 hover:scale-105"
-            onClick={() => navigate('/subscription')}
-          >
-            <ArrowUp className="h-4 w-4" />
-            <span>Upgrade Plan</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <UserRound className="h-6 w-6 text-primary animate-pulse" />
+            <div className="flex flex-col items-start">
+              <span className="text-sm font-medium">Brian</span>
+              <span className="text-xs text-muted-foreground">Workspace</span>
+            </div>
+          </div>
         </SidebarFooter>
       </Sidebar>
 

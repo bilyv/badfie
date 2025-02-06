@@ -1,4 +1,5 @@
-import { Bell, Moon, Sun, User, Check, LogOut } from "lucide-react";
+
+import { ArrowUp, Bell, Moon, Sun, User, Check, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -75,6 +76,15 @@ export function Navbar() {
     <div className="sticky top-0 z-50 backdrop-blur-sm bg-white/75 dark:bg-gray-900/75 border-b border-gray-200 dark:border-gray-800 transition-all duration-300">
       <div className="flex h-16 items-center px-4 md:px-6">
         <SidebarTrigger className="mr-4" />
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="gap-2 bg-background/50 backdrop-blur-sm border-dashed hover:border-primary transition-all duration-300 hover:scale-105 animate-neon-glow dark:animate-neon-glow-dark"
+          onClick={() => navigate('/subscription')}
+        >
+          <ArrowUp className="h-4 w-4" />
+          <span>Upgrade Plan</span>
+        </Button>
         <div className="ml-auto flex items-center space-x-4">
           <Sheet>
             <SheetTrigger asChild>
