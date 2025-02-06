@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -101,10 +100,9 @@ export default {
             opacity: '1'
           }
         },
-        'gradient': {
-          '0%': { 'background-position': '0% 50%' },
-          '50%': { 'background-position': '100% 50%' },
-          '100%': { 'background-position': '0% 50%' }
+        'wiggle': {
+          '0%, 100%': { transform: 'rotate(-1deg)' },
+          '50%': { transform: 'rotate(1deg)' }
         }
       },
       animation: {
@@ -112,10 +110,7 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'neon-glow': 'neon-pulse 2s ease-in-out infinite',
         'neon-glow-dark': 'neon-pulse-dark 2s ease-in-out infinite',
-        'gradient': 'gradient 3s ease infinite'
-      },
-      backgroundSize: {
-        '300%': '300%'
+        'wiggle': 'wiggle 0.3s ease-in-out infinite'
       }
     }
   },
