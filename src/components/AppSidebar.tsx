@@ -1,8 +1,8 @@
 
+import { ArrowUp } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { UserRound } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
+import { Button } from "./ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -30,6 +31,7 @@ import { SidebarMenuItem } from "./sidebar/types";
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [editMode, setEditMode] = useState<'position' | 'disable' | null>(null);
   const [menuItems, setMenuItems] = useState<SidebarMenuItem[]>(defaultMenuItems);
@@ -118,16 +120,15 @@ export function AppSidebar() {
         </SidebarContent>
 
         <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <UserRound className="h-8 w-8 text-primary" />
-              <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 animate-neon-glow dark:animate-neon-glow-dark border-2 border-white dark:border-gray-900" />
-            </div>
-            <div className="flex flex-col items-start">
-              <span className="text-sm font-medium">Brian</span>
-              <span className="text-xs text-muted-foreground">Workspace</span>
-            </div>
-          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="w-full gap-2 bg-background/50 backdrop-blur-sm border-dashed hover:border-primary transition-all duration-300 hover:scale-105"
+            onClick={() => navigate('/subscription')}
+          >
+            <ArrowUp className="h-4 w-4" />
+            <span>Upgrade Plan</span>
+          </Button>
         </SidebarFooter>
       </Sidebar>
 
