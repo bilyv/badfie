@@ -28,6 +28,7 @@ export function SidebarMenuItemComponent({
         expandedGroups={expandedGroups}
         toggleGroup={toggleGroup}
         confirmDisable={confirmDisable}
+        provided={provided}
       />
     );
   }
