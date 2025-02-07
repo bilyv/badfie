@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -101,13 +100,9 @@ export default {
             opacity: '1'
           }
         },
-        'spin-slow': {
-          '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg)' }
-        },
         'wiggle': {
-          '0%, 100%': { transform: 'rotate(-1deg)' },
-          '50%': { transform: 'rotate(1deg)' }
+          '0%, 100%': { transform: 'rotate(-10deg)' },
+          '50%': { transform: 'rotate(10deg)' }
         }
       },
       animation: {
@@ -115,8 +110,7 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'neon-glow': 'neon-pulse 2s ease-in-out infinite',
         'neon-glow-dark': 'neon-pulse-dark 2s ease-in-out infinite',
-        'spin-slow': 'spin-slow 6s linear infinite',
-        'wiggle': 'wiggle 0.3s ease-in-out infinite'
+        'wiggle': 'wiggle 2s ease-in-out infinite'
       }
     }
   },
