@@ -1,16 +1,10 @@
+
 import { Card } from "@/components/ui/card";
-import { Package, ArrowDown, DollarSign, CreditCard, BarChart2, LineChart, PlusCircle, X, Server } from "lucide-react";
+import { Package, ArrowDown, DollarSign, CreditCard, Server } from "lucide-react";
 import { Bar, BarChart, Line, LineChart as RechartsLineChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip, Legend } from "recharts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import ServiceDashboardMetrics from "@/components/ServiceDashboardMetrics";
 
 const barData = [
@@ -70,14 +64,18 @@ const Index = () => {
   const [activeGraphs, setActiveGraphs] = useState<string[]>(['sales-stock', 'revenue-expenses']);
 
   const handleAddGraph = (graphId: string) => {
-    setActiveGraphs(prev => [...prev, graphId]);
+    if (!activeGraphs.includes(graphId)) {
+      setActiveGraphs(prev => [...prev, graphId]);
+    }
   };
 
   const handleRemoveGraph = (graphId: string) => {
     setActiveGraphs(prev => prev.filter(id => id !== graphId));
   };
 
-  const renderGraph = (graph: GraphType) => {
+  const renderGraph = (graph: GraphType | undefined) => {
+    if (!graph) return null;
+
     return (
       <Card key={graph.id} className="p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-lg">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
@@ -86,7 +84,7 @@ const Index = () => {
           onClick={() => handleRemoveGraph(graph.id)}
           className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-background z-10"
         >
-          <X className="h-4 w-4 text-foreground/60" />
+          <span className="h-4 w-4">×</span>
         </button>
         
         <h3 className="font-semibold mb-4 text-foreground/80 relative z-10">{graph.title}</h3>
@@ -189,9 +187,7 @@ const Index = () => {
       {mode === "product" ? (
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card 
-              className="p-6 relative overflow-hidden group transition-all duration-300"
-            >
+            <Card className="p-6 relative overflow-hidden group transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
               
               <div className="relative z-10">
@@ -209,9 +205,7 @@ const Index = () => {
                 </div>
               </div>
             </Card>
-            <Card 
-              className="p-6 relative overflow-hidden group transition-all duration-300"
-            >
+            <Card className="p-6 relative overflow-hidden group transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
               
               <div className="relative z-10">
@@ -229,9 +223,7 @@ const Index = () => {
                 </div>
               </div>
             </Card>
-            <Card 
-              className="p-6 relative overflow-hidden group transition-all duration-300"
-            >
+            <Card className="p-6 relative overflow-hidden group transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
               
               <div className="relative z-10">
@@ -249,9 +241,7 @@ const Index = () => {
                 </div>
               </div>
             </Card>
-            <Card 
-              className="p-6 relative overflow-hidden group transition-all duration-300"
-            >
+            <Card className="p-6 relative overflow-hidden group transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-gray-700/10 dark:from-blue-300/10 dark:to-purple-300/10 opacity-0 group-hover:opacity-100 animate-neon-glow dark:animate-neon-glow-dark blur-xl" />
               
               <div className="relative z-10">
@@ -273,46 +263,12 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {activeGraphs.map(graphId => {
               const graph = availableGraphs.find(g => g.id === graphId);
-              if (graph) return renderGraph(graph);
-              return null;
+              return renderGraph(graph);
             })}
           </div>
         </>
       ) : (
-        <>
-          <ServiceDashboardMetrics />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4">Service Bookings Trend</h3>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsLineChart data={lineData} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <RechartsTooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="revenue" name="Bookings" stroke="#22c55e" />
-                  </RechartsLineChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4">Service Categories Distribution</h3>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <RechartsTooltip />
-                    <Legend />
-                    <Bar dataKey="sales" name="Completed" fill="#22c55e" />
-                    <Bar dataKey="stock" name="Pending" fill="#ea384c" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
-          </div>
-        </>
+        <ServiceDashboardMetrics />
       )}
     </div>
   );
