@@ -79,9 +79,9 @@ export function Navbar() {
       <div className="flex h-16 items-center px-4 md:px-6">
         <SidebarTrigger className="mr-4" />
         <Button
-          variant="gradient"
+          variant="default"
           onClick={openUpgradeDialog}
-          className="mr-auto bg-gradient-to-r from-primary to-purple-600 text-white hover:opacity-90 transition-opacity"
+          className="mr-auto bg-gradient-to-r from-primary to-purple-600 hover:opacity-90 transition-opacity"
         >
           Upgrade Plan
         </Button>
