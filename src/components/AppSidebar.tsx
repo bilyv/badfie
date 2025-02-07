@@ -74,7 +74,7 @@ export function AppSidebar() {
                 <div 
                   {...provided.droppableProps} 
                   ref={provided.innerRef}
-                  className="transition-all duration-300 ease-in-out"
+                  className="transition-all duration-500 ease-in-out transform"
                 >
                   <SidebarGroup>
                     <SidebarGroupContent>
