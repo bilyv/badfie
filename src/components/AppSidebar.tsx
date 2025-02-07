@@ -71,7 +71,11 @@ export function AppSidebar() {
           <DragDropContext onDragEnd={handleOnDragEnd}>
             <Droppable droppableId="sidebar-menu">
               {(provided) => (
-                <div {...provided.droppableProps} ref={provided.innerRef}>
+                <div 
+                  {...provided.droppableProps} 
+                  ref={provided.innerRef}
+                  className="transition-all duration-300 ease-in-out"
+                >
                   <SidebarGroup>
                     <SidebarGroupContent>
                       <SidebarMenuList
