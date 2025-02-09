@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Package, ArrowDown, DollarSign, CreditCard, BarChart2, LineChart, PlusCircle, X, Server } from "lucide-react";
 import { Bar, BarChart, Line, LineChart as RechartsLineChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip, Legend } from "recharts";
@@ -78,20 +77,7 @@ const Index = () => {
     setActiveGraphs(prev => prev.filter(id => id !== graphId));
   };
 
-  const renderGraph = (graphId: string) => {
-    const graph = availableGraphs.find(g => g.id === graphId);
-    
-    if (!graph) {
-      console.error(`Graph with id ${graphId} not found`);
-      return null;
-    }
-
-    const commonAxisProps = {
-      stroke: "currentColor",
-      strokeOpacity: 0.7,
-      fontSize: 12
-    };
-
+  const renderGraph = (graph: GraphType) => {
     return (
       <Card key={graph.id} className="p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-lg">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
@@ -108,8 +94,8 @@ const Index = () => {
           <ResponsiveContainer width="100%" height="100%">
             {graph.type === 'bar' ? (
               <BarChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
-                <XAxis dataKey="month" {...commonAxisProps} />
-                <YAxis {...commonAxisProps} />
+                <XAxis dataKey="month" stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
+                <YAxis stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
                 <RechartsTooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--background))',
@@ -124,8 +110,8 @@ const Index = () => {
               </BarChart>
             ) : (
               <RechartsLineChart data={graph.data} className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20">
-                <XAxis dataKey="month" {...commonAxisProps} />
-                <YAxis {...commonAxisProps} />
+                <XAxis dataKey="month" stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
+                <YAxis stroke="currentColor" strokeOpacity={0.7} fontSize={12} />
                 <RechartsTooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--background))',
@@ -285,7 +271,11 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {activeGraphs.map(graphId => renderGraph(graphId))}
+            {activeGraphs.map(graphId => {
+              const graph = availableGraphs.find(g => g.id === graphId);
+              if (graph) return renderGraph(graph);
+              return null;
+            })}
           </div>
         </>
       ) : (
