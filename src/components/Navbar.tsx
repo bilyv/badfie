@@ -1,8 +1,10 @@
-import { Bell, Moon, Sun, User, Check, LogOut } from "lucide-react";
+
+import { Bell, Moon, Sun, User, Check, LogOut, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useNavigate } from "react-router-dom";
+import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +24,7 @@ import { toast } from "@/hooks/use-toast";
 export function Navbar() {
   const { setTheme, theme } = useTheme();
   const navigate = useNavigate();
+  const { openUpgradeDialog, UpgradeDialog } = useUpgradeDialog();
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -75,6 +78,16 @@ export function Navbar() {
     <div className="sticky top-0 z-50 backdrop-blur-sm bg-white/75 dark:bg-gray-900/75 border-b border-gray-200 dark:border-gray-800 transition-all duration-300">
       <div className="flex h-16 items-center px-4 md:px-6">
         <SidebarTrigger className="mr-4" />
+        
+        <Button
+          variant="outline"
+          className="hidden md:flex items-center gap-2 hover:bg-primary/10 transition-colors duration-300"
+          onClick={openUpgradeDialog}
+        >
+          <ArrowUpRight className="h-4 w-4" />
+          <span>Upgrade Plan</span>
+        </Button>
+
         <div className="ml-auto flex items-center space-x-4">
           <Sheet>
             <SheetTrigger asChild>
@@ -166,6 +179,7 @@ export function Navbar() {
           </DropdownMenu>
         </div>
       </div>
+      <UpgradeDialog />
     </div>
   );
 }
