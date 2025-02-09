@@ -81,7 +81,7 @@ export function Navbar() {
         
         <Button
           variant="outline"
-          className="hidden md:flex items-center gap-2 hover:bg-primary/10 transition-colors duration-300"
+          className="flex items-center gap-2 hover:bg-primary/10 transition-colors duration-300"
           onClick={openUpgradeDialog}
         >
           <ArrowUpRight className="h-4 w-4" />

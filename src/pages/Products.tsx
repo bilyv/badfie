@@ -2,32 +2,52 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Link2 } from "lucide-react";
+import { Package, PackagePlus, Link2, Badge, Clock } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ProductType } from "@/lib/types";
 
-const integrations = [
+const sampleProducts = [
   {
-    name: "Shopify",
-    description: "Connect your Shopify store to sync products and orders",
-    icon: "🛍️",
+    id: 1,
+    name: "Premium Enterprise Laptop",
+    sku: "LAP-PRO-2024",
+    inStock: 45,
+    category: "Electronics",
+    lastUpdated: "2024-02-15",
+    status: "In Stock",
+    reorderPoint: 20,
   },
   {
-    name: "WooCommerce",
-    description: "Integrate with WooCommerce to manage your inventory",
-    icon: "🛒",
+    id: 2,
+    name: "Ergonomic Office Chair",
+    sku: "CHR-ERG-001",
+    inStock: 12,
+    category: "Furniture",
+    lastUpdated: "2024-02-14",
+    status: "Low Stock",
+    reorderPoint: 15,
   },
   {
-    name: "Amazon",
-    description: "Connect to Amazon Marketplace for seamless selling",
-    icon: "📦",
+    id: 3,
+    name: "Wireless Noise-Canceling Headphones",
+    sku: "AUD-WNC-003",
+    inStock: 78,
+    category: "Audio",
+    lastUpdated: "2024-02-13",
+    status: "In Stock",
+    reorderPoint: 25,
   },
   {
-    name: "Etsy",
-    description: "Sync your Etsy shop with our inventory system",
-    icon: "🎨",
+    id: 4,
+    name: "4K Ultra HD Monitor",
+    sku: "MON-4K-002",
+    inStock: 8,
+    category: "Electronics",
+    lastUpdated: "2024-02-12",
+    status: "Critical Stock",
+    reorderPoint: 10,
   },
 ];
 
@@ -35,11 +55,23 @@ const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [connectDialogOpen, setConnectDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
-  const [products] = useState([]);
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
     setDialogOpen(true);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "In Stock":
+        return "text-green-600 bg-green-100 dark:bg-green-900/30";
+      case "Low Stock":
+        return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30";
+      case "Critical Stock":
+        return "text-red-600 bg-red-100 dark:bg-red-900/30";
+      default:
+        return "text-gray-600 bg-gray-100 dark:bg-gray-900/30";
+    }
   };
 
   return (
@@ -52,31 +84,47 @@ const Products = () => {
       </div>
       
       <Card className="p-6">
-        <Tabs defaultValue="inventory" className="space-y-4">
+        <Tabs defaultValue="live-stock" className="space-y-4">
           <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-            <TabsTrigger value="inventory">Inventory</TabsTrigger>
+            <TabsTrigger value="live-stock">Live Stock</TabsTrigger>
             <TabsTrigger value="add-products">Add Products</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="inventory" className="space-y-4">
+          <TabsContent value="live-stock" className="space-y-4">
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
-                    <TableHead className="w-[200px]">Product Name</TableHead>
-                    <TableHead className="hidden md:table-cell">Category</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead className="hidden md:table-cell">Quantity</TableHead>
+                    <TableHead className="w-[250px]">Item Name</TableHead>
+                    <TableHead>SKU</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead className="text-center">In Stock</TableHead>
+                    <TableHead className="text-center">Status</TableHead>
+                    <TableHead className="text-right">Last Updated</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {products.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                        No products found. Add some products to get started.
+                  {sampleProducts.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell className="font-mono text-sm">{product.sku}</TableCell>
+                      <TableCell>{product.category}</TableCell>
+                      <TableCell className="text-center">
+                        <span className="font-medium">{product.inStock}</span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
+                          {product.status}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2 text-muted-foreground">
+                          <Clock className="h-4 w-4" />
+                          <span>{product.lastUpdated}</span>
+                        </div>
                       </TableCell>
                     </TableRow>
-                  )}
+                  ))}
                 </TableBody>
               </Table>
             </div>
