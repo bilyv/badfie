@@ -3,11 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Link2, Badge, Clock, ShoppingBag, Store, Box, Palette } from "lucide-react";
+import { Package, PackagePlus, Calendar, AlertTriangle, Settings } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ProductType } from "@/lib/types";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const sampleProducts = [
   {
@@ -78,7 +80,9 @@ const integrations = [
 
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [connectDialogOpen, setConnectDialogOpen] = useState(false);
+  const [expiryDialogOpen, setExpiryDialogOpen] = useState(false);
+  const [damageDialogOpen, setDamageDialogOpen] = useState(false);
+  const [adjustmentDialogOpen, setAdjustmentDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
 
   const handleAddProduct = (type: ProductType) => {
@@ -110,13 +114,13 @@ const Products = () => {
       
       <Card className="p-6">
         <Tabs defaultValue="live-stock" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+          <TabsList className="grid w-full md:w-[400px] grid-cols-2">
             <TabsTrigger value="live-stock">Live Stock</TabsTrigger>
             <TabsTrigger value="add-products">Add Products</TabsTrigger>
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
-            <div className="rounded-md border">
+            <div className="overflow-x-auto rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
@@ -144,8 +148,7 @@ const Products = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                          <Clock className="h-4 w-4" />
-                          <span>{product.lastUpdated}</span>
+                          {product.lastUpdated}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -156,7 +159,7 @@ const Products = () => {
           </TabsContent>
 
           <TabsContent value="add-products" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
               <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="p-3 bg-primary/10 rounded-full">
@@ -170,7 +173,7 @@ const Products = () => {
                   </div>
                   <Button
                     onClick={() => handleAddProduct("individual")}
-                    className="w-full sm:w-auto"
+                    className="w-full"
                   >
                     <Package className="mr-2 h-4 w-4" />
                     Add Individual Product
@@ -191,7 +194,7 @@ const Products = () => {
                   </div>
                   <Button
                     onClick={() => handleAddProduct("combined")}
-                    className="w-full sm:w-auto"
+                    className="w-full"
                   >
                     <PackagePlus className="mr-2 h-4 w-4" />
                     Add Combined Product
@@ -202,20 +205,62 @@ const Products = () => {
               <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="p-3 bg-primary/10 rounded-full">
-                    <Link2 className="h-8 w-8 text-primary" />
+                    <Calendar className="h-8 w-8 text-primary" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">Connect Store</h3>
+                    <h3 className="font-semibold text-lg">Set Expiry</h3>
                     <p className="text-sm text-muted-foreground">
-                      Connect and sync with your e-commerce platforms
+                      Set expiration dates for your products
                     </p>
                   </div>
                   <Button
-                    onClick={() => setConnectDialogOpen(true)}
-                    className="w-full sm:w-auto"
+                    onClick={() => setExpiryDialogOpen(true)}
+                    className="w-full"
                   >
-                    <Link2 className="mr-2 h-4 w-4" />
-                    Connect Store
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Set Expiry Date
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <AlertTriangle className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-lg">Damage Products</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Report damaged or defective items
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setDamageDialogOpen(true)}
+                    className="w-full"
+                  >
+                    <AlertTriangle className="mr-2 h-4 w-4" />
+                    Report Damage
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <Settings className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-lg">Stock Adjustment</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Adjust stock levels and quantities
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setAdjustmentDialogOpen(true)}
+                    className="w-full"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Adjust Stock
                   </Button>
                 </div>
               </Card>
@@ -230,30 +275,78 @@ const Products = () => {
         productType={selectedProductType}
       />
 
-      <Dialog open={connectDialogOpen} onOpenChange={setConnectDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+      <Dialog open={expiryDialogOpen} onOpenChange={setExpiryDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Connect to E-commerce Platforms</DialogTitle>
+            <DialogTitle>Set Product Expiry</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-6 mt-4">
-            {integrations.map((integration) => (
-              <Card key={integration.name} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <div className="text-2xl mb-2">{integration.icon}</div>
-                    <h3 className="font-semibold">{integration.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {integration.description}
-                    </p>
-                  </div>
-                  <Button variant="outline" className="shrink-0">
-                    <Link2 className="h-4 w-4 mr-2" />
-                    Connect
-                  </Button>
-                </div>
-              </Card>
-            ))}
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="product">Product Name</Label>
+              <Input id="product" placeholder="Select product" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="expiry-date">Expiry Date</Label>
+              <Input type="date" id="expiry-date" />
+            </div>
           </div>
+          <DialogFooter>
+            <Button type="submit">Save changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={damageDialogOpen} onOpenChange={setDamageDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Report Damaged Product</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="damage-product">Product Name</Label>
+              <Input id="damage-product" placeholder="Select product" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="damage-quantity">Quantity Damaged</Label>
+              <Input type="number" id="damage-quantity" min="1" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="damage-reason">Reason</Label>
+              <Input id="damage-reason" placeholder="Enter damage reason" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit">Submit Report</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={adjustmentDialogOpen} onOpenChange={setAdjustmentDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Adjust Stock Level</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="adjustment-product">Product Name</Label>
+              <Input id="adjustment-product" placeholder="Select product" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="current-stock">Current Stock</Label>
+              <Input type="number" id="current-stock" disabled />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="new-stock">New Stock Level</Label>
+              <Input type="number" id="new-stock" min="0" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="adjustment-reason">Reason for Adjustment</Label>
+              <Input id="adjustment-reason" placeholder="Enter reason" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit">Save Adjustment</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
