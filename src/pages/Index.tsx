@@ -78,7 +78,14 @@ const Index = () => {
     setActiveGraphs(prev => prev.filter(id => id !== graphId));
   };
 
-  const renderGraph = (graph: GraphType) => {
+  const renderGraph = (graphId: string) => {
+    const graph = availableGraphs.find(g => g.id === graphId);
+    
+    if (!graph) {
+      console.error(`Graph with id ${graphId} not found`);
+      return null;
+    }
+
     const commonAxisProps = {
       stroke: "currentColor",
       strokeOpacity: 0.7,
@@ -278,11 +285,7 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {activeGraphs.map(graphId => {
-              const graph = availableGraphs.find(g => g.id === graphId);
-              if (graph) return renderGraph(graph);
-              return null;
-            })}
+            {activeGraphs.map(graphId => renderGraph(graphId))}
           </div>
         </>
       ) : (
