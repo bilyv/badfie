@@ -34,7 +34,6 @@ export function SidebarMenuGroup({
       ref={provided.innerRef}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
-      className={`${editMode === 'position' ? 'animate-wiggle' : ''}`}
     >
       <Collapsible
         open={expandedGroups.includes(item.group)}
@@ -42,7 +41,7 @@ export function SidebarMenuGroup({
       >
         <CollapsibleTrigger asChild>
           <SidebarMenuButton
-            className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group"
+            className={`w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 group ${editMode === 'position' ? 'animate-wiggle' : ''}`}
           >
             <div className="flex items-center gap-3">
               <item.icon className="h-4 w-4" />
@@ -60,7 +59,7 @@ export function SidebarMenuGroup({
             <BaseSidebarMenuItem key={subItem.id}>
               <SidebarMenuButton
                 asChild
-                className="pl-9 transition-all duration-300 hover:scale-105 group"
+                className={`pl-9 transition-all duration-300 hover:scale-105 group ${editMode === 'position' ? 'animate-wiggle' : ''}`}
               >
                 <Link to={subItem.path} className="flex items-center justify-between w-full pr-2">
                   <div className="flex items-center gap-3">

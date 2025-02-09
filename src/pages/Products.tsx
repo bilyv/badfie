@@ -1,104 +1,41 @@
-
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Link2, ShoppingBag, Store, Box, Palette } from "lucide-react";
+import { Package, PackagePlus, Link2 } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ProductType } from "@/lib/types";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
-
-const sampleProducts = [
-  {
-    id: 1,
-    name: "MacBook Pro M2",
-    sku: "MBP-M2-2023",
-    inStock: 45,
-    status: "In Stock",
-    lastUpdated: "2024-03-15",
-    reorderPoint: 20,
-    supplier: "Apple Inc.",
-  },
-  {
-    id: 2,
-    name: "Dell XPS 15",
-    sku: "XPS-15-2024",
-    inStock: 12,
-    status: "Low Stock",
-    lastUpdated: "2024-03-14",
-    reorderPoint: 15,
-    supplier: "Dell Technologies",
-  },
-  {
-    id: 3,
-    name: "ThinkPad X1 Carbon",
-    sku: "X1C-2024",
-    inStock: 0,
-    status: "Out of Stock",
-    lastUpdated: "2024-03-13",
-    reorderPoint: 10,
-    supplier: "Lenovo",
-  },
-  {
-    id: 4,
-    name: "HP Spectre x360",
-    sku: "SPX-360-2024",
-    inStock: 28,
-    status: "In Stock",
-    lastUpdated: "2024-03-12",
-    reorderPoint: 25,
-    supplier: "HP Inc.",
-  },
-];
 
 const integrations = [
   {
     name: "Shopify",
     description: "Connect your Shopify store to sync products and orders",
-    icon: <ShoppingBag className="h-8 w-8 text-primary" />,
+    icon: "🛍️",
   },
   {
     name: "WooCommerce",
     description: "Integrate with WooCommerce to manage your inventory",
-    icon: <Store className="h-8 w-8 text-primary" />,
+    icon: "🛒",
   },
   {
     name: "Amazon",
     description: "Connect to Amazon Marketplace for seamless selling",
-    icon: <Box className="h-8 w-8 text-primary" />,
+    icon: "📦",
   },
   {
     name: "Etsy",
     description: "Sync your Etsy shop with our inventory system",
-    icon: <Palette className="h-8 w-8 text-primary" />,
+    icon: "🎨",
   },
 ];
-
-const getStatusBadge = (status: string) => {
-  switch (status) {
-    case "In Stock":
-      return <Badge className="bg-green-500">{status}</Badge>;
-    case "Low Stock":
-      return <Badge className="bg-yellow-500">{status}</Badge>;
-    case "Out of Stock":
-      return <Badge className="bg-red-500">{status}</Badge>;
-    default:
-      return <Badge>{status}</Badge>;
-  }
-};
 
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [connectDialogOpen, setConnectDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
+  const [products] = useState([]);
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -115,55 +52,31 @@ const Products = () => {
       </div>
       
       <Card className="p-6">
-        <Tabs defaultValue="live-stock" className="space-y-4">
+        <Tabs defaultValue="inventory" className="space-y-4">
           <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-            <TabsTrigger value="live-stock">Live Stock</TabsTrigger>
+            <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="add-products">Add Products</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="live-stock" className="space-y-4">
+          <TabsContent value="inventory" className="space-y-4">
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
-                    <TableHead className="w-[250px]">Item Name</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>In Stock</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Last Updated</TableHead>
-                    <TableHead>Supplier</TableHead>
+                    <TableHead className="w-[200px]">Product Name</TableHead>
+                    <TableHead className="hidden md:table-cell">Category</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead className="hidden md:table-cell">Quantity</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sampleProducts.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell>{product.sku}</TableCell>
-                      <TableCell>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <span className={`font-medium ${
-                                product.inStock === 0 
-                                  ? "text-red-500" 
-                                  : product.inStock <= product.reorderPoint 
-                                  ? "text-yellow-500" 
-                                  : "text-green-500"
-                              }`}>
-                                {product.inStock}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Reorder Point: {product.reorderPoint}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  {products.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                        No products found. Add some products to get started.
                       </TableCell>
-                      <TableCell>{getStatusBadge(product.status)}</TableCell>
-                      <TableCell>{product.lastUpdated}</TableCell>
-                      <TableCell>{product.supplier}</TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </div>
