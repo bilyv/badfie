@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Settings, Plus, FolderPlus, Clock, SwitchCamera } from "lucide-react";
+import { Package, PackagePlus, Settings, Plus, FolderPlus, Clock, SwitchCamera, LayoutGrid, LayoutList } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -26,6 +26,9 @@ const sampleProducts = [
     lastUpdated: "2024-02-15",
     status: "In Stock",
     reorderPoint: 20,
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+    price: 1299.99,
+    description: "High-performance laptop for business professionals"
   },
   {
     id: 2,
@@ -36,6 +39,9 @@ const sampleProducts = [
     lastUpdated: "2024-02-14",
     status: "Low Stock",
     reorderPoint: 15,
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+    price: 299.99,
+    description: "Comfortable ergonomic chair for long work hours"
   },
   {
     id: 3,
@@ -46,6 +52,9 @@ const sampleProducts = [
     lastUpdated: "2024-02-13",
     status: "In Stock",
     reorderPoint: 25,
+    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+    price: 199.99,
+    description: "Premium wireless headphones with noise cancellation"
   },
   {
     id: 4,
@@ -56,10 +65,14 @@ const sampleProducts = [
     lastUpdated: "2024-02-12",
     status: "Critical Stock",
     reorderPoint: 10,
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+    price: 499.99,
+    description: "Professional 4K monitor for content creators"
   },
 ];
 
 type StockViewType = 'real-time' | 'movement' | 'damaged' | 'expiry';
+type LayoutType = 'list' | 'grid';
 
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -68,6 +81,7 @@ const Products = () => {
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
   const [stockView, setStockView] = useState<StockViewType>('real-time');
+  const [layout, setLayout] = useState<LayoutType>('list');
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -87,45 +101,95 @@ const Products = () => {
     }
   };
 
+  const renderListView = () => (
+    <Table>
+      <TableHeader>
+        <TableRow className="bg-muted/50">
+          <TableHead>Image</TableHead>
+          <TableHead className="w-[250px]">Item Name</TableHead>
+          <TableHead>SKU</TableHead>
+          <TableHead>Category</TableHead>
+          <TableHead className="text-center">In Stock</TableHead>
+          <TableHead className="text-center">Status</TableHead>
+          <TableHead className="text-right">Last Updated</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sampleProducts.map((product) => (
+          <TableRow key={product.id}>
+            <TableCell>
+              <div className="w-12 h-12 rounded-lg overflow-hidden">
+                <img 
+                  src={product.image} 
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </TableCell>
+            <TableCell className="font-medium">{product.name}</TableCell>
+            <TableCell className="font-mono text-sm">{product.sku}</TableCell>
+            <TableCell>{product.category}</TableCell>
+            <TableCell className="text-center">
+              <span className="font-medium">{product.inStock}</span>
+            </TableCell>
+            <TableCell className="text-center">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
+                {product.status}
+              </span>
+            </TableCell>
+            <TableCell className="text-right">
+              <div className="flex items-center justify-end gap-2 text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>{product.lastUpdated}</span>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+
+  const renderGridView = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {sampleProducts.map((product) => (
+        <div 
+          key={product.id}
+          className="group relative overflow-hidden rounded-lg border bg-background transition-all hover:shadow-lg"
+        >
+          <div className="aspect-square overflow-hidden">
+            <img 
+              src={product.image} 
+              alt={product.name}
+              className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            />
+            <div className="absolute top-2 right-2 bg-background/90 px-2 py-1 rounded-md">
+              <span className="font-semibold">${product.price}</span>
+            </div>
+          </div>
+          <div className="p-4">
+            <h3 className="font-semibold truncate">{product.name}</h3>
+            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+              {product.description}
+            </p>
+            <div className="mt-2 flex items-center justify-between">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
+                {product.status}
+              </span>
+              <span className="text-sm font-medium">Stock: {product.inStock}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   const renderStockTable = () => {
     switch (stockView) {
       case 'real-time':
         return (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="w-[250px]">Item Name</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-center">In Stock</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-right">Last Updated</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sampleProducts.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell className="font-mono text-sm">{product.sku}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell className="text-center">
-                    <span className="font-medium">{product.inStock}</span>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
-                      {product.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>{product.lastUpdated}</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="animate-fade-in">
+            {layout === 'list' ? renderListView() : renderGridView()}
+          </div>
         );
       case 'movement':
         return (
@@ -216,7 +280,19 @@ const Products = () => {
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-end gap-2 mb-4">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setLayout(layout === 'list' ? 'grid' : 'list')}
+                className="transition-colors"
+              >
+                {layout === 'list' ? (
+                  <LayoutGrid className="h-4 w-4" />
+                ) : (
+                  <LayoutList className="h-4 w-4" />
+                )}
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="gap-2">
@@ -240,7 +316,7 @@ const Products = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="rounded-md border animate-fade-in">
+            <div className="rounded-md border">
               {renderStockTable()}
             </div>
           </TabsContent>
