@@ -2,19 +2,16 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Settings, Plus, FolderPlus, Clock, SwitchCamera, LayoutGrid, LayoutList } from "lucide-react";
+import { Package, PackagePlus, Settings, Plus, FolderPlus } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ProductType } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ProductListView } from "@/components/products/ProductListView";
+import { ProductGridView } from "@/components/products/ProductGridView";
+import { StockViewSwitch } from "@/components/products/StockViewSwitch";
 
 const sampleProducts = [
   {
@@ -101,94 +98,16 @@ const Products = () => {
     }
   };
 
-  const renderListView = () => (
-    <Table>
-      <TableHeader>
-        <TableRow className="bg-muted/50">
-          <TableHead>Image</TableHead>
-          <TableHead className="w-[250px]">Item Name</TableHead>
-          <TableHead>SKU</TableHead>
-          <TableHead>Category</TableHead>
-          <TableHead className="text-center">In Stock</TableHead>
-          <TableHead className="text-center">Status</TableHead>
-          <TableHead className="text-right">Last Updated</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sampleProducts.map((product) => (
-          <TableRow key={product.id}>
-            <TableCell>
-              <div className="w-12 h-12 rounded-lg overflow-hidden">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </TableCell>
-            <TableCell className="font-medium">{product.name}</TableCell>
-            <TableCell className="font-mono text-sm">{product.sku}</TableCell>
-            <TableCell>{product.category}</TableCell>
-            <TableCell className="text-center">
-              <span className="font-medium">{product.inStock}</span>
-            </TableCell>
-            <TableCell className="text-center">
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
-                {product.status}
-              </span>
-            </TableCell>
-            <TableCell className="text-right">
-              <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                <span>{product.lastUpdated}</span>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-
-  const renderGridView = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {sampleProducts.map((product) => (
-        <div 
-          key={product.id}
-          className="group relative overflow-hidden rounded-lg border bg-background transition-all hover:shadow-lg"
-        >
-          <div className="aspect-square overflow-hidden">
-            <img 
-              src={product.image} 
-              alt={product.name}
-              className="h-full w-full object-cover transition-transform group-hover:scale-105"
-            />
-            <div className="absolute top-2 right-2 bg-background/90 px-2 py-1 rounded-md">
-              <span className="font-semibold">${product.price}</span>
-            </div>
-          </div>
-          <div className="p-4">
-            <h3 className="font-semibold truncate">{product.name}</h3>
-            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-              {product.description}
-            </p>
-            <div className="mt-2 flex items-center justify-between">
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
-                {product.status}
-              </span>
-              <span className="text-sm font-medium">Stock: {product.inStock}</span>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
   const renderStockTable = () => {
     switch (stockView) {
       case 'real-time':
         return (
           <div className="animate-fade-in">
-            {layout === 'list' ? renderListView() : renderGridView()}
+            {layout === 'list' ? (
+              <ProductListView products={sampleProducts} getStatusColor={getStatusColor} />
+            ) : (
+              <ProductGridView products={sampleProducts} getStatusColor={getStatusColor} />
+            )}
           </div>
         );
       case 'movement':
@@ -280,42 +199,11 @@ const Products = () => {
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
-            <div className="flex justify-end gap-2 mb-4">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setLayout(layout === 'list' ? 'grid' : 'list')}
-                className="transition-colors"
-              >
-                {layout === 'list' ? (
-                  <LayoutGrid className="h-4 w-4" />
-                ) : (
-                  <LayoutList className="h-4 w-4" />
-                )}
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <SwitchCamera className="h-4 w-4" />
-                    Switch View
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setStockView('real-time')}>
-                    Real-time Stock
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStockView('movement')}>
-                    Stock Movement
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStockView('damaged')}>
-                    Damaged
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStockView('expiry')}>
-                    Expiry Dates
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <StockViewSwitch
+              layout={layout}
+              onLayoutChange={setLayout}
+              onViewChange={setStockView}
+            />
             <div className="rounded-md border">
               {renderStockTable()}
             </div>
