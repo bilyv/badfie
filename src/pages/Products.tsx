@@ -1,15 +1,20 @@
-
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Settings, Plus, FolderPlus, Clock } from "lucide-react";
+import { Package, PackagePlus, Settings, Plus, FolderPlus, Clock, SwitchCamera } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ProductType } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const sampleProducts = [
   {
@@ -54,12 +59,15 @@ const sampleProducts = [
   },
 ];
 
+type StockViewType = 'real-time' | 'movement' | 'damaged' | 'expiry';
+
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [adjustmentDialogOpen, setAdjustmentDialogOpen] = useState(false);
   const [requestDialogOpen, setRequestDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
+  const [stockView, setStockView] = useState<StockViewType>('real-time');
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -76,6 +84,118 @@ const Products = () => {
         return "text-red-600 bg-red-100 dark:bg-red-900/30";
       default:
         return "text-gray-600 bg-gray-100 dark:bg-gray-900/30";
+    }
+  };
+
+  const renderStockTable = () => {
+    switch (stockView) {
+      case 'real-time':
+        return (
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead className="w-[250px]">Item Name</TableHead>
+                <TableHead>SKU</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead className="text-center">In Stock</TableHead>
+                <TableHead className="text-center">Status</TableHead>
+                <TableHead className="text-right">Last Updated</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sampleProducts.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="font-mono text-sm">{product.sku}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell className="text-center">
+                    <span className="font-medium">{product.inStock}</span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
+                      {product.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2 text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>{product.lastUpdated}</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        );
+      case 'movement':
+        return (
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead>Item Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead className="text-center">Quantity</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Reference</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Premium Enterprise Laptop</TableCell>
+                <TableCell>Outbound</TableCell>
+                <TableCell className="text-center">-5</TableCell>
+                <TableCell>2024-02-15</TableCell>
+                <TableCell>ORD-001</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        );
+      case 'damaged':
+        return (
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead>Item Name</TableHead>
+                <TableHead>Damage Type</TableHead>
+                <TableHead className="text-center">Quantity</TableHead>
+                <TableHead>Report Date</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>4K Ultra HD Monitor</TableCell>
+                <TableCell>Screen Damage</TableCell>
+                <TableCell className="text-center">2</TableCell>
+                <TableCell>2024-02-12</TableCell>
+                <TableCell>Pending Review</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        );
+      case 'expiry':
+        return (
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead>Item Name</TableHead>
+                <TableHead>Batch Number</TableHead>
+                <TableHead>Expiry Date</TableHead>
+                <TableHead className="text-center">Quantity</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Wireless Headphones</TableCell>
+                <TableCell>BTH-2024-001</TableCell>
+                <TableCell>2025-02-15</TableCell>
+                <TableCell className="text-center">25</TableCell>
+                <TableCell>Valid</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        );
     }
   };
 
@@ -96,42 +216,32 @@ const Products = () => {
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead className="w-[250px]">Item Name</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead className="text-center">In Stock</TableHead>
-                    <TableHead className="text-center">Status</TableHead>
-                    <TableHead className="text-right">Last Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sampleProducts.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell className="font-mono text-sm">{product.sku}</TableCell>
-                      <TableCell>{product.category}</TableCell>
-                      <TableCell className="text-center">
-                        <span className="font-medium">{product.inStock}</span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
-                          {product.status}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                          <Clock className="h-4 w-4" />
-                          <span>{product.lastUpdated}</span>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="flex justify-end mb-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <SwitchCamera className="h-4 w-4" />
+                    Switch View
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setStockView('real-time')}>
+                    Real-time Stock
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStockView('movement')}>
+                    Stock Movement
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStockView('damaged')}>
+                    Damaged
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStockView('expiry')}>
+                    Expiry Dates
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div className="rounded-md border animate-fade-in">
+              {renderStockTable()}
             </div>
           </TabsContent>
 
