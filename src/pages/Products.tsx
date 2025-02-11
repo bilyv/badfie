@@ -51,7 +51,7 @@ const sampleProducts = [
   },
 ];
 
-// Define the integrations array
+// Define the integrations array with proper typing
 const integrations = [
   {
     name: "Shopify",
@@ -73,7 +73,7 @@ const integrations = [
     description: "Sync your Etsy shop with our inventory system",
     icon: Paintbrush,
   },
-];
+] as const;
 
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -235,23 +235,28 @@ const Products = () => {
             <DialogTitle>Connect to E-commerce Platforms</DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 mt-4">
-            {integrations.map((integration) => (
-              <Card key={integration.name} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <div className="text-2xl mb-2">{integration.icon}</div>
-                    <h3 className="font-semibold">{integration.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {integration.description}
-                    </p>
+            {integrations.map((integration) => {
+              const IconComponent = integration.icon;
+              return (
+                <Card key={integration.name} className="p-6 hover:shadow-lg transition-shadow">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <div className="text-2xl mb-2">
+                        <IconComponent className="h-6 w-6" />
+                      </div>
+                      <h3 className="font-semibold">{integration.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {integration.description}
+                      </p>
+                    </div>
+                    <Button variant="outline" className="shrink-0">
+                      <Link2 className="h-4 w-4 mr-2" />
+                      Connect
+                    </Button>
                   </div>
-                  <Button variant="outline" className="shrink-0">
-                    <Link2 className="h-4 w-4 mr-2" />
-                    Connect
-                  </Button>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         </DialogContent>
       </Dialog>
