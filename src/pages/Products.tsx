@@ -1,9 +1,8 @@
-
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Link2, Badge, Clock, ShoppingBag, Store, Box, Palette } from "lucide-react";
+import { Package, PackagePlus, Link2, Badge, Clock, ShoppingCart, Store as StoreIcon, Package2, Paintbrush } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -57,22 +56,22 @@ const integrations = [
   {
     name: "Shopify",
     description: "Connect your Shopify store to sync products and orders",
-    icon: ShoppingBag,
+    icon: ShoppingCart,
   },
   {
     name: "WooCommerce",
     description: "Integrate with WooCommerce to manage your inventory",
-    icon: Store,
+    icon: StoreIcon,
   },
   {
     name: "Amazon",
     description: "Connect to Amazon Marketplace for seamless selling",
-    icon: Box,
+    icon: Package2,
   },
   {
     name: "Etsy",
     description: "Sync your Etsy shop with our inventory system",
-    icon: Palette,
+    icon: Paintbrush,
   },
 ];
 
