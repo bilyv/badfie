@@ -1,12 +1,15 @@
+
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Link2, Badge, Clock, ShoppingCart, Store as StoreIcon, Package2, Paintbrush } from "lucide-react";
+import { Package, PackagePlus, Settings, Plus, FolderPlus } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ProductType } from "@/lib/types";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const sampleProducts = [
   {
@@ -51,33 +54,11 @@ const sampleProducts = [
   },
 ];
 
-// Define the integrations array with proper typing
-const integrations = [
-  {
-    name: "Shopify",
-    description: "Connect your Shopify store to sync products and orders",
-    icon: ShoppingCart,
-  },
-  {
-    name: "WooCommerce",
-    description: "Integrate with WooCommerce to manage your inventory",
-    icon: StoreIcon,
-  },
-  {
-    name: "Amazon",
-    description: "Connect to Amazon Marketplace for seamless selling",
-    icon: Package2,
-  },
-  {
-    name: "Etsy",
-    description: "Sync your Etsy shop with our inventory system",
-    icon: Paintbrush,
-  },
-] as const;
-
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [connectDialogOpen, setConnectDialogOpen] = useState(false);
+  const [adjustmentDialogOpen, setAdjustmentDialogOpen] = useState(false);
+  const [requestDialogOpen, setRequestDialogOpen] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
 
   const handleAddProduct = (type: ProductType) => {
@@ -155,7 +136,7 @@ const Products = () => {
           </TabsContent>
 
           <TabsContent value="add-products" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="p-3 bg-primary/10 rounded-full">
@@ -169,7 +150,7 @@ const Products = () => {
                   </div>
                   <Button
                     onClick={() => handleAddProduct("individual")}
-                    className="w-full sm:w-auto"
+                    className="w-full"
                   >
                     <Package className="mr-2 h-4 w-4" />
                     Add Individual Product
@@ -190,7 +171,7 @@ const Products = () => {
                   </div>
                   <Button
                     onClick={() => handleAddProduct("combined")}
-                    className="w-full sm:w-auto"
+                    className="w-full"
                   >
                     <PackagePlus className="mr-2 h-4 w-4" />
                     Add Combined Product
@@ -201,20 +182,62 @@ const Products = () => {
               <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="p-3 bg-primary/10 rounded-full">
-                    <Link2 className="h-8 w-8 text-primary" />
+                    <Settings className="h-8 w-8 text-primary" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">Connect Store</h3>
+                    <h3 className="font-semibold text-lg">Stock Adjustment</h3>
                     <p className="text-sm text-muted-foreground">
-                      Connect and sync with your e-commerce platforms
+                      Adjust stock levels when mistakenly configured
                     </p>
                   </div>
                   <Button
-                    onClick={() => setConnectDialogOpen(true)}
-                    className="w-full sm:w-auto"
+                    onClick={() => setAdjustmentDialogOpen(true)}
+                    className="w-full"
                   >
-                    <Link2 className="mr-2 h-4 w-4" />
-                    Connect Store
+                    <Settings className="mr-2 h-4 w-4" />
+                    Adjust Stock
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <Plus className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-lg">Request Stock</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Request additional stock for existing products
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setRequestDialogOpen(true)}
+                    className="w-full"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Request Stock
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <FolderPlus className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-lg">Create Category</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Create new categories for products
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setCategoryDialogOpen(true)}
+                    className="w-full"
+                  >
+                    <FolderPlus className="mr-2 h-4 w-4" />
+                    Add Category
                   </Button>
                 </div>
               </Card>
@@ -229,35 +252,82 @@ const Products = () => {
         productType={selectedProductType}
       />
 
-      <Dialog open={connectDialogOpen} onOpenChange={setConnectDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+      <Dialog open={adjustmentDialogOpen} onOpenChange={setAdjustmentDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Connect to E-commerce Platforms</DialogTitle>
+            <DialogTitle>Adjust Stock Level</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-6 mt-4">
-            {integrations.map((integration) => {
-              const IconComponent = integration.icon;
-              return (
-                <Card key={integration.name} className="p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <div className="text-2xl mb-2">
-                        <IconComponent className="h-6 w-6" />
-                      </div>
-                      <h3 className="font-semibold">{integration.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {integration.description}
-                      </p>
-                    </div>
-                    <Button variant="outline" className="shrink-0">
-                      <Link2 className="h-4 w-4 mr-2" />
-                      Connect
-                    </Button>
-                  </div>
-                </Card>
-              );
-            })}
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="adjustment-product">Product Name</Label>
+              <Input id="adjustment-product" placeholder="Select product" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="current-stock">Current Stock</Label>
+              <Input type="number" id="current-stock" disabled />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="new-stock">New Stock Level</Label>
+              <Input type="number" id="new-stock" min="0" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="adjustment-reason">Reason for Adjustment</Label>
+              <Input id="adjustment-reason" placeholder="Enter reason" />
+            </div>
           </div>
+          <DialogFooter>
+            <Button type="submit">Save Adjustment</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={requestDialogOpen} onOpenChange={setRequestDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Request Additional Stock</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="request-product">Product Name</Label>
+              <Input id="request-product" placeholder="Select product" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="request-quantity">Quantity Needed</Label>
+              <Input type="number" id="request-quantity" min="1" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="request-priority">Priority Level</Label>
+              <Input id="request-priority" placeholder="High/Medium/Low" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="request-notes">Additional Notes</Label>
+              <Input id="request-notes" placeholder="Enter any additional details" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit">Submit Request</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Create New Category</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="category-name">Category Name</Label>
+              <Input id="category-name" placeholder="Enter category name" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="category-description">Description</Label>
+              <Input id="category-description" placeholder="Enter category description" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit">Create Category</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
