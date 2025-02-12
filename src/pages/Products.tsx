@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { ProductListView } from "@/components/products/ProductListView";
 import { ProductGridView } from "@/components/products/ProductGridView";
 import { StockViewSwitch } from "@/components/products/StockViewSwitch";
+import { ProductTemplates } from "@/components/products/ProductTemplates";
 
 const sampleProducts = [
   {
@@ -248,12 +249,18 @@ const Products = () => {
       
       <Card className="p-4 md:p-6">
         <Tabs defaultValue="live-stock" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px] mb-4">
+          <TabsList className="grid w-full grid-cols-3 lg:w-[400px] mb-4">
             <TabsTrigger 
               value="live-stock"
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
               Live Stock
+            </TabsTrigger>
+            <TabsTrigger 
+              value="templates"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Templates
             </TabsTrigger>
             <TabsTrigger 
               value="add-products"
@@ -274,6 +281,10 @@ const Products = () => {
             <div className="rounded-md border overflow-x-auto">
               {renderStockTable()}
             </div>
+          </TabsContent>
+
+          <TabsContent value="templates" className="space-y-4">
+            <ProductTemplates availableProducts={sampleProducts} />
           </TabsContent>
 
           <TabsContent value="add-products" className="space-y-6">
