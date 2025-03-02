@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { ProductListView } from "@/components/products/ProductListView";
 import { ProductGridView } from "@/components/products/ProductGridView";
 import { StockViewSwitch } from "@/components/products/StockViewSwitch";
-import { Search } from "lucide-react";
 
 const sampleProducts = [
   {
@@ -80,8 +79,6 @@ const Products = () => {
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
   const [stockView, setStockView] = useState<StockViewType>('real-time');
   const [layout, setLayout] = useState<LayoutType>('list');
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -101,23 +98,15 @@ const Products = () => {
     }
   };
 
-  const filteredProducts = sampleProducts.filter(product => 
-    searchQuery ? (
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category?.toLowerCase().includes(searchQuery.toLowerCase())
-    ) : true
-  );
-
   const renderStockTable = () => {
     switch (stockView) {
       case 'real-time':
         return (
           <div className="animate-fade-in">
             {layout === 'list' ? (
-              <ProductListView products={filteredProducts} getStatusColor={getStatusColor} />
+              <ProductListView products={sampleProducts} getStatusColor={getStatusColor} />
             ) : (
-              <ProductGridView products={filteredProducts} getStatusColor={getStatusColor} />
+              <ProductGridView products={sampleProducts} getStatusColor={getStatusColor} />
             )}
           </div>
         );
@@ -200,51 +189,13 @@ const Products = () => {
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Products</h1>
           <p className="text-sm text-muted-foreground">Manage your product inventory</p>
         </div>
-        <div className="flex items-center gap-2">
-          {isSearching ? (
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                className="pl-10 w-full md:w-[300px]"
-                placeholder="Search inventory..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') {
-                    setIsSearching(false);
-                    setSearchQuery('');
-                  }
-                }}
-                autoFocus
-              />
-            </div>
-          ) : (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setIsSearching(true)}
-            >
-              <Search className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
       </div>
       
-      <Card className="p-4 md:p-6">
+      <Card className="p-6">
         <Tabs defaultValue="live-stock" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px] mb-4">
-            <TabsTrigger 
-              value="live-stock"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Live Stock
-            </TabsTrigger>
-            <TabsTrigger 
-              value="add-products"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Add Products
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+            <TabsTrigger value="live-stock">Live Stock</TabsTrigger>
+            <TabsTrigger value="add-products">Add Products</TabsTrigger>
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
@@ -253,13 +204,13 @@ const Products = () => {
               onLayoutChange={setLayout}
               onViewChange={setStockView}
             />
-            <div className="rounded-md border overflow-x-auto">
+            <div className="rounded-md border">
               {renderStockTable()}
             </div>
           </TabsContent>
 
           <TabsContent value="add-products" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="p-3 bg-primary/10 rounded-full">
