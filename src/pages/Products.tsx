@@ -2,16 +2,17 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Settings, Plus, FolderPlus, Search } from "lucide-react";
+import { Package, PackagePlus, Settings, Plus, FolderPlus } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { ProductType } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ProductListView } from "@/components/products/ProductListView";
 import { ProductGridView } from "@/components/products/ProductGridView";
 import { StockViewSwitch } from "@/components/products/StockViewSwitch";
+import { Search } from "lucide-react";
 
 const sampleProducts = [
   {
@@ -81,23 +82,6 @@ const Products = () => {
   const [layout, setLayout] = useState<LayoutType>('list');
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsSearching(false);
-        if (!searchQuery) {
-          setSearchQuery("");
-        }
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [searchQuery]);
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -216,7 +200,7 @@ const Products = () => {
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Products</h1>
           <p className="text-sm text-muted-foreground">Manage your product inventory</p>
         </div>
-        <div ref={searchRef} className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           {isSearching ? (
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -264,13 +248,11 @@ const Products = () => {
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <StockViewSwitch
-                layout={layout}
-                onLayoutChange={setLayout}
-                onViewChange={setStockView}
-              />
-            </div>
+            <StockViewSwitch
+              layout={layout}
+              onLayoutChange={setLayout}
+              onViewChange={setStockView}
+            />
             <div className="rounded-md border overflow-x-auto">
               {renderStockTable()}
             </div>
