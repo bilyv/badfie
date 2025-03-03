@@ -73,8 +73,8 @@ export default {
         sm: 'calc(var(--radius) - 4px)'
       },
       backgroundImage: {
-        'grid-pattern': "linear-gradient(to right, hsl(var(--primary)/15) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--primary)/15) 1px, transparent 1px)",
-        'grid-pattern-diagonal': "repeating-linear-gradient(45deg, hsl(var(--primary)/15) 0px, hsl(var(--primary)/15) 1px, transparent 1px, transparent 50px)",
+        'grid-pattern': "linear-gradient(to right, hsl(var(--primary)/25) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--primary)/25) 1px, transparent 1px)",
+        'grid-pattern-diagonal': "repeating-linear-gradient(45deg, hsl(var(--primary)/25) 0px, hsl(var(--primary)/25) 1px, transparent 1px, transparent 50px)",
       },
       keyframes: {
         'accordion-down': {
