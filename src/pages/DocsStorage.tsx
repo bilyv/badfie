@@ -21,7 +21,7 @@ import {
   FileText,
   FileImage,
   FileSpreadsheet,
-  FilePdf
+  FileCode
 } from "lucide-react";
 import {
   Dialog,
@@ -44,7 +44,7 @@ const getFileIcon = (filename: string) => {
   
   switch(extension) {
     case 'pdf':
-      return <FilePdf className="h-10 w-10 text-red-500" />;
+      return <FileText className="h-10 w-10 text-red-500" />;
     case 'jpg':
     case 'jpeg':
     case 'png':
