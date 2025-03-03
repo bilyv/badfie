@@ -10,6 +10,7 @@ import { Calendar, Clock, DollarSign, Hotel, PartyPopper, Scissors, Search, User
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import ServiceDashboardMetrics from "@/components/ServiceDashboardMetrics";
 
 const Services = () => {
   const [serviceType, setServiceType] = useState("all");
@@ -77,7 +78,7 @@ const Services = () => {
                 <Plus className="h-4 w-4 mr-1" /> Add Service
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Service</DialogTitle>
                 <DialogDescription>
@@ -115,7 +116,7 @@ const Services = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="duration">Duration</Label>
                     <Input 
@@ -136,11 +137,11 @@ const Services = () => {
                   </div>
                 </div>
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              <DialogFooter className="flex-col sm:flex-row gap-2">
+                <Button variant="outline" onClick={() => setDialogOpen(false)} className="w-full sm:w-auto">
                   <X className="h-4 w-4 mr-1" /> Cancel
                 </Button>
-                <Button type="submit" onClick={handleAddService} disabled={isLoading}>
+                <Button type="submit" onClick={handleAddService} disabled={isLoading} className="w-full sm:w-auto">
                   {isLoading ? (
                     <Skeleton className="h-4 w-4 rounded-full mr-2 animate-pulse" />
                   ) : (
@@ -154,40 +155,7 @@ const Services = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 transition-all duration-300 hover:shadow-md">
-          <div className="flex items-center gap-2">
-            <Hotel className="h-5 w-5 text-blue-600" />
-            <h3 className="font-semibold">Rooms</h3>
-          </div>
-          <p className="text-2xl font-bold mt-2">24</p>
-          <p className="text-sm text-muted-foreground">Active listings</p>
-        </Card>
-        <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 transition-all duration-300 hover:shadow-md">
-          <div className="flex items-center gap-2">
-            <PartyPopper className="h-5 w-5 text-purple-600" />
-            <h3 className="font-semibold">Events</h3>
-          </div>
-          <p className="text-2xl font-bold mt-2">12</p>
-          <p className="text-sm text-muted-foreground">Upcoming events</p>
-        </Card>
-        <Card className="p-4 bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 transition-all duration-300 hover:shadow-md">
-          <div className="flex items-center gap-2">
-            <Scissors className="h-5 w-5 text-pink-600" />
-            <h3 className="font-semibold">Saloon</h3>
-          </div>
-          <p className="text-2xl font-bold mt-2">8</p>
-          <p className="text-sm text-muted-foreground">Active services</p>
-        </Card>
-        <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 transition-all duration-300 hover:shadow-md">
-          <div className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-green-600" />
-            <h3 className="font-semibold">Total Bookings</h3>
-          </div>
-          <p className="text-2xl font-bold mt-2">156</p>
-          <p className="text-sm text-muted-foreground">This month</p>
-        </Card>
-      </div>
+      <ServiceDashboardMetrics />
 
       <Card className="p-4">
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
