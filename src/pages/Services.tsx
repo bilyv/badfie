@@ -10,7 +10,6 @@ import { Calendar, Clock, DollarSign, Hotel, PartyPopper, Scissors, Search, User
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import ServiceDashboardMetrics from "@/components/ServiceDashboardMetrics";
 
 const Services = () => {
   const [serviceType, setServiceType] = useState("all");
@@ -154,8 +153,6 @@ const Services = () => {
           </Dialog>
         </div>
       </div>
-
-      <ServiceDashboardMetrics />
 
       <Card className="p-4">
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
