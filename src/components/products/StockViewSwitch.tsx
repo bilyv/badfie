@@ -1,33 +1,18 @@
-
 import { Button } from "@/components/ui/button";
 import { LayoutGrid, LayoutList, SwitchCamera } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
 interface StockViewSwitchProps {
   layout: 'list' | 'grid';
   onLayoutChange: (layout: 'list' | 'grid') => void;
   onViewChange: (view: 'real-time' | 'movement' | 'damaged' | 'expiry') => void;
 }
-
 export const StockViewSwitch = ({
   layout,
   onLayoutChange,
   onViewChange
 }: StockViewSwitchProps) => {
-  return (
-    <div className="flex justify-end gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => onLayoutChange(layout === 'list' ? 'grid' : 'list')}
-        className="transition-colors"
-      >
-        {layout === 'list' ? (
-          <LayoutGrid className="h-4 w-4" />
-        ) : (
-          <LayoutList className="h-4 w-4" />
-        )}
-      </Button>
+  return <div className="flex justify-end gap-2">
+      
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -51,6 +36,5 @@ export const StockViewSwitch = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
-  );
+    </div>;
 };
