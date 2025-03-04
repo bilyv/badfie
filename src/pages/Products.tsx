@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { ProductListView } from "@/components/products/ProductListView";
 import { ProductGridView } from "@/components/products/ProductGridView";
 import { StockViewSwitch } from "@/components/products/StockViewSwitch";
+import { ProductTemplates } from "@/components/products/ProductTemplates";
 
 const sampleProducts = [
   {
@@ -100,7 +100,6 @@ const Products = () => {
     }
   };
 
-  // Filter products based on search query
   const filteredProducts = sampleProducts.filter(product => 
     searchQuery === '' || 
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -203,9 +202,10 @@ const Products = () => {
       
       <Card className="p-6">
         <Tabs defaultValue="live-stock" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+          <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
             <TabsTrigger value="live-stock">Live Stock</TabsTrigger>
             <TabsTrigger value="add-products">Add Products</TabsTrigger>
+            <TabsTrigger value="templates">Templates</TabsTrigger>
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
@@ -337,6 +337,10 @@ const Products = () => {
                 </div>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="templates" className="space-y-4">
+            <ProductTemplates products={sampleProducts} />
           </TabsContent>
         </Tabs>
       </Card>
