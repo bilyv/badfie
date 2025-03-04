@@ -1,8 +1,9 @@
+
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Settings, Plus, FolderPlus } from "lucide-react";
+import { Package, PackagePlus, Settings, Plus, FolderPlus, Search } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -79,6 +80,7 @@ const Products = () => {
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
   const [stockView, setStockView] = useState<StockViewType>('real-time');
   const [layout, setLayout] = useState<LayoutType>('list');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -98,15 +100,23 @@ const Products = () => {
     }
   };
 
+  // Filter products based on search query
+  const filteredProducts = sampleProducts.filter(product => 
+    searchQuery === '' || 
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const renderStockTable = () => {
     switch (stockView) {
       case 'real-time':
         return (
           <div className="animate-fade-in">
             {layout === 'list' ? (
-              <ProductListView products={sampleProducts} getStatusColor={getStatusColor} />
+              <ProductListView products={filteredProducts} getStatusColor={getStatusColor} />
             ) : (
-              <ProductGridView products={sampleProducts} getStatusColor={getStatusColor} />
+              <ProductGridView products={filteredProducts} getStatusColor={getStatusColor} />
             )}
           </div>
         );
@@ -116,19 +126,19 @@ const Products = () => {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead>Item Name</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead className="hidden sm:table-cell">Type</TableHead>
                 <TableHead className="text-center">Quantity</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Reference</TableHead>
+                <TableHead className="hidden md:table-cell">Date</TableHead>
+                <TableHead className="hidden lg:table-cell">Reference</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow>
                 <TableCell>Premium Enterprise Laptop</TableCell>
-                <TableCell>Outbound</TableCell>
+                <TableCell className="hidden sm:table-cell">Outbound</TableCell>
                 <TableCell className="text-center">-5</TableCell>
-                <TableCell>2024-02-15</TableCell>
-                <TableCell>ORD-001</TableCell>
+                <TableCell className="hidden md:table-cell">2024-02-15</TableCell>
+                <TableCell className="hidden lg:table-cell">ORD-001</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -139,19 +149,19 @@ const Products = () => {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead>Item Name</TableHead>
-                <TableHead>Damage Type</TableHead>
+                <TableHead className="hidden sm:table-cell">Damage Type</TableHead>
                 <TableHead className="text-center">Quantity</TableHead>
-                <TableHead>Report Date</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="hidden md:table-cell">Report Date</TableHead>
+                <TableHead className="hidden lg:table-cell">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow>
                 <TableCell>4K Ultra HD Monitor</TableCell>
-                <TableCell>Screen Damage</TableCell>
+                <TableCell className="hidden sm:table-cell">Screen Damage</TableCell>
                 <TableCell className="text-center">2</TableCell>
-                <TableCell>2024-02-12</TableCell>
-                <TableCell>Pending Review</TableCell>
+                <TableCell className="hidden md:table-cell">2024-02-12</TableCell>
+                <TableCell className="hidden lg:table-cell">Pending Review</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -162,19 +172,19 @@ const Products = () => {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead>Item Name</TableHead>
-                <TableHead>Batch Number</TableHead>
-                <TableHead>Expiry Date</TableHead>
+                <TableHead className="hidden sm:table-cell">Batch Number</TableHead>
+                <TableHead className="hidden md:table-cell">Expiry Date</TableHead>
                 <TableHead className="text-center">Quantity</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="hidden lg:table-cell">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow>
                 <TableCell>Wireless Headphones</TableCell>
-                <TableCell>BTH-2024-001</TableCell>
-                <TableCell>2025-02-15</TableCell>
+                <TableCell className="hidden sm:table-cell">BTH-2024-001</TableCell>
+                <TableCell className="hidden md:table-cell">2025-02-15</TableCell>
                 <TableCell className="text-center">25</TableCell>
-                <TableCell>Valid</TableCell>
+                <TableCell className="hidden lg:table-cell">Valid</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -199,11 +209,22 @@ const Products = () => {
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
-            <StockViewSwitch
-              layout={layout}
-              onLayoutChange={setLayout}
-              onViewChange={setStockView}
-            />
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+              <div className="relative w-full sm:w-auto">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 w-full sm:w-[300px]"
+                />
+              </div>
+              <StockViewSwitch
+                layout={layout}
+                onLayoutChange={setLayout}
+                onViewChange={setStockView}
+              />
+            </div>
             <div className="rounded-md border">
               {renderStockTable()}
             </div>
