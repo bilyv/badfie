@@ -69,6 +69,78 @@ const sampleProducts = [
   },
 ];
 
+const stockMovementData = [
+  { 
+    id: 1, 
+    name: "Premium Enterprise Laptop", 
+    type: "Outbound", 
+    quantity: -5, 
+    date: "2024-02-15", 
+    reference: "ORD-001",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+  },
+  { 
+    id: 2, 
+    name: "Ergonomic Office Chair", 
+    type: "Inbound", 
+    quantity: 10, 
+    date: "2024-02-14", 
+    reference: "PO-002",
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
+  },
+  { 
+    id: 3, 
+    name: "Wireless Noise-Canceling Headphones", 
+    type: "Transfer", 
+    quantity: -2, 
+    date: "2024-02-13", 
+    reference: "TRF-003",
+    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+  }
+];
+
+const damagedStockData = [
+  { 
+    id: 1, 
+    name: "4K Ultra HD Monitor", 
+    damageType: "Screen Damage", 
+    quantity: 2, 
+    reportDate: "2024-02-12", 
+    status: "Pending Review",
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475"
+  },
+  { 
+    id: 2, 
+    name: "Premium Enterprise Laptop", 
+    damageType: "Hardware Failure", 
+    quantity: 1, 
+    reportDate: "2024-02-11", 
+    status: "Approved",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+  }
+];
+
+const expiryStockData = [
+  { 
+    id: 1, 
+    name: "Wireless Headphones", 
+    batchNumber: "BTH-2024-001", 
+    expiryDate: "2025-02-15", 
+    quantity: 25, 
+    status: "Valid",
+    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+  },
+  { 
+    id: 2, 
+    name: "Premium Enterprise Laptop", 
+    batchNumber: "LAP-2023-005", 
+    expiryDate: "2024-04-20", 
+    quantity: 3, 
+    status: "Near Expiry",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+  }
+];
+
 type StockViewType = 'real-time' | 'movement' | 'damaged' | 'expiry';
 type LayoutType = 'list' | 'grid';
 
@@ -124,6 +196,7 @@ const Products = () => {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
+                <TableHead>Image</TableHead>
                 <TableHead>Item Name</TableHead>
                 <TableHead className="hidden sm:table-cell">Type</TableHead>
                 <TableHead className="text-center">Quantity</TableHead>
@@ -132,13 +205,28 @@ const Products = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>Premium Enterprise Laptop</TableCell>
-                <TableCell className="hidden sm:table-cell">Outbound</TableCell>
-                <TableCell className="text-center">-5</TableCell>
-                <TableCell className="hidden md:table-cell">2024-02-15</TableCell>
-                <TableCell className="hidden lg:table-cell">ORD-001</TableCell>
-              </TableRow>
+              {stockMovementData.map(item => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <div className="w-12 h-12 rounded-lg overflow-hidden">
+                      <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{item.type}</TableCell>
+                  <TableCell className="text-center font-medium">
+                    <span className={item.quantity < 0 ? "text-red-500" : "text-green-500"}>
+                      {item.quantity > 0 ? `+${item.quantity}` : item.quantity}
+                    </span>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">{item.date}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{item.reference}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         );
@@ -147,6 +235,7 @@ const Products = () => {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
+                <TableHead>Image</TableHead>
                 <TableHead>Item Name</TableHead>
                 <TableHead className="hidden sm:table-cell">Damage Type</TableHead>
                 <TableHead className="text-center">Quantity</TableHead>
@@ -155,13 +244,32 @@ const Products = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>4K Ultra HD Monitor</TableCell>
-                <TableCell className="hidden sm:table-cell">Screen Damage</TableCell>
-                <TableCell className="text-center">2</TableCell>
-                <TableCell className="hidden md:table-cell">2024-02-12</TableCell>
-                <TableCell className="hidden lg:table-cell">Pending Review</TableCell>
-              </TableRow>
+              {damagedStockData.map(item => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <div className="w-12 h-12 rounded-lg overflow-hidden">
+                      <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{item.damageType}</TableCell>
+                  <TableCell className="text-center font-medium">{item.quantity}</TableCell>
+                  <TableCell className="hidden md:table-cell">{item.reportDate}</TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      item.status === "Approved" 
+                        ? "text-green-600 bg-green-100" 
+                        : "text-yellow-600 bg-yellow-100"
+                    }`}>
+                      {item.status}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         );
@@ -170,6 +278,7 @@ const Products = () => {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
+                <TableHead>Image</TableHead>
                 <TableHead>Item Name</TableHead>
                 <TableHead className="hidden sm:table-cell">Batch Number</TableHead>
                 <TableHead className="hidden md:table-cell">Expiry Date</TableHead>
@@ -178,13 +287,32 @@ const Products = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>Wireless Headphones</TableCell>
-                <TableCell className="hidden sm:table-cell">BTH-2024-001</TableCell>
-                <TableCell className="hidden md:table-cell">2025-02-15</TableCell>
-                <TableCell className="text-center">25</TableCell>
-                <TableCell className="hidden lg:table-cell">Valid</TableCell>
-              </TableRow>
+              {expiryStockData.map(item => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <div className="w-12 h-12 rounded-lg overflow-hidden">
+                      <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell className="hidden sm:table-cell font-mono text-sm">{item.batchNumber}</TableCell>
+                  <TableCell className="hidden md:table-cell">{item.expiryDate}</TableCell>
+                  <TableCell className="text-center font-medium">{item.quantity}</TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      item.status === "Valid" 
+                        ? "text-green-600 bg-green-100" 
+                        : "text-yellow-600 bg-yellow-100"
+                    }`}>
+                      {item.status}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         );
