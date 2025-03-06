@@ -6,12 +6,8 @@ import GraphContainer from "@/components/dashboard/GraphContainer";
 import ServiceGraphContainer from "@/components/dashboard/ServiceGraphContainer";
 import { availableGraphs, lineData } from "@/components/dashboard/data";
 
-interface IndexProps {
-  mode: "product" | "service";
-  setMode: (mode: "product" | "service") => void;
-}
-
-const Index = ({ mode, setMode }: IndexProps) => {
+const Index = () => {
+  const [mode, setMode] = useState<"product" | "service">("product");
   const [activeGraphs, setActiveGraphs] = useState<string[]>(['sales-stock', 'revenue-expenses']);
   const [greeting, setGreeting] = useState<string>("Hello");
   const [currentGraph, setCurrentGraph] = useState<number>(0);
