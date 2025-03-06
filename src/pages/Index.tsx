@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import ServiceDashboardMetrics from "@/components/ServiceDashboardMetrics";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import ProductMetricCards from "@/components/dashboard/ProductMetricCards";
 import GraphContainer from "@/components/dashboard/GraphContainer";
@@ -71,6 +72,7 @@ const Index = () => {
         </>
       ) : (
         <>
+          <ServiceDashboardMetrics />
           <ServiceGraphContainer data={lineData} />
         </>
       )}

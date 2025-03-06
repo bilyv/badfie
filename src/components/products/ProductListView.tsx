@@ -1,10 +1,6 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Clock, Info, Edit } from "lucide-react";
-import { useState } from "react";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Clock } from "lucide-react";
 
 interface Product {
   id: number;
@@ -15,9 +11,6 @@ interface Product {
   lastUpdated: string;
   status: string;
   image: string;
-  price?: number;
-  description?: string;
-  reorderPoint?: number;
 }
 
 interface ProductListViewProps {
@@ -26,144 +19,51 @@ interface ProductListViewProps {
 }
 
 export const ProductListView = ({ products, getStatusColor }: ProductListViewProps) => {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
   return (
-    <TooltipProvider>
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-muted/50">
-            {/* Always visible on all screen sizes */}
-            <TableHead>Image</TableHead>
-            
-            {/* Always visible on all screen sizes */}
-            <TableHead className="w-[250px]">Item Name</TableHead>
-            
-            {/* Hidden on small screens, visible on sm breakpoint and up */}
-            <TableHead className="hidden sm:table-cell">SKU</TableHead>
-            
-            {/* Hidden on small screens, visible on md breakpoint and up */}
-            <TableHead className="hidden md:table-cell">Category</TableHead>
-            
-            {/* Always visible (per user request) */}
-            <TableHead className="text-center">In Stock</TableHead>
-            
-            {/* Hidden on small screens, visible on lg breakpoint and up */}
-            <TableHead className="hidden lg:table-cell text-center">Status</TableHead>
-            
-            {/* Hidden on small screens, visible on xl breakpoint and up */}
-            <TableHead className="hidden xl:table-cell text-right">Last Updated</TableHead>
+    <Table>
+      <TableHeader>
+        <TableRow className="bg-muted/50">
+          <TableHead>Image</TableHead>
+          <TableHead className="w-[250px]">Item Name</TableHead>
+          <TableHead className="hidden md:table-cell">SKU</TableHead>
+          <TableHead className="hidden md:table-cell">Category</TableHead>
+          <TableHead className="text-center">In Stock</TableHead>
+          <TableHead className="hidden md:table-cell text-center">Status</TableHead>
+          <TableHead className="hidden md:table-cell text-right">Last Updated</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {products.map((product) => (
+          <TableRow key={product.id}>
+            <TableCell>
+              <div className="w-12 h-12 rounded-lg overflow-hidden">
+                <img 
+                  src={product.image} 
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </TableCell>
+            <TableCell className="font-medium">{product.name}</TableCell>
+            <TableCell className="hidden md:table-cell font-mono text-sm">{product.sku}</TableCell>
+            <TableCell className="hidden md:table-cell">{product.category}</TableCell>
+            <TableCell className="text-center">
+              <span className="font-medium">{product.inStock}</span>
+            </TableCell>
+            <TableCell className="hidden md:table-cell text-center">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
+                {product.status}
+              </span>
+            </TableCell>
+            <TableCell className="hidden md:table-cell text-right">
+              <div className="flex items-center justify-end gap-2 text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>{product.lastUpdated}</span>
+              </div>
+            </TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {products.map((product) => (
-            <TableRow key={product.id}>
-              {/* Always visible */}
-              <TableCell>
-                <div className="w-12 h-12 rounded-lg overflow-hidden">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </TableCell>
-              
-              {/* Always visible */}
-              <TableCell>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="font-medium text-left hover:text-primary hover:underline transition-colors">
-                      {product.name}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-semibold text-lg">{product.name}</h3>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Edit Product</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div>
-                          <span className="font-medium text-muted-foreground">SKU:</span>
-                          <p>{product.sku}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-muted-foreground">Category:</span>
-                          <p>{product.category}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-muted-foreground">In Stock:</span>
-                          <p>{product.inStock}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-muted-foreground">Status:</span>
-                          <p className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
-                            {product.status}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-muted-foreground">Price:</span>
-                          <p>${product.price?.toFixed(2) || "N/A"}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-muted-foreground">Reorder Point:</span>
-                          <p>{product.reorderPoint || "N/A"}</p>
-                        </div>
-                      </div>
-                      {product.description && (
-                        <div className="text-sm">
-                          <span className="font-medium text-muted-foreground">Description:</span>
-                          <p className="mt-1">{product.description}</p>
-                        </div>
-                      )}
-                      <div className="text-xs text-muted-foreground flex items-center gap-1 mt-2">
-                        <Clock className="h-3 w-3" />
-                        <span>Last updated: {product.lastUpdated}</span>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </TableCell>
-              
-              {/* Hidden on small screens, visible on sm breakpoint and up */}
-              <TableCell className="hidden sm:table-cell font-mono text-sm">{product.sku}</TableCell>
-              
-              {/* Hidden on small screens, visible on md breakpoint and up */}
-              <TableCell className="hidden md:table-cell">{product.category}</TableCell>
-              
-              {/* Always visible (per user request) */}
-              <TableCell className="text-center">
-                <span className="font-medium">{product.inStock}</span>
-              </TableCell>
-              
-              {/* Hidden on small screens, visible on lg breakpoint and up */}
-              <TableCell className="hidden lg:table-cell text-center">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
-                  {product.status}
-                </span>
-              </TableCell>
-              
-              {/* Hidden on small screens, visible on xl breakpoint and up */}
-              <TableCell className="hidden xl:table-cell text-right">
-                <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>{product.lastUpdated}</span>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TooltipProvider>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
