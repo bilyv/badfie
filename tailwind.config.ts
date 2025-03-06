@@ -72,10 +72,6 @@ export default {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)'
       },
-      backgroundImage: {
-        'grid-pattern': "linear-gradient(to right, hsl(var(--primary)/25) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--primary)/25) 1px, transparent 1px)",
-        'grid-pattern-diagonal': "repeating-linear-gradient(45deg, hsl(var(--primary)/25) 0px, hsl(var(--primary)/25) 1px, transparent 1px, transparent 50px)",
-      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
@@ -112,14 +108,6 @@ export default {
         'wiggle': {
           '0%, 100%': { transform: 'rotate(-1deg)' },
           '50%': { transform: 'rotate(1deg)' }
-        },
-        'grid-slide': {
-          '0%': { transform: 'translateX(0) translateY(0)' },
-          '100%': { transform: 'translateX(50px) translateY(50px)' }
-        },
-        'grid-slide-reverse': {
-          '0%': { transform: 'translateX(0) translateY(0) rotate(0deg)' },
-          '100%': { transform: 'translateX(-50px) translateY(-50px) rotate(10deg)' }
         }
       },
       animation: {
@@ -128,9 +116,7 @@ export default {
         'neon-glow': 'neon-pulse 2s ease-in-out infinite',
         'neon-glow-dark': 'neon-pulse-dark 2s ease-in-out infinite',
         'spin-slow': 'spin-slow 6s linear infinite',
-        'wiggle': 'wiggle 0.3s ease-in-out infinite',
-        'grid-slide': 'grid-slide 20s linear infinite',
-        'grid-slide-reverse': 'grid-slide-reverse 20s linear infinite'
+        'wiggle': 'wiggle 0.3s ease-in-out infinite'
       }
     }
   },
