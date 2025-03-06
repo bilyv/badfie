@@ -1,5 +1,5 @@
+
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Package, PackagePlus, Settings, Plus, FolderPlus, Search } from "lucide-react";
@@ -13,6 +13,7 @@ import { ProductListView } from "@/components/products/ProductListView";
 import { ProductGridView } from "@/components/products/ProductGridView";
 import { StockViewSwitch } from "@/components/products/StockViewSwitch";
 import { ProductTemplates } from "@/components/products/ProductTemplates";
+import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
 
 const sampleProducts = [
   {
@@ -153,6 +154,7 @@ const Products = () => {
   const [stockView, setStockView] = useState<StockViewType>('real-time');
   const [layout, setLayout] = useState<LayoutType>('list');
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState("live-stock");
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -319,24 +321,17 @@ const Products = () => {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Products</h1>
-          <p className="text-sm text-muted-foreground">Manage your product inventory</p>
-        </div>
-      </div>
-      
-      <Card className="p-6">
-        <Tabs defaultValue="live-stock" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
-            <TabsTrigger value="live-stock">Live Stock</TabsTrigger>
-            <TabsTrigger value="add-products">Add Products</TabsTrigger>
-            <TabsTrigger value="templates">Templates</TabsTrigger>
-          </TabsList>
+  const navItems = [
+    { name: "Live Stock", value: "live-stock", icon: Package },
+    { name: "Add Products", value: "add-products", icon: PackagePlus },
+    { name: "Templates", value: "templates", icon: FolderPlus }
+  ];
 
-          <TabsContent value="live-stock" className="space-y-4">
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "live-stock":
+        return (
+          <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <div className="relative w-full sm:w-auto">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -356,9 +351,11 @@ const Products = () => {
             <div className="rounded-md border">
               {renderStockTable()}
             </div>
-          </TabsContent>
-
-          <TabsContent value="add-products" className="space-y-6">
+          </div>
+        );
+      case "add-products":
+        return (
+          <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
                 <div className="flex flex-col items-center text-center space-y-4">
@@ -465,12 +462,36 @@ const Products = () => {
                 </div>
               </Card>
             </div>
-          </TabsContent>
+          </div>
+        );
+      case "templates":
+        return <ProductTemplates products={sampleProducts} />;
+      default:
+        return null;
+    }
+  };
 
-          <TabsContent value="templates" className="space-y-4">
-            <ProductTemplates products={sampleProducts} />
-          </TabsContent>
-        </Tabs>
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Products</h1>
+          <p className="text-sm text-muted-foreground">Manage your product inventory</p>
+        </div>
+      </div>
+      
+      <Card className="p-6">
+        <div className="space-y-6">
+          <TubelightNavbar 
+            items={navItems} 
+            value={activeTab} 
+            onValueChange={setActiveTab} 
+          />
+          
+          <div className="mt-6">
+            {renderTabContent()}
+          </div>
+        </div>
       </Card>
 
       <ProductFormDialog
