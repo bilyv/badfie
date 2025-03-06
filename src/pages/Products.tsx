@@ -2,19 +2,16 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Settings, Plus, FolderPlus, Clock, SwitchCamera } from "lucide-react";
+import { Package, PackagePlus, Settings, Plus, FolderPlus, Search } from "lucide-react";
 import { ProductFormDialog } from "@/components/products/ProductFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ProductType } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ProductListView } from "@/components/products/ProductListView";
+import { ProductGridView } from "@/components/products/ProductGridView";
+import { StockViewSwitch } from "@/components/products/StockViewSwitch";
 
 const sampleProducts = [
   {
@@ -26,6 +23,9 @@ const sampleProducts = [
     lastUpdated: "2024-02-15",
     status: "In Stock",
     reorderPoint: 20,
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+    price: 1299.99,
+    description: "High-performance laptop for business professionals"
   },
   {
     id: 2,
@@ -36,6 +36,9 @@ const sampleProducts = [
     lastUpdated: "2024-02-14",
     status: "Low Stock",
     reorderPoint: 15,
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+    price: 299.99,
+    description: "Comfortable ergonomic chair for long work hours"
   },
   {
     id: 3,
@@ -46,6 +49,9 @@ const sampleProducts = [
     lastUpdated: "2024-02-13",
     status: "In Stock",
     reorderPoint: 25,
+    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+    price: 199.99,
+    description: "Premium wireless headphones with noise cancellation"
   },
   {
     id: 4,
@@ -56,10 +62,14 @@ const sampleProducts = [
     lastUpdated: "2024-02-12",
     status: "Critical Stock",
     reorderPoint: 10,
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+    price: 499.99,
+    description: "Professional 4K monitor for content creators"
   },
 ];
 
 type StockViewType = 'real-time' | 'movement' | 'damaged' | 'expiry';
+type LayoutType = 'list' | 'grid';
 
 const Products = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -68,6 +78,26 @@ const Products = () => {
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
   const [stockView, setStockView] = useState<StockViewType>('real-time');
+  const [layout, setLayout] = useState<LayoutType>('list');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearching(false);
+        if (!searchQuery) {
+          setSearchQuery("");
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [searchQuery]);
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -87,45 +117,25 @@ const Products = () => {
     }
   };
 
+  const filteredProducts = sampleProducts.filter(product => 
+    searchQuery ? (
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) : true
+  );
+
   const renderStockTable = () => {
     switch (stockView) {
       case 'real-time':
         return (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="w-[250px]">Item Name</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-center">In Stock</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-right">Last Updated</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sampleProducts.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell className="font-mono text-sm">{product.sku}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell className="text-center">
-                    <span className="font-medium">{product.inStock}</span>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
-                      {product.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>{product.lastUpdated}</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="animate-fade-in">
+            {layout === 'list' ? (
+              <ProductListView products={filteredProducts} getStatusColor={getStatusColor} />
+            ) : (
+              <ProductGridView products={filteredProducts} getStatusColor={getStatusColor} />
+            )}
+          </div>
         );
       case 'movement':
         return (
@@ -206,47 +216,68 @@ const Products = () => {
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Products</h1>
           <p className="text-sm text-muted-foreground">Manage your product inventory</p>
         </div>
+        <div ref={searchRef} className="flex items-center gap-2">
+          {isSearching ? (
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                className="pl-10 w-full md:w-[300px]"
+                placeholder="Search inventory..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setIsSearching(false);
+                    setSearchQuery('');
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setIsSearching(true)}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
       
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <Tabs defaultValue="live-stock" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-            <TabsTrigger value="live-stock">Live Stock</TabsTrigger>
-            <TabsTrigger value="add-products">Add Products</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 lg:w-[400px] mb-4">
+            <TabsTrigger 
+              value="live-stock"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Live Stock
+            </TabsTrigger>
+            <TabsTrigger 
+              value="add-products"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Add Products
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
-            <div className="flex justify-end mb-4">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <SwitchCamera className="h-4 w-4" />
-                    Switch View
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setStockView('real-time')}>
-                    Real-time Stock
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStockView('movement')}>
-                    Stock Movement
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStockView('damaged')}>
-                    Damaged
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStockView('expiry')}>
-                    Expiry Dates
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <StockViewSwitch
+                layout={layout}
+                onLayoutChange={setLayout}
+                onViewChange={setStockView}
+              />
             </div>
-            <div className="rounded-md border animate-fade-in">
+            <div className="rounded-md border overflow-x-auto">
               {renderStockTable()}
             </div>
           </TabsContent>
 
           <TabsContent value="add-products" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
               <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="p-3 bg-primary/10 rounded-full">
