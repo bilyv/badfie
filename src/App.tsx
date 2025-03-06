@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,7 +22,8 @@ import DocsStorage from "./pages/DocsStorage";
 import AIAdviser from "./pages/AIAdviser";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
-import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
+import Connect from "./pages/Connect";
+import Subscription from "./pages/Subscription";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,8 +35,6 @@ const queryClient = new QueryClient({
 });
 
 const Layout = () => {
-  const { UpgradeDialog } = useUpgradeDialog();
-  
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -43,25 +43,26 @@ const Layout = () => {
           <Navbar />
           <div className="container py-6">
             <Routes>
-              <Route index element={<Index />} />
-              <Route path="multi-store" element={<MultiStore />} />
-              <Route path="products" element={<Products />} />
-              <Route path="services" element={<Services />} />
-              <Route path="sales" element={<Sales />} />
-              <Route path="expenses" element={<Expenses />} />
-              <Route path="tax" element={<Tax />} />
-              <Route path="reminders" element={<Reminders />} />
-              <Route path="reports" element={<Reports />} />
-              <Route path="users" element={<Users />} />
-              <Route path="docs-storage" element={<DocsStorage />} />
-              <Route path="ai-adviser" element={<AIAdviser />} />
-              <Route path="settings" element={<Settings />} />
+              <Route path="/" element={<Index />} />
+              <Route path="/multi-store" element={<MultiStore />} />
+              <Route path="/connect" element={<Connect />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/sales" element={<Sales />} />
+              <Route path="/expenses" element={<Expenses />} />
+              <Route path="/tax" element={<Tax />} />
+              <Route path="/reminders" element={<Reminders />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/docs-storage" element={<DocsStorage />} />
+              <Route path="/ai-adviser" element={<AIAdviser />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/subscription" element={<Subscription />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </main>
       </div>
-      <UpgradeDialog />
     </SidebarProvider>
   );
 };
@@ -73,11 +74,8 @@ const App = () => {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
             <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Index />} />
-                <Route path="*" element={<Layout />} />
-              </Route>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/*" element={<Layout />} />
             </Routes>
             <Toaster />
             <Sonner />
