@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,8 +7,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "next-themes";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Navbar } from "@/components/Navbar";
-import { SkeletonLoader } from "@/components/SkeletonLoader";
-import AnimatedBackground from "@/components/AnimatedBackground";
 import Index from "./pages/Index";
 import MultiStore from "./pages/MultiStore";
 import Products from "./pages/Products";
@@ -24,8 +21,7 @@ import DocsStorage from "./pages/DocsStorage";
 import AIAdviser from "./pages/AIAdviser";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
-import Connect from "./pages/Connect";
-import Subscription from "./pages/Subscription";
+import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +33,8 @@ const queryClient = new QueryClient({
 });
 
 const Layout = () => {
+  const { UpgradeDialog } = useUpgradeDialog();
+  
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -44,28 +42,26 @@ const Layout = () => {
         <main className="flex-1">
           <Navbar />
           <div className="container py-6">
-            <AnimatedBackground />
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/multi-store" element={<MultiStore />} />
-              <Route path="/connect" element={<Connect />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/sales" element={<Sales />} />
-              <Route path="/expenses" element={<Expenses />} />
-              <Route path="/tax" element={<Tax />} />
-              <Route path="/reminders" element={<Reminders />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/docs-storage" element={<DocsStorage />} />
-              <Route path="/ai-adviser" element={<AIAdviser />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/subscription" element={<Subscription />} />
+              <Route index element={<Index />} />
+              <Route path="multi-store" element={<MultiStore />} />
+              <Route path="products" element={<Products />} />
+              <Route path="services" element={<Services />} />
+              <Route path="sales" element={<Sales />} />
+              <Route path="expenses" element={<Expenses />} />
+              <Route path="tax" element={<Tax />} />
+              <Route path="reminders" element={<Reminders />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="users" element={<Users />} />
+              <Route path="docs-storage" element={<DocsStorage />} />
+              <Route path="ai-adviser" element={<AIAdviser />} />
+              <Route path="settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </main>
       </div>
+      <UpgradeDialog />
     </SidebarProvider>
   );
 };
@@ -76,14 +72,15 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <SkeletonLoader>
-              <Routes>
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/*" element={<Layout />} />
-              </Routes>
-              <Toaster />
-              <Sonner />
-            </SkeletonLoader>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Index />} />
+                <Route path="*" element={<Layout />} />
+              </Route>
+              <Route path="/auth" element={<Auth />} />
+            </Routes>
+            <Toaster />
+            <Sonner />
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>

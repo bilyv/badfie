@@ -1,10 +1,8 @@
-
-import { Bell, Moon, Sun, User, Check, LogOut, ArrowUpRight } from "lucide-react";
+import { Bell, Moon, Sun, User, Check, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useNavigate } from "react-router-dom";
-import { useUpgradeDialog } from "@/hooks/use-upgrade-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +22,6 @@ import { toast } from "@/hooks/use-toast";
 export function Navbar() {
   const { setTheme, theme } = useTheme();
   const navigate = useNavigate();
-  const { openUpgradeDialog, UpgradeDialog } = useUpgradeDialog();
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -78,23 +75,13 @@ export function Navbar() {
     <div className="sticky top-0 z-50 backdrop-blur-sm bg-white/75 dark:bg-gray-900/75 border-b border-gray-200 dark:border-gray-800 transition-all duration-300">
       <div className="flex h-16 items-center px-4 md:px-6">
         <SidebarTrigger className="mr-4" />
-        
-        <Button
-          variant="outline"
-          className="flex items-center gap-2 hover:bg-primary/10 transition-colors duration-300"
-          onClick={openUpgradeDialog}
-        >
-          <ArrowUpRight className="h-4 w-4" />
-          <span>Upgrade Plan</span>
-        </Button>
-
         <div className="ml-auto flex items-center space-x-4">
           <Sheet>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300"
+                className="relative hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
@@ -155,16 +142,16 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-500"
+            className="hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all duration-500 dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all duration-500 dark:rotate-0 dark:scale-100" />
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300">
+              <Button variant="ghost" size="icon" className="hover:bg-gray-100 dark:hover:bg-gray-800">
                 <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
@@ -179,7 +166,6 @@ export function Navbar() {
           </DropdownMenu>
         </div>
       </div>
-      <UpgradeDialog />
     </div>
   );
 }

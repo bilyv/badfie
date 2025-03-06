@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Settings, Edit, Trash2, LogIn, DollarSign } from "lucide-react";
+import { Plus, Settings, Edit, Trash2, LogIn } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
@@ -220,43 +220,37 @@ const MultiStore = () => {
                         {store.location}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-green-600 dark:text-green-400 flex items-center gap-1">
-                        <DollarSign className="h-4 w-4" />
-                        {Math.floor(Math.random() * 10000)}
-                      </span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="rounded-full hover:bg-primary/10"
-                          >
-                            <Settings className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedStore(store);
-                              setNewStoreName(store.name);
-                              setIsRenameDialogOpen(true);
-                            }}
-                            className="gap-2"
-                          >
-                            <Edit className="h-4 w-4" />
-                            Rename
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteStore(store.id)}
-                            className="gap-2 text-red-600 dark:text-red-400"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="rounded-full hover:bg-primary/10"
+                        >
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setSelectedStore(store);
+                            setNewStoreName(store.name);
+                            setIsRenameDialogOpen(true);
+                          }}
+                          className="gap-2"
+                        >
+                          <Edit className="h-4 w-4" />
+                          Rename
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteStore(store.id)}
+                          className="gap-2 text-red-600 dark:text-red-400"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
