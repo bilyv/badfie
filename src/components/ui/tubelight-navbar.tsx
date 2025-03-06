@@ -5,16 +5,16 @@ import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface NavItem {
-  name: string
-  icon: LucideIcon
-  value: string
+  name: string;
+  icon: LucideIcon;
+  value: string;
 }
 
 interface NavBarProps {
-  items: NavItem[]
-  className?: string
-  value: string
-  onValueChange: (value: string) => void
+  items: NavItem[];
+  className?: string;
+  value: string;
+  onValueChange: (value: string) => void;
 }
 
 export function TubelightNavbar({ items, className, value, onValueChange }: NavBarProps) {
