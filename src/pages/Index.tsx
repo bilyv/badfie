@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Package, ArrowDown, DollarSign, CreditCard, BarChart2, LineChart, PlusCircle, X, Server } from "lucide-react";
 import { Bar, BarChart, Line, LineChart as RechartsLineChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip, Legend } from "recharts";
@@ -66,18 +67,25 @@ const availableGraphs: GraphType[] = [
 ];
 
 const Index = () => {
+  // Initialize with a default value to prevent null
   const [mode, setMode] = useState<"product" | "service">("product");
   const [activeGraphs, setActiveGraphs] = useState<string[]>(['sales-stock', 'revenue-expenses']);
 
   const handleAddGraph = (graphId: string) => {
-    setActiveGraphs(prev => [...prev, graphId]);
+    if (!activeGraphs.includes(graphId)) {
+      setActiveGraphs(prev => [...prev, graphId]);
+    }
   };
 
   const handleRemoveGraph = (graphId: string) => {
-    setActiveGraphs(prev => prev.filter(id => id !== graphId));
+    if (graphId) {
+      setActiveGraphs(prev => prev.filter(id => id !== graphId));
+    }
   };
 
   const renderGraph = (graph: GraphType) => {
+    if (!graph) return null;
+    
     return (
       <Card key={graph.id} className="p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-lg">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
@@ -273,8 +281,8 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {activeGraphs.map(graphId => {
               const graph = availableGraphs.find(g => g.id === graphId);
-              if (graph) return renderGraph(graph);
-              return null;
+              if (!graph) return null;
+              return renderGraph(graph);
             })}
           </div>
         </>
