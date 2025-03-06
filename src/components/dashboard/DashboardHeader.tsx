@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
 import { Package, Server } from "lucide-react";
+import { useMediaQuery } from "react-responsive";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardHeaderProps {
   greeting: string;
@@ -11,6 +13,9 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader = ({ greeting, mode, setMode }: DashboardHeaderProps) => {
+  const isMobile = useIsMobile();
+  const isTablet = useMediaQuery({ maxWidth: 768 });
+  
   const items = [
     { name: "Product", icon: Package, value: "product" },
     { name: "Service", icon: Server, value: "service" },
@@ -35,7 +40,7 @@ const DashboardHeader = ({ greeting, mode, setMode }: DashboardHeaderProps) => {
           items={items}
           value={mode}
           onValueChange={setMode}
-          className="max-w-[250px]"
+          className={`${isTablet ? "max-w-[180px]" : "max-w-[220px]"}`}
         />
       </div>
     </div>
