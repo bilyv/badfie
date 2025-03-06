@@ -60,6 +60,12 @@ export const defaultMenuItems = [
     id: "sales"
   },
   {
+    title: "Expenses",
+    path: "/expenses",
+    icon: DollarSign,
+    id: "expenses"
+  },
+  {
     title: "Tax",
     path: "/tax",
     icon: Percent,
@@ -81,12 +87,6 @@ export const defaultMenuItems = [
         path: "/reports",
         icon: ChartBar,
         id: "reports"
-      },
-      {
-        title: "Expenses",
-        path: "/expenses",
-        icon: DollarSign,
-        id: "expenses"
       },
       {
         title: "AI Adviser",

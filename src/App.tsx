@@ -8,6 +8,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "next-themes";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Navbar } from "@/components/Navbar";
+import { SkeletonLoader } from "@/components/SkeletonLoader";
+import AnimatedBackground from "@/components/AnimatedBackground";
 import Index from "./pages/Index";
 import MultiStore from "./pages/MultiStore";
 import Products from "./pages/Products";
@@ -42,6 +44,7 @@ const Layout = () => {
         <main className="flex-1">
           <Navbar />
           <div className="container py-6">
+            <AnimatedBackground />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/multi-store" element={<MultiStore />} />
@@ -73,12 +76,14 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <Routes>
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/*" element={<Layout />} />
-            </Routes>
-            <Toaster />
-            <Sonner />
+            <SkeletonLoader>
+              <Routes>
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/*" element={<Layout />} />
+              </Routes>
+              <Toaster />
+              <Sonner />
+            </SkeletonLoader>
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>
