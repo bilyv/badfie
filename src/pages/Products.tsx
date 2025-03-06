@@ -1,17 +1,14 @@
+
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Package, PackagePlus, Settings, Plus, FolderPlus } from "lucide-react";
-import { ProductFormDialog } from "@/components/products/ProductFormDialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ProductType } from "@/lib/types";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ProductListView } from "@/components/products/ProductListView";
-import { ProductGridView } from "@/components/products/ProductGridView";
+import { ProductHeader } from "@/components/products/ProductHeader";
+import { ProductDialogs } from "@/components/products/ProductDialogs";
+import { StockContent } from "@/components/products/StockContent";
+import { AddProductsContent } from "@/components/products/AddProductsContent";
 import { StockViewSwitch } from "@/components/products/StockViewSwitch";
+import { ProductTemplates } from "@/components/products/ProductTemplates";
 
 const sampleProducts = [
   {
@@ -79,6 +76,25 @@ const Products = () => {
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("individual");
   const [stockView, setStockView] = useState<StockViewType>('real-time');
   const [layout, setLayout] = useState<LayoutType>('list');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearching(false);
+        if (!searchQuery) {
+          setSearchQuery("");
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [searchQuery]);
 
   const handleAddProduct = (type: ProductType) => {
     setSelectedProductType(type);
@@ -98,312 +114,91 @@ const Products = () => {
     }
   };
 
-  const renderStockTable = () => {
-    switch (stockView) {
-      case 'real-time':
-        return (
-          <div className="animate-fade-in">
-            {layout === 'list' ? (
-              <ProductListView products={sampleProducts} getStatusColor={getStatusColor} />
-            ) : (
-              <ProductGridView products={sampleProducts} getStatusColor={getStatusColor} />
-            )}
-          </div>
-        );
-      case 'movement':
-        return (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead>Item Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-center">Quantity</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Reference</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>Premium Enterprise Laptop</TableCell>
-                <TableCell>Outbound</TableCell>
-                <TableCell className="text-center">-5</TableCell>
-                <TableCell>2024-02-15</TableCell>
-                <TableCell>ORD-001</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        );
-      case 'damaged':
-        return (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead>Item Name</TableHead>
-                <TableHead>Damage Type</TableHead>
-                <TableHead className="text-center">Quantity</TableHead>
-                <TableHead>Report Date</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>4K Ultra HD Monitor</TableCell>
-                <TableCell>Screen Damage</TableCell>
-                <TableCell className="text-center">2</TableCell>
-                <TableCell>2024-02-12</TableCell>
-                <TableCell>Pending Review</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        );
-      case 'expiry':
-        return (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead>Item Name</TableHead>
-                <TableHead>Batch Number</TableHead>
-                <TableHead>Expiry Date</TableHead>
-                <TableHead className="text-center">Quantity</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>Wireless Headphones</TableCell>
-                <TableCell>BTH-2024-001</TableCell>
-                <TableCell>2025-02-15</TableCell>
-                <TableCell className="text-center">25</TableCell>
-                <TableCell>Valid</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        );
-    }
-  };
+  const filteredProducts = sampleProducts.filter(product => 
+    searchQuery ? (
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) : true
+  );
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Products</h1>
-          <p className="text-sm text-muted-foreground">Manage your product inventory</p>
-        </div>
-      </div>
+      <ProductHeader
+        isSearching={isSearching}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        setIsSearching={setIsSearching}
+        searchRef={searchRef}
+      />
       
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <Tabs defaultValue="live-stock" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-            <TabsTrigger value="live-stock">Live Stock</TabsTrigger>
-            <TabsTrigger value="add-products">Add Products</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 lg:w-[400px] mb-4">
+            <TabsTrigger 
+              value="live-stock"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Live Stock
+            </TabsTrigger>
+            <TabsTrigger 
+              value="templates"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Templates
+            </TabsTrigger>
+            <TabsTrigger 
+              value="add-products"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Add Products
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="live-stock" className="space-y-4">
-            <StockViewSwitch
-              layout={layout}
-              onLayoutChange={setLayout}
-              onViewChange={setStockView}
-            />
-            <div className="rounded-md border">
-              {renderStockTable()}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <StockViewSwitch
+                layout={layout}
+                onLayoutChange={setLayout}
+                onViewChange={setStockView}
+              />
+            </div>
+            <div className="rounded-md border overflow-x-auto">
+              <StockContent 
+                stockView={stockView}
+                layout={layout}
+                filteredProducts={filteredProducts}
+                getStatusColor={getStatusColor}
+              />
             </div>
           </TabsContent>
 
+          <TabsContent value="templates" className="space-y-4">
+            <ProductTemplates products={sampleProducts} />
+          </TabsContent>
+
           <TabsContent value="add-products" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="p-3 bg-primary/10 rounded-full">
-                    <Package className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">Individual Product</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Add a single product with its own specifications
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => handleAddProduct("individual")}
-                    className="w-full"
-                  >
-                    <Package className="mr-2 h-4 w-4" />
-                    Add Individual Product
-                  </Button>
-                </div>
-              </Card>
-
-              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="p-3 bg-primary/10 rounded-full">
-                    <PackagePlus className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">Combined Product</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Create a product made up of multiple ingredients
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => handleAddProduct("combined")}
-                    className="w-full"
-                  >
-                    <PackagePlus className="mr-2 h-4 w-4" />
-                    Add Combined Product
-                  </Button>
-                </div>
-              </Card>
-
-              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="p-3 bg-primary/10 rounded-full">
-                    <Settings className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">Stock Adjustment</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Adjust stock levels when mistakenly configured
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => setAdjustmentDialogOpen(true)}
-                    className="w-full"
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    Adjust Stock
-                  </Button>
-                </div>
-              </Card>
-
-              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="p-3 bg-primary/10 rounded-full">
-                    <Plus className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">Request Stock</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Request additional stock for existing products
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => setRequestDialogOpen(true)}
-                    className="w-full"
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Request Stock
-                  </Button>
-                </div>
-              </Card>
-
-              <Card className="p-6 space-y-4 hover:shadow-lg transition-shadow">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="p-3 bg-primary/10 rounded-full">
-                    <FolderPlus className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">Create Category</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Create new categories for products
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => setCategoryDialogOpen(true)}
-                    className="w-full"
-                  >
-                    <FolderPlus className="mr-2 h-4 w-4" />
-                    Add Category
-                  </Button>
-                </div>
-              </Card>
-            </div>
+            <AddProductsContent
+              onAddProduct={handleAddProduct}
+              onOpenAdjustment={() => setAdjustmentDialogOpen(true)}
+              onOpenRequest={() => setRequestDialogOpen(true)}
+              onOpenCategory={() => setCategoryDialogOpen(true)}
+            />
           </TabsContent>
         </Tabs>
       </Card>
 
-      <ProductFormDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        productType={selectedProductType}
+      <ProductDialogs
+        dialogOpen={dialogOpen}
+        adjustmentDialogOpen={adjustmentDialogOpen}
+        requestDialogOpen={requestDialogOpen}
+        categoryDialogOpen={categoryDialogOpen}
+        selectedProductType={selectedProductType}
+        setDialogOpen={setDialogOpen}
+        setAdjustmentDialogOpen={setAdjustmentDialogOpen}
+        setRequestDialogOpen={setRequestDialogOpen}
+        setCategoryDialogOpen={setCategoryDialogOpen}
       />
-
-      <Dialog open={adjustmentDialogOpen} onOpenChange={setAdjustmentDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Adjust Stock Level</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="adjustment-product">Product Name</Label>
-              <Input id="adjustment-product" placeholder="Select product" />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="current-stock">Current Stock</Label>
-              <Input type="number" id="current-stock" disabled />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="new-stock">New Stock Level</Label>
-              <Input type="number" id="new-stock" min="0" />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="adjustment-reason">Reason for Adjustment</Label>
-              <Input id="adjustment-reason" placeholder="Enter reason" />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit">Save Adjustment</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={requestDialogOpen} onOpenChange={setRequestDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Request Additional Stock</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="request-product">Product Name</Label>
-              <Input id="request-product" placeholder="Select product" />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="request-quantity">Quantity Needed</Label>
-              <Input type="number" id="request-quantity" min="1" />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="request-priority">Priority Level</Label>
-              <Input id="request-priority" placeholder="High/Medium/Low" />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="request-notes">Additional Notes</Label>
-              <Input id="request-notes" placeholder="Enter any additional details" />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit">Submit Request</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Create New Category</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="category-name">Category Name</Label>
-              <Input id="category-name" placeholder="Enter category name" />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="category-description">Description</Label>
-              <Input id="category-description" placeholder="Enter category description" />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit">Create Category</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
