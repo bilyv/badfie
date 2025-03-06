@@ -11,42 +11,18 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button";
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { defaultMenuItems } from "./sidebar/defaultMenuItems";
 import { SidebarHeader as CustomSidebarHeader } from "./sidebar/SidebarHeader";
 import { DisableItemDialog } from "./sidebar/DisableItemDialog";
 import { SidebarMenuList } from "./sidebar/SidebarMenuList";
 
-interface AppSidebarProps {
-  mode?: "product" | "service";
-}
-
-export function AppSidebar({ mode = "product" }: AppSidebarProps) {
+export function AppSidebar() {
   const [isEditing, setIsEditing] = useState(false);
   const [editMode, setEditMode] = useState<'position' | 'disable' | null>(null);
   const [menuItems, setMenuItems] = useState(defaultMenuItems);
-  const [filteredMenuItems, setFilteredMenuItems] = useState(defaultMenuItems);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [itemToDisable, setItemToDisable] = useState<string | null>(null);
-
-  // Update sidebar menu items based on mode
-  useEffect(() => {
-    if (mode === "product") {
-      setFilteredMenuItems(menuItems.filter(item => {
-        if ('id' in item) {
-          return item.id !== 'services'; // Remove service-specific tabs in product mode
-        }
-        return true;
-      }));
-    } else {
-      setFilteredMenuItems(menuItems.filter(item => {
-        if ('id' in item) {
-          return item.id !== 'products'; // Remove product-specific tabs in service mode
-        }
-        return true;
-      }));
-    }
-  }, [mode, menuItems]);
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups(prev => 
@@ -99,7 +75,7 @@ export function AppSidebar({ mode = "product" }: AppSidebarProps) {
                   <SidebarGroup>
                     <SidebarGroupContent>
                       <SidebarMenuList
-                        menuItems={filteredMenuItems}
+                        menuItems={menuItems}
                         editMode={editMode}
                         expandedGroups={expandedGroups}
                         toggleGroup={toggleGroup}

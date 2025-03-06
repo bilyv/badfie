@@ -10,8 +10,6 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Navbar } from "@/components/Navbar";
 import { SkeletonLoader } from "@/components/SkeletonLoader";
 import AnimatedBackground from "@/components/AnimatedBackground";
-import { useState, createContext, useContext } from "react";
-import { useDeviceType } from "@/hooks/useDeviceType";
 import Index from "./pages/Index";
 import MultiStore from "./pages/MultiStore";
 import Products from "./pages/Products";
@@ -38,71 +36,58 @@ const queryClient = new QueryClient({
   },
 });
 
-// Create device type context
-export const DeviceContext = createContext<"mobile" | "tablet" | "desktop">("desktop");
-export const useDeviceContext = () => useContext(DeviceContext);
-
 const Layout = () => {
-  const [mode, setMode] = useState<"product" | "service">("product");
-  const deviceType = useDeviceType();
-
   return (
-    <DeviceContext.Provider value={deviceType}>
-      <SidebarProvider>
-        <div className={`flex min-h-screen w-full transition-all duration-300`}>
-          <AppSidebar mode={mode} />
-          <main className="flex-1">
-            <Navbar />
-            <div className={`container py-4 md:py-6 px-2 sm:px-4 md:px-6 transition-all duration-300`}>
-              <AnimatedBackground />
-              <Routes>
-                <Route path="/" element={<Index mode={mode} setMode={setMode} />} />
-                <Route path="/multi-store" element={<MultiStore />} />
-                <Route path="/connect" element={<Connect />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/sales" element={<Sales />} />
-                <Route path="/expenses" element={<Expenses />} />
-                <Route path="/tax" element={<Tax />} />
-                <Route path="/reminders" element={<Reminders />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/users" element={<Users />} />
-                <Route path="/docs-storage" element={<DocsStorage />} />
-                <Route path="/ai-adviser" element={<AIAdviser />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/subscription" element={<Subscription />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </div>
-          </main>
-        </div>
-      </SidebarProvider>
-    </DeviceContext.Provider>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1">
+          <Navbar />
+          <div className="container py-6">
+            <AnimatedBackground />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/multi-store" element={<MultiStore />} />
+              <Route path="/connect" element={<Connect />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/sales" element={<Sales />} />
+              <Route path="/expenses" element={<Expenses />} />
+              <Route path="/tax" element={<Tax />} />
+              <Route path="/reminders" element={<Reminders />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/docs-storage" element={<DocsStorage />} />
+              <Route path="/ai-adviser" element={<AIAdviser />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/subscription" element={<Subscription />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
+        </main>
+      </div>
+    </SidebarProvider>
   );
 };
 
 const App = () => {
-  const deviceType = useDeviceType();
-  
   return (
-    <DeviceContext.Provider value={deviceType}>
-      <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <TooltipProvider>
-              <SkeletonLoader>
-                <Routes>
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/*" element={<Layout />} />
-                </Routes>
-                <Toaster />
-                <Sonner />
-              </SkeletonLoader>
-            </TooltipProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </BrowserRouter>
-    </DeviceContext.Provider>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <TooltipProvider>
+            <SkeletonLoader>
+              <Routes>
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/*" element={<Layout />} />
+              </Routes>
+              <Toaster />
+              <Sonner />
+            </SkeletonLoader>
+          </TooltipProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 };
 
