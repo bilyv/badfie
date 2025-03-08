@@ -19,7 +19,10 @@ import {
   Building2,
   Receipt,
   PieChart,
-  Lightbulb
+  Lightbulb,
+  Calendar,
+  Clock,
+  UserSquare
 } from "lucide-react";
 
 export const defaultMenuItems = [
@@ -36,46 +39,34 @@ export const defaultMenuItems = [
     id: "multi-store"
   },
   {
-    title: "Connect",
-    path: "/connect",
-    icon: Link2,
-    id: "connect"
-  },
-  {
-    title: "Products",
-    path: "/products",
-    icon: ShoppingBag,
-    id: "products"
-  },
-  {
     title: "Services",
     path: "/services",
     icon: Wrench,
     id: "services"
   },
   {
-    title: "Sales",
-    path: "/sales",
-    icon: Receipt,
-    id: "sales"
+    title: "Client Management",
+    path: "/clients",
+    icon: UserSquare,
+    id: "clients"
   },
   {
-    title: "Expenses",
-    path: "/expenses",
-    icon: DollarSign,
-    id: "expenses"
-  },
-  {
-    title: "Tax",
-    path: "/tax",
-    icon: Percent,
-    id: "tax"
+    title: "Appointments",
+    path: "/appointments",
+    icon: Calendar,
+    id: "appointments"
   },
   {
     title: "Reminders",
     path: "/reminders",
     icon: Bell,
     id: "reminders"
+  },
+  {
+    title: "Expenses",
+    path: "/expenses",
+    icon: DollarSign,
+    id: "expenses"
   },
   {
     group: "Insights",
