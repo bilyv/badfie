@@ -1,3 +1,4 @@
+
 import { UserRound } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -92,7 +93,7 @@ export function AppSidebar({ mode = "product" }: AppSidebarProps) {
           />
         </SidebarHeader>
 
-        <SidebarContent>
+        <SidebarContent className="flex-grow overflow-y-auto">
           <DragDropContext onDragEnd={handleOnDragEnd}>
             <Droppable droppableId="sidebar-menu">
               {(provided) => (
@@ -115,7 +116,7 @@ export function AppSidebar({ mode = "product" }: AppSidebarProps) {
           </DragDropContext>
         </SidebarContent>
 
-        <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60 sticky bottom-0 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60">
+        <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60 sticky bottom-0 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60 mt-auto">
           <div className="flex items-center gap-3">
             <div className="relative">
               <UserRound className="h-8 w-8 text-primary" />

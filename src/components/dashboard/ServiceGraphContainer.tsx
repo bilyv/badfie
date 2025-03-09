@@ -11,7 +11,6 @@ import {
   BarChart,
   Bar
 } from "recharts";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 
@@ -48,84 +47,84 @@ const ServiceGraphContainer = ({ data }: ServiceGraphContainerProps) => {
           Service Performance Metrics
         </h3>
         
-        <Tabs defaultValue="bookings" className="w-full sm:w-auto" onValueChange={setActiveTab}>
+        <Tabs defaultValue="bookings" className="w-full sm:w-auto" onValueChange={setActiveTab} value={activeTab}>
           <TabsList className="grid w-full sm:w-auto grid-cols-3 h-8">
             <TabsTrigger value="bookings" className="text-xs">Bookings</TabsTrigger>
             <TabsTrigger value="services" className="text-xs">Services</TabsTrigger>
             <TabsTrigger value="clients" className="text-xs">Clients</TabsTrigger>
           </TabsList>
+        
+          <div className="h-[250px] sm:h-[300px]">
+            <TabsContent value="bookings" className="h-full mt-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsLineChart 
+                  data={data} 
+                  className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20"
+                  margin={{ top: 5, right: 5, left: -15, bottom: 5 }}
+                >
+                  <XAxis dataKey="month" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <RechartsTooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--background))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="revenue" name="Bookings" stroke="#22c55e" />
+                </RechartsLineChart>
+              </ResponsiveContainer>
+            </TabsContent>
+
+            <TabsContent value="services" className="h-full mt-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={serviceData}
+                  className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20"
+                  margin={{ top: 5, right: 5, left: -15, bottom: 5 }}
+                >
+                  <XAxis dataKey="name" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <RechartsTooltip
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--background))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Bar dataKey="value" name="Services (%)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </TabsContent>
+
+            <TabsContent value="clients" className="h-full mt-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={clientData}
+                  className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20"
+                  margin={{ top: 5, right: 5, left: -15, bottom: 5 }}
+                >
+                  <XAxis dataKey="month" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <RechartsTooltip
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--background))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="new" name="New Clients" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="returning" name="Returning Clients" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </TabsContent>
+          </div>
         </Tabs>
-      </div>
-      
-      <div className="h-[250px] sm:h-[300px]">
-        <TabsContent value="bookings" className="h-full mt-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <RechartsLineChart 
-              data={data} 
-              className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20"
-              margin={{ top: 5, right: 5, left: -15, bottom: 5 }}
-            >
-              <XAxis dataKey="month" fontSize={12} />
-              <YAxis fontSize={12} />
-              <RechartsTooltip 
-                contentStyle={{ 
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                }}
-              />
-              <Legend />
-              <Line type="monotone" dataKey="revenue" name="Bookings" stroke="#22c55e" />
-            </RechartsLineChart>
-          </ResponsiveContainer>
-        </TabsContent>
-
-        <TabsContent value="services" className="h-full mt-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={serviceData}
-              className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20"
-              margin={{ top: 5, right: 5, left: -15, bottom: 5 }}
-            >
-              <XAxis dataKey="name" fontSize={12} />
-              <YAxis fontSize={12} />
-              <RechartsTooltip
-                contentStyle={{ 
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                }}
-              />
-              <Bar dataKey="value" name="Services (%)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </TabsContent>
-
-        <TabsContent value="clients" className="h-full mt-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={clientData}
-              className="[&_.recharts-cartesian-grid-horizontal]:opacity-20 [&_.recharts-cartesian-grid-vertical]:opacity-20"
-              margin={{ top: 5, right: 5, left: -15, bottom: 5 }}
-            >
-              <XAxis dataKey="month" fontSize={12} />
-              <YAxis fontSize={12} />
-              <RechartsTooltip
-                contentStyle={{ 
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                }}
-              />
-              <Legend />
-              <Bar dataKey="new" name="New Clients" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="returning" name="Returning Clients" fill="#22c55e" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </TabsContent>
       </div>
     </Card>
   );
