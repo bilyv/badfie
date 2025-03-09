@@ -1,4 +1,3 @@
-
 import { UserRound } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -34,14 +33,16 @@ export function AppSidebar({ mode = "product" }: AppSidebarProps) {
     if (mode === "product") {
       setFilteredMenuItems(menuItems.filter(item => {
         if ('id' in item) {
-          return item.id !== 'services'; // Remove service-specific tabs in product mode
+          // Keep items that don't have a mode specified, or have mode="product"
+          return !item.mode || item.mode === 'product';
         }
         return true;
       }));
     } else {
       setFilteredMenuItems(menuItems.filter(item => {
         if ('id' in item) {
-          return item.id !== 'products'; // Remove product-specific tabs in service mode
+          // Keep items that don't have a mode specified, or have mode="service"
+          return !item.mode || item.mode === 'service';
         }
         return true;
       }));
@@ -114,7 +115,7 @@ export function AppSidebar({ mode = "product" }: AppSidebarProps) {
           </DragDropContext>
         </SidebarContent>
 
-        <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60">
+        <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60 sticky bottom-0 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60">
           <div className="flex items-center gap-3">
             <div className="relative">
               <UserRound className="h-8 w-8 text-primary" />

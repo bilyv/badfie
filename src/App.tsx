@@ -27,6 +27,8 @@ import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import Connect from "./pages/Connect";
 import Subscription from "./pages/Subscription";
+import ClientManagement from "./pages/ClientManagement";
+import Appointments from "./pages/Appointments";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,7 +40,7 @@ const queryClient = new QueryClient({
 });
 
 const Layout = () => {
-  const [mode, setMode] = useState<"product" | "service">("product");
+  const [mode, setMode] = useState<"product" | "service">("service"); // Set default to service mode
 
   return (
     <SidebarProvider>
@@ -54,6 +56,8 @@ const Layout = () => {
               <Route path="/connect" element={<Connect />} />
               <Route path="/products" element={<Products />} />
               <Route path="/services" element={<Services />} />
+              <Route path="/client-management" element={<ClientManagement />} />
+              <Route path="/appointments" element={<Appointments />} />
               <Route path="/sales" element={<Sales />} />
               <Route path="/expenses" element={<Expenses />} />
               <Route path="/tax" element={<Tax />} />
