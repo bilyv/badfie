@@ -15,9 +15,9 @@ import Index from "./pages/Index";
 import MultiStore from "./pages/MultiStore";
 import Products from "./pages/Products";
 import Services from "./pages/Services";
-import Clients from "./pages/Clients";
-import Appointments from "./pages/Appointments";
+import Sales from "./pages/Sales";
 import Expenses from "./pages/Expenses";
+import Tax from "./pages/Tax";
 import Reminders from "./pages/Reminders";
 import Reports from "./pages/Reports";
 import Users from "./pages/Users";
@@ -38,7 +38,7 @@ const queryClient = new QueryClient({
 });
 
 const Layout = () => {
-  const [mode, setMode] = useState<"product" | "service">("service");
+  const [mode, setMode] = useState<"product" | "service">("product");
 
   return (
     <SidebarProvider>
@@ -54,9 +54,9 @@ const Layout = () => {
               <Route path="/connect" element={<Connect />} />
               <Route path="/products" element={<Products />} />
               <Route path="/services" element={<Services />} />
-              <Route path="/clients" element={<Clients />} />
-              <Route path="/appointments" element={<Appointments />} />
+              <Route path="/sales" element={<Sales />} />
               <Route path="/expenses" element={<Expenses />} />
+              <Route path="/tax" element={<Tax />} />
               <Route path="/reminders" element={<Reminders />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/users" element={<Users />} />

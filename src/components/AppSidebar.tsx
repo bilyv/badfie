@@ -34,14 +34,14 @@ export function AppSidebar({ mode = "product" }: AppSidebarProps) {
     if (mode === "product") {
       setFilteredMenuItems(menuItems.filter(item => {
         if ('id' in item) {
-          return item.id !== 'services' && item.id !== 'clients' && item.id !== 'appointments'; // Remove service-specific tabs in product mode
+          return item.id !== 'services'; // Remove service-specific tabs in product mode
         }
         return true;
       }));
     } else {
       setFilteredMenuItems(menuItems.filter(item => {
         if ('id' in item) {
-          return item.id !== 'products' && item.id !== 'sales' && item.id !== 'tax'; // Remove product-specific tabs in service mode
+          return item.id !== 'products'; // Remove product-specific tabs in service mode
         }
         return true;
       }));
@@ -114,7 +114,7 @@ export function AppSidebar({ mode = "product" }: AppSidebarProps) {
           </DragDropContext>
         </SidebarContent>
 
-        <SidebarFooter className="sticky bottom-0 p-4 border-t border-gray-200/60 dark:border-gray-800/60 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60">
+        <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60">
           <div className="flex items-center gap-3">
             <div className="relative">
               <UserRound className="h-8 w-8 text-primary" />
