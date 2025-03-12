@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Contact, Plus, Users, ShoppingBag, Briefcase, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -81,8 +80,13 @@ const Contacts = () => {
 
   const onSubmit = (data: ContactFormValues) => {
     const newContact: ContactData = {
-      id: Math.random().toString(36).substring(2, 11), // Generate a random ID
-      ...data,
+      id: Math.random().toString(36).substring(2, 11),
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      type: data.type,
+      company: data.company,
+      address: data.address,
     };
     
     setContacts((prev) => [...prev, newContact]);
