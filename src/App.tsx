@@ -29,6 +29,7 @@ import Connect from "./pages/Connect";
 import Subscription from "./pages/Subscription";
 import ClientManagement from "./pages/ClientManagement";
 import Appointments from "./pages/Appointments";
+import Contacts from "./pages/Contacts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,6 +57,7 @@ const Layout = () => {
               <Route path="/connect" element={<Connect />} />
               <Route path="/products" element={<Products />} />
               <Route path="/services" element={<Services />} />
+              <Route path="/contacts" element={<Contacts />} />
               <Route path="/client-management" element={<ClientManagement />} />
               <Route path="/appointments" element={<Appointments />} />
               <Route path="/sales" element={<Sales />} />

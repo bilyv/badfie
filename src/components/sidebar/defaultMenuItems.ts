@@ -21,7 +21,8 @@ import {
   PieChart,
   Lightbulb,
   CalendarClock,
-  UserRound
+  UserRound,
+  Contact
 } from "lucide-react";
 
 export const defaultMenuItems = [
@@ -56,6 +57,12 @@ export const defaultMenuItems = [
     icon: Wrench,
     id: "services",
     mode: "service"
+  },
+  {
+    title: "Contacts",
+    path: "/contacts",
+    icon: Contact,
+    id: "contacts"
   },
   {
     title: "Client Management",
