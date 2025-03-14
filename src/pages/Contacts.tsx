@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Plus, Users, ShoppingBag, Briefcase, Search } from "lucide-react";
+import { Plus, Users, ShoppingBag, Briefcase, Search, Mail, Send, UserCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -25,7 +25,11 @@ import {
   FormMessage 
 } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useToast } from "@/hooks/use-toast";
 
 // Define contact types
 type ContactType = "customer" | "supplier" | "vendor";
@@ -58,16 +62,28 @@ const contactFormSchema = z.object({
   address: z.string().optional(),
 });
 
+// Form schema for message composition
+const composeFormSchema = z.object({
+  subject: z.string().min(1, { message: "Subject is required" }),
+  message: z.string().min(1, { message: "Message content is required" }),
+  selectedContacts: z.array(z.string()).min(1, { message: "Select at least one contact" })
+    .max(10, { message: "You can't select more than 10 contacts" }),
+});
+
 type ContactFormValues = z.infer<typeof contactFormSchema>;
+type ComposeFormValues = z.infer<typeof composeFormSchema>;
 
 const Contacts = () => {
   const [contacts, setContacts] = useState<ContactData[]>(mockContacts);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<ContactType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedContactIds, setSelectedContactIds] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState("contacts");
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
-  const form = useForm<ContactFormValues>({
+  const contactForm = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
       name: "",
@@ -79,7 +95,16 @@ const Contacts = () => {
     },
   });
 
-  const onSubmit = (data: ContactFormValues) => {
+  const composeForm = useForm<ComposeFormValues>({
+    resolver: zodResolver(composeFormSchema),
+    defaultValues: {
+      subject: "",
+      message: "",
+      selectedContacts: [],
+    },
+  });
+
+  const onSubmitContact = (data: ContactFormValues) => {
     const newContact: ContactData = {
       id: Math.random().toString(36).substring(2, 11),
       name: data.name,
@@ -92,7 +117,25 @@ const Contacts = () => {
     
     setContacts((prev) => [...prev, newContact]);
     setIsCreateDialogOpen(false);
-    form.reset();
+    contactForm.reset();
+    
+    toast({
+      title: "Contact added",
+      description: `${data.name} has been added to your contacts.`,
+    });
+  };
+
+  const onSubmitMessage = (data: ComposeFormValues) => {
+    console.log("Message sent:", data);
+    // Here you would implement the actual message sending logic
+    
+    toast({
+      title: "Message sent",
+      description: `Your message has been sent to ${data.selectedContacts.length} contacts.`,
+    });
+    
+    composeForm.reset();
+    setSelectedContactIds([]);
   };
 
   // Filter contacts based on the active filter and search query
@@ -107,14 +150,28 @@ const Contacts = () => {
     return matchesFilter && matchesSearch;
   });
 
-  const getFilterIcon = (filter: ContactType | "all") => {
-    switch (filter) {
-      case "customer": return <Users className="h-4 w-4" />;
-      case "supplier": return <ShoppingBag className="h-4 w-4" />;
-      case "vendor": return <Briefcase className="h-4 w-4" />;
-      case "all": return null;
-    }
+  const toggleContactSelection = (contactId: string) => {
+    setSelectedContactIds(prev => {
+      if (prev.includes(contactId)) {
+        return prev.filter(id => id !== contactId);
+      } else {
+        if (prev.length >= 10) {
+          toast({
+            title: "Maximum selections reached",
+            description: "You can't select more than 10 contacts.",
+            variant: "destructive"
+          });
+          return prev;
+        }
+        return [...prev, contactId];
+      }
+    });
   };
+
+  // Update form values when selections change
+  React.useEffect(() => {
+    composeForm.setValue("selectedContacts", selectedContactIds);
+  }, [selectedContactIds, composeForm]);
 
   return (
     <div className="space-y-6">
@@ -125,113 +182,294 @@ const Contacts = () => {
             Manage your customers, suppliers, and vendors
           </p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)} className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
-          <Plus className="mr-2 h-4 w-4" /> Add Contact
-        </Button>
-      </div>
-
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-        <div className="flex flex-wrap gap-2">
-          <Button 
-            variant={activeFilter === "all" ? "default" : "outline"}
-            onClick={() => setActiveFilter("all")}
-            className="flex items-center gap-2"
-          >
-            All
+        {activeTab === "contacts" && (
+          <Button onClick={() => setIsCreateDialogOpen(true)} className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
+            <Plus className="mr-2 h-4 w-4" /> Add Contact
           </Button>
-          <Button 
-            variant={activeFilter === "customer" ? "default" : "outline"}
-            onClick={() => setActiveFilter("customer")}
-            className="flex items-center gap-2"
-          >
-            <Users className="h-4 w-4" /> Customers
-          </Button>
-          <Button 
-            variant={activeFilter === "supplier" ? "default" : "outline"}
-            onClick={() => setActiveFilter("supplier")}
-            className="flex items-center gap-2"
-          >
-            <ShoppingBag className="h-4 w-4" /> Suppliers
-          </Button>
-          <Button 
-            variant={activeFilter === "vendor" ? "default" : "outline"}
-            onClick={() => setActiveFilter("vendor")}
-            className="flex items-center gap-2"
-          >
-            <Briefcase className="h-4 w-4" /> Vendors
-          </Button>
-        </div>
-        
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search contacts..." 
-            className="pl-9"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredContacts.length > 0 ? (
-          filteredContacts.map((contact) => (
-            <ContactCard key={contact.id} contact={contact} />
-          ))
-        ) : (
-          <div className="col-span-full flex flex-col items-center justify-center py-10 text-center">
-            <div className="rounded-full bg-muted p-3 mb-4">
-              <Users className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-medium">No contacts found</h3>
-            <p className="text-muted-foreground mt-1">
-              {searchQuery ? `No results for "${searchQuery}"` : `No ${activeFilter !== "all" ? activeFilter + "s" : "contacts"} found`}
-            </p>
-            <Button 
-              onClick={() => setIsCreateDialogOpen(true)}
-              variant="outline" 
-              className="mt-4"
-            >
-              <Plus className="mr-2 h-4 w-4" /> Add Contact
-            </Button>
-          </div>
         )}
       </div>
 
+      <Tabs defaultValue="contacts" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid grid-cols-2 w-full max-w-md mb-4">
+          <TabsTrigger value="contacts" className="flex items-center gap-2">
+            <Users className="h-4 w-4" /> Contacts
+          </TabsTrigger>
+          <TabsTrigger value="compose" className="flex items-center gap-2">
+            <Mail className="h-4 w-4" /> Compose
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="contacts" className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+            <div className="flex flex-wrap gap-2">
+              <Button 
+                variant={activeFilter === "all" ? "default" : "outline"}
+                onClick={() => setActiveFilter("all")}
+                className="flex items-center gap-2"
+              >
+                All
+              </Button>
+              <Button 
+                variant={activeFilter === "customer" ? "default" : "outline"}
+                onClick={() => setActiveFilter("customer")}
+                className="flex items-center gap-2"
+              >
+                <Users className="h-4 w-4" /> Customers
+              </Button>
+              <Button 
+                variant={activeFilter === "supplier" ? "default" : "outline"}
+                onClick={() => setActiveFilter("supplier")}
+                className="flex items-center gap-2"
+              >
+                <ShoppingBag className="h-4 w-4" /> Suppliers
+              </Button>
+              <Button 
+                variant={activeFilter === "vendor" ? "default" : "outline"}
+                onClick={() => setActiveFilter("vendor")}
+                className="flex items-center gap-2"
+              >
+                <Briefcase className="h-4 w-4" /> Vendors
+              </Button>
+            </div>
+            
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search contacts..." 
+                className="pl-9"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredContacts.length > 0 ? (
+              filteredContacts.map((contact) => (
+                <ContactCard key={contact.id} contact={contact} />
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-10 text-center">
+                <div className="rounded-full bg-muted p-3 mb-4">
+                  <Users className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-medium">No contacts found</h3>
+                <p className="text-muted-foreground mt-1">
+                  {searchQuery ? `No results for "${searchQuery}"` : `No ${activeFilter !== "all" ? activeFilter + "s" : "contacts"} found`}
+                </p>
+                <Button 
+                  onClick={() => setIsCreateDialogOpen(true)}
+                  variant="outline" 
+                  className="mt-4"
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Add Contact
+                </Button>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="compose" className="space-y-4">
+          <div className="bg-card rounded-lg border border-border p-6">
+            <Form {...composeForm}>
+              <form onSubmit={composeForm.handleSubmit(onSubmitMessage)} className="space-y-6">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4">
+                    <FormField
+                      control={composeForm.control}
+                      name="subject"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Subject</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter message subject" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={composeForm.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Message</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Type your message here..." 
+                              className="min-h-[120px]" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <div>
+                    <FormField
+                      control={composeForm.control}
+                      name="selectedContacts"
+                      render={() => (
+                        <FormItem>
+                          <div className="mb-4">
+                            <FormLabel className="text-base">Select Recipients (Max 10)</FormLabel>
+                            <div className="text-sm text-muted-foreground">
+                              {selectedContactIds.length} of 10 selected
+                            </div>
+                          </div>
+                          <FormMessage />
+                          
+                          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
+                            <div className="flex flex-wrap gap-2">
+                              <Button 
+                                type="button"
+                                variant={activeFilter === "all" ? "default" : "outline"}
+                                onClick={() => setActiveFilter("all")}
+                                className="flex items-center gap-2"
+                              >
+                                All
+                              </Button>
+                              <Button 
+                                type="button"
+                                variant={activeFilter === "customer" ? "default" : "outline"}
+                                onClick={() => setActiveFilter("customer")}
+                                className="flex items-center gap-2"
+                              >
+                                <Users className="h-4 w-4" /> Customers
+                              </Button>
+                              <Button 
+                                type="button"
+                                variant={activeFilter === "supplier" ? "default" : "outline"}
+                                onClick={() => setActiveFilter("supplier")}
+                                className="flex items-center gap-2"
+                              >
+                                <ShoppingBag className="h-4 w-4" /> Suppliers
+                              </Button>
+                              <Button 
+                                type="button"
+                                variant={activeFilter === "vendor" ? "default" : "outline"}
+                                onClick={() => setActiveFilter("vendor")}
+                                className="flex items-center gap-2"
+                              >
+                                <Briefcase className="h-4 w-4" /> Vendors
+                              </Button>
+                            </div>
+                            
+                            <div className="relative w-full sm:w-64">
+                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                              <Input 
+                                placeholder="Search contacts..." 
+                                className="pl-9"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="border rounded-md overflow-auto max-h-[300px]">
+                            <div className="divide-y">
+                              {filteredContacts.length > 0 ? (
+                                filteredContacts.map((contact) => (
+                                  <div 
+                                    key={contact.id}
+                                    className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <Checkbox 
+                                        id={`contact-${contact.id}`}
+                                        checked={selectedContactIds.includes(contact.id)}
+                                        onCheckedChange={() => toggleContactSelection(contact.id)}
+                                      />
+                                      <div>
+                                        <label 
+                                          htmlFor={`contact-${contact.id}`}
+                                          className="font-medium cursor-pointer"
+                                        >
+                                          {contact.name}
+                                        </label>
+                                        <div className="text-sm text-muted-foreground">{contact.email}</div>
+                                      </div>
+                                    </div>
+                                    <div className={`text-xs px-2 py-1 rounded-full ${getTypeStyle(contact.type)}`}>
+                                      {contact.type.charAt(0).toUpperCase() + contact.type.slice(1)}
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="p-8 text-center">
+                                  <p>No contacts found</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedContactIds([]);
+                      composeForm.reset();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit"
+                    className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+                    disabled={selectedContactIds.length === 0}
+                  >
+                    <Send className="mr-2 h-4 w-4" /> Send Message
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </TabsContent>
+      </Tabs>
+
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className={`${isMobile ? 'w-[95vw] max-w-[95vw]' : 'sm:max-w-[500px]'}`}>
+        <DialogContent className={`${isMobile ? 'w-[90vw] max-w-[90vw]' : 'sm:max-w-[450px]'} p-4 sm:p-6`}>
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Create New Contact</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">New Contact</DialogTitle>
             <DialogDescription>
-              Add a new contact to your network. Fill in the details below.
+              Add a new contact to your network
             </DialogDescription>
           </DialogHeader>
           
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <Form {...contactForm}>
+            <form onSubmit={contactForm.handleSubmit(onSubmitContact)} className="space-y-3">
               <FormField
-                control={form.control}
+                control={contactForm.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input placeholder="Full name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <FormField
-                  control={form.control}
+                  control={contactForm.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="email@example.com" {...field} />
+                        <Input placeholder="Email" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -239,13 +477,13 @@ const Contacts = () => {
                 />
                 
                 <FormField
-                  control={form.control}
+                  control={contactForm.control}
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Phone</FormLabel>
                       <FormControl>
-                        <Input placeholder="+1234567890" {...field} />
+                        <Input placeholder="Phone number" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -254,18 +492,18 @@ const Contacts = () => {
               </div>
               
               <FormField
-                control={form.control}
+                control={contactForm.control}
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contact Type</FormLabel>
+                    <FormLabel>Type</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a contact type" />
+                          <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -280,13 +518,13 @@ const Contacts = () => {
               />
               
               <FormField
-                control={form.control}
+                control={contactForm.control}
                 name="company"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Company (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="Company Name" {...field} />
+                      <Input placeholder="Company name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -294,20 +532,20 @@ const Contacts = () => {
               />
               
               <FormField
-                control={form.control}
+                control={contactForm.control}
                 name="address"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Address (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="123 Main St, City, Country" {...field} />
+                      <Input placeholder="Address" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               
-              <DialogFooter className="mt-6 flex flex-col-reverse sm:flex-row gap-2">
+              <DialogFooter className="mt-4 pt-2 border-t flex flex-col-reverse sm:flex-row gap-2">
                 <DialogClose asChild>
                   <Button variant="outline" className="w-full sm:w-auto">Cancel</Button>
                 </DialogClose>
@@ -321,6 +559,15 @@ const Contacts = () => {
       </Dialog>
     </div>
   );
+};
+
+// Helper function to get type label styles
+const getTypeStyle = (type: ContactType) => {
+  switch (type) {
+    case "customer": return "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300";
+    case "supplier": return "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300";
+    case "vendor": return "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300";
+  }
 };
 
 // Contact Card Component
