@@ -45,6 +45,13 @@ export const defaultMenuItems = [
     id: "connect"
   },
   {
+    title: "Contacts",
+    path: "/contacts",
+    icon: Contact,
+    id: "contacts",
+    highlight: true
+  },
+  {
     title: "Products",
     path: "/products",
     icon: ShoppingBag,
@@ -57,12 +64,6 @@ export const defaultMenuItems = [
     icon: Wrench,
     id: "services",
     mode: "service"
-  },
-  {
-    title: "Contacts",
-    path: "/contacts",
-    icon: Contact,
-    id: "contacts"
   },
   {
     title: "Client Management",

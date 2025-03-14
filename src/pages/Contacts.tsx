@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Plus, Users, ShoppingBag, Briefcase, Search, Mail, Send, UserCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -270,7 +270,7 @@ const Contacts = () => {
         </TabsContent>
         
         <TabsContent value="compose" className="space-y-4">
-          <div className="bg-card rounded-lg border border-border p-6">
+          <div className="bg-card rounded-lg border border-border shadow-sm p-6">
             <Form {...composeForm}>
               <form onSubmit={composeForm.handleSubmit(onSubmitMessage)} className="space-y-6">
                 <div className="space-y-4">
@@ -280,9 +280,9 @@ const Contacts = () => {
                       name="subject"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Subject</FormLabel>
+                          <FormLabel className="text-base font-medium">Subject</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter message subject" {...field} />
+                            <Input placeholder="Enter message subject" className="bg-background" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -294,11 +294,11 @@ const Contacts = () => {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Message</FormLabel>
+                          <FormLabel className="text-base font-medium">Message</FormLabel>
                           <FormControl>
                             <Textarea 
                               placeholder="Type your message here..." 
-                              className="min-h-[120px]" 
+                              className="min-h-[120px] bg-background resize-y" 
                               {...field} 
                             />
                           </FormControl>
@@ -315,9 +315,12 @@ const Contacts = () => {
                       render={() => (
                         <FormItem>
                           <div className="mb-4">
-                            <FormLabel className="text-base">Select Recipients (Max 10)</FormLabel>
-                            <div className="text-sm text-muted-foreground">
-                              {selectedContactIds.length} of 10 selected
+                            <FormLabel className="text-base font-medium">Select Recipients</FormLabel>
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs px-2 py-1 rounded-full font-medium flex items-center">
+                                <UserCheck className="h-3 w-3 mr-1" />
+                                {selectedContactIds.length} of 10 selected
+                              </div>
                             </div>
                           </div>
                           <FormMessage />
@@ -329,6 +332,7 @@ const Contacts = () => {
                                 variant={activeFilter === "all" ? "default" : "outline"}
                                 onClick={() => setActiveFilter("all")}
                                 className="flex items-center gap-2"
+                                size="sm"
                               >
                                 All
                               </Button>
@@ -337,6 +341,7 @@ const Contacts = () => {
                                 variant={activeFilter === "customer" ? "default" : "outline"}
                                 onClick={() => setActiveFilter("customer")}
                                 className="flex items-center gap-2"
+                                size="sm"
                               >
                                 <Users className="h-4 w-4" /> Customers
                               </Button>
@@ -345,6 +350,7 @@ const Contacts = () => {
                                 variant={activeFilter === "supplier" ? "default" : "outline"}
                                 onClick={() => setActiveFilter("supplier")}
                                 className="flex items-center gap-2"
+                                size="sm"
                               >
                                 <ShoppingBag className="h-4 w-4" /> Suppliers
                               </Button>
@@ -353,6 +359,7 @@ const Contacts = () => {
                                 variant={activeFilter === "vendor" ? "default" : "outline"}
                                 onClick={() => setActiveFilter("vendor")}
                                 className="flex items-center gap-2"
+                                size="sm"
                               >
                                 <Briefcase className="h-4 w-4" /> Vendors
                               </Button>
@@ -369,7 +376,7 @@ const Contacts = () => {
                             </div>
                           </div>
                           
-                          <div className="border rounded-md overflow-auto max-h-[300px]">
+                          <div className="border rounded-md overflow-auto max-h-[300px] bg-background shadow-inner">
                             <div className="divide-y">
                               {filteredContacts.length > 0 ? (
                                 filteredContacts.map((contact) => (
@@ -382,6 +389,7 @@ const Contacts = () => {
                                         id={`contact-${contact.id}`}
                                         checked={selectedContactIds.includes(contact.id)}
                                         onCheckedChange={() => toggleContactSelection(contact.id)}
+                                        className="border-2 data-[state=checked]:bg-indigo-500 data-[state=checked]:border-indigo-500"
                                       />
                                       <div>
                                         <label 
@@ -411,7 +419,7 @@ const Contacts = () => {
                   </div>
                 </div>
                 
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2 pt-4 border-t">
                   <Button
                     type="button"
                     variant="outline"
@@ -437,8 +445,8 @@ const Contacts = () => {
       </Tabs>
 
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className={`${isMobile ? 'w-[90vw] max-w-[90vw]' : 'sm:max-w-[450px]'} p-4 sm:p-6`}>
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden">
+          <DialogHeader className="px-4 pt-4 pb-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
             <DialogTitle className="text-xl font-semibold">New Contact</DialogTitle>
             <DialogDescription>
               Add a new contact to your network
@@ -446,7 +454,7 @@ const Contacts = () => {
           </DialogHeader>
           
           <Form {...contactForm}>
-            <form onSubmit={contactForm.handleSubmit(onSubmitContact)} className="space-y-3">
+            <form onSubmit={contactForm.handleSubmit(onSubmitContact)} className="px-4 py-3 space-y-2.5">
               <FormField
                 control={contactForm.control}
                 name="name"
@@ -461,7 +469,7 @@ const Contacts = () => {
                 )}
               />
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <FormField
                   control={contactForm.control}
                   name="email"
@@ -545,7 +553,7 @@ const Contacts = () => {
                 )}
               />
               
-              <DialogFooter className="mt-4 pt-2 border-t flex flex-col-reverse sm:flex-row gap-2">
+              <DialogFooter className="mt-4 pt-3 border-t flex flex-col-reverse sm:flex-row gap-2">
                 <DialogClose asChild>
                   <Button variant="outline" className="w-full sm:w-auto">Cancel</Button>
                 </DialogClose>
