@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Users, ShoppingBag, Briefcase, Search, Mail, Send, UserCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -169,7 +169,7 @@ const Contacts = () => {
   };
 
   // Update form values when selections change
-  React.useEffect(() => {
+  useEffect(() => {
     composeForm.setValue("selectedContacts", selectedContactIds);
   }, [selectedContactIds, composeForm]);
 
@@ -437,7 +437,7 @@ const Contacts = () => {
       </Tabs>
 
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className={`${isMobile ? 'w-[90vw] max-w-[90vw]' : 'sm:max-w-[450px]'} p-4 sm:p-6`}>
+        <DialogContent className={`${isMobile ? 'w-[90vw] max-w-[90vw]' : 'sm:max-w-[425px]'} p-4 sm:p-6`}>
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">New Contact</DialogTitle>
             <DialogDescription>
