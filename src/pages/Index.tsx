@@ -1,12 +1,10 @@
 
 import { useState, useEffect } from "react";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import ProductMetricCards from "@/components/dashboard/ProductMetricCards";
 import GraphContainer from "@/components/dashboard/GraphContainer";
+import RestaurantMetricCards from "@/components/dashboard/RestaurantMetricCards";
 import { availableGraphs } from "@/components/dashboard/data";
 
 const Index = () => {
-  const [activeGraphs, setActiveGraphs] = useState<string[]>(['sales-stock', 'revenue-expenses']);
   const [greeting, setGreeting] = useState<string>("Hello");
   const [currentGraph, setCurrentGraph] = useState<number>(0);
 
@@ -20,18 +18,6 @@ const Index = () => {
       setGreeting("Good evening");
     }
   }, []);
-
-  const handleAddGraph = (graphId: string) => {
-    if (!activeGraphs.includes(graphId)) {
-      setActiveGraphs(prev => [...prev, graphId]);
-    }
-  };
-
-  const handleRemoveGraph = (graphId: string) => {
-    if (graphId) {
-      setActiveGraphs(prev => prev.filter(id => id !== graphId));
-    }
-  };
 
   const handlePrevGraph = () => {
     setCurrentGraph(prev => (prev === 0 ? availableGraphs.length - 1 : prev - 1));
@@ -52,14 +38,14 @@ const Index = () => {
     <div className="space-y-4 sm:space-y-8">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
-          {greeting}, Brian!
+          {greeting}, Chef!
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Here's what's happening with your business today.
+          Here's what's happening in your restaurant today.
         </p>
       </div>
 
-      <ProductMetricCards />
+      <RestaurantMetricCards />
       <GraphContainer 
         availableGraphs={availableGraphs}
         currentGraph={currentGraph}

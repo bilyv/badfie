@@ -1,15 +1,10 @@
 
 import { 
   LayoutDashboard, 
-  ShoppingBag,
-  ChartBar,
   DollarSign,
   Percent,
-  FileText,
   Users,
   Settings,
-  Package,
-  Database,
   Folder,
   Bell,
   Receipt,
@@ -25,12 +20,6 @@ export const defaultMenuItems = [
     path: "/",
     icon: LayoutDashboard,
     id: "dashboard"
-  },
-  {
-    title: "Products",
-    path: "/products",
-    icon: ShoppingBag,
-    id: "products"
   },
   {
     title: "Contacts",
@@ -82,7 +71,7 @@ export const defaultMenuItems = [
       {
         title: "Reports",
         path: "/reports",
-        icon: ChartBar,
+        icon: PieChart,
         id: "reports"
       },
     ],
