@@ -1,20 +1,16 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 import { PricingPlansDialog } from "@/components/PricingPlansDialog";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { AuthHeader } from "@/components/auth/AuthHeader";
-import { AuthFormsContainer } from "@/components/auth/AuthFormsContainer";
 import { Card } from "@/components/ui/card";
+import { Package } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [showPricingPlans, setShowPricingPlans] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -30,66 +26,54 @@ const Auth = () => {
     return <LoadingSpinner />;
   }
 
-  const handleGoogleLogin = async () => {
-    try {
-      setIsLoading(true);
-      // Simulate Google login
+  const handleLogin = () => {
+    setIsLoading(true);
+    // Simulate login
+    setTimeout(() => {
       localStorage.setItem('isLoggedIn', 'true');
-      navigate("/");
-    } catch (error: any) {
+      localStorage.setItem('userEmail', 'user@example.com');
+
       toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
+        description: "Successfully logged in",
       });
-    } finally {
+
+      navigate("/");
       setIsLoading(false);
-    }
+    }, 1000);
   };
-
-  if (showForgotPassword) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="w-full max-w-md space-y-8">
-          <AuthHeader 
-            title="Reset Password"
-            description="Enter your email to reset your password"
-          />
-
-          <Card className="p-6">
-            <ForgotPasswordForm />
-          </Card>
-
-          <Button
-            variant="link"
-            className="w-full"
-            onClick={() => setShowForgotPassword(false)}
-          >
-            Back to login
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
-        <AuthHeader 
-          title="Welcome to Inventory"
-          description="Sign in to your account to continue"
-        />
+        <div className="flex flex-col items-center space-y-2 text-center">
+          <Package className="h-12 w-12 text-primary" />
+          <h1 className="text-2xl font-bold">Welcome to DigitalStock</h1>
+          <p className="text-muted-foreground">Sign in to your account to continue</p>
+        </div>
 
-        <AuthFormsContainer 
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-          onGoogleLogin={handleGoogleLogin}
-          onForgotPassword={() => setShowForgotPassword(true)}
-        />
+        <Card className="p-6">
+          <div className="space-y-4">
+            <Button
+              onClick={handleLogin}
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? "Signing in..." : "Sign In"}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setShowPricingPlans(true)}
+              className="w-full"
+            >
+              View Pricing Plans
+            </Button>
+          </div>
+        </Card>
       </div>
 
-      <PricingPlansDialog 
-        open={showPricingPlans} 
+      <PricingPlansDialog
+        open={showPricingPlans}
         onOpenChange={setShowPricingPlans}
       />
     </div>
