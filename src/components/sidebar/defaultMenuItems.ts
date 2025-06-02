@@ -14,7 +14,9 @@ import {
   Bell,
   Receipt,
   PieChart,
-  Contact
+  Contact,
+  Wine,
+  ChefHat
 } from "lucide-react";
 
 export const defaultMenuItems = [
@@ -59,6 +61,18 @@ export const defaultMenuItems = [
     path: "/reminders",
     icon: Bell,
     id: "reminders"
+  },
+  {
+    title: "Bar Management",
+    path: "/bar-management",
+    icon: Wine,
+    id: "bar-management"
+  },
+  {
+    title: "Kitchen Management",
+    path: "/kitchen-management",
+    icon: ChefHat,
+    id: "kitchen-management"
   },
   {
     group: "Insights",

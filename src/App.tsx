@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +22,8 @@ import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import Subscription from "./pages/Subscription";
 import Contacts from "./pages/Contacts";
+import BarManagement from "./pages/BarManagement";
+import KitchenManagement from "./pages/KitchenManagement";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +51,8 @@ const Layout = () => {
               <Route path="/expenses" element={<Expenses />} />
               <Route path="/tax" element={<Tax />} />
               <Route path="/reminders" element={<Reminders />} />
+              <Route path="/bar-management" element={<BarManagement />} />
+              <Route path="/kitchen-management" element={<KitchenManagement />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/users" element={<Users />} />
               <Route path="/docs-storage" element={<DocsStorage />} />

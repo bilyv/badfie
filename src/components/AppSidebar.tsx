@@ -1,10 +1,8 @@
 
-import { UserRound } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -114,19 +112,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter className="p-4 border-t border-gray-200/60 dark:border-gray-800/60 sticky bottom-0 bg-background/60 backdrop-blur-sm dark:bg-gray-900/60 mt-auto">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <UserRound className="h-8 w-8 text-primary" />
-            <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 animate-neon-glow dark:animate-neon-glow-dark border-2 border-white dark:border-gray-900" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium">Brian Thompson</span>
-            <span className="text-xs text-muted-foreground">Personal Workspace</span>
-          </div>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }
