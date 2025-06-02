@@ -10,11 +10,8 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Navbar } from "@/components/Navbar";
 import { SkeletonLoader } from "@/components/SkeletonLoader";
 import AnimatedBackground from "@/components/AnimatedBackground";
-import { useState } from "react";
 import Index from "./pages/Index";
-import MultiStore from "./pages/MultiStore";
 import Products from "./pages/Products";
-import Services from "./pages/Services";
 import Sales from "./pages/Sales";
 import Expenses from "./pages/Expenses";
 import Tax from "./pages/Tax";
@@ -22,13 +19,9 @@ import Reminders from "./pages/Reminders";
 import Reports from "./pages/Reports";
 import Users from "./pages/Users";
 import DocsStorage from "./pages/DocsStorage";
-import AIAdviser from "./pages/AIAdviser";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
-import Connect from "./pages/Connect";
 import Subscription from "./pages/Subscription";
-import ClientManagement from "./pages/ClientManagement";
-import Appointments from "./pages/Appointments";
 import Contacts from "./pages/Contacts";
 
 const queryClient = new QueryClient({
@@ -41,25 +34,18 @@ const queryClient = new QueryClient({
 });
 
 const Layout = () => {
-  const [mode, setMode] = useState<"product" | "service">("service"); // Set default to service mode
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <AppSidebar mode={mode} />
+        <AppSidebar />
         <main className="flex-1">
           <Navbar />
           <div className="container py-6">
             <AnimatedBackground />
             <Routes>
-              <Route path="/" element={<Index mode={mode} setMode={setMode} />} />
-              <Route path="/multi-store" element={<MultiStore />} />
-              <Route path="/connect" element={<Connect />} />
+              <Route path="/" element={<Index />} />
               <Route path="/products" element={<Products />} />
-              <Route path="/services" element={<Services />} />
               <Route path="/contacts" element={<Contacts />} />
-              <Route path="/client-management" element={<ClientManagement />} />
-              <Route path="/appointments" element={<Appointments />} />
               <Route path="/sales" element={<Sales />} />
               <Route path="/expenses" element={<Expenses />} />
               <Route path="/tax" element={<Tax />} />
@@ -67,7 +53,6 @@ const Layout = () => {
               <Route path="/reports" element={<Reports />} />
               <Route path="/users" element={<Users />} />
               <Route path="/docs-storage" element={<DocsStorage />} />
-              <Route path="/ai-adviser" element={<AIAdviser />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/subscription" element={<Subscription />} />
               <Route path="*" element={<Navigate to="/" replace />} />

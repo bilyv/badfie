@@ -12,16 +12,8 @@ import {
   Database,
   Folder,
   Bell,
-  Wrench,
-  Bot,
-  Edit2,
-  Link2,
-  Building2,
   Receipt,
   PieChart,
-  Lightbulb,
-  CalendarClock,
-  UserRound,
   Contact
 } from "lucide-react";
 
@@ -33,30 +25,10 @@ export const defaultMenuItems = [
     id: "dashboard"
   },
   {
-    title: "Multi-Store",
-    path: "/multi-store",
-    icon: Building2,
-    id: "multi-store"
-  },
-  {
-    title: "Connect",
-    path: "/connect",
-    icon: Link2,
-    id: "connect"
-  },
-  {
     title: "Products",
     path: "/products",
     icon: ShoppingBag,
-    id: "products",
-    mode: "product"
-  },
-  {
-    title: "Services",
-    path: "/services",
-    icon: Wrench,
-    id: "services",
-    mode: "service"
+    id: "products"
   },
   {
     title: "Contacts",
@@ -65,25 +37,10 @@ export const defaultMenuItems = [
     id: "contacts"
   },
   {
-    title: "Client Management",
-    path: "/client-management",
-    icon: UserRound,
-    id: "client-management",
-    mode: "service"
-  },
-  {
-    title: "Appointments",
-    path: "/appointments",
-    icon: CalendarClock,
-    id: "appointments",
-    mode: "service"
-  },
-  {
     title: "Sales",
     path: "/sales",
     icon: Receipt,
-    id: "sales",
-    mode: "product"
+    id: "sales"
   },
   {
     title: "Expenses",
@@ -95,8 +52,7 @@ export const defaultMenuItems = [
     title: "Tax",
     path: "/tax",
     icon: Percent,
-    id: "tax",
-    mode: "product"
+    id: "tax"
   },
   {
     title: "Reminders",
@@ -114,12 +70,6 @@ export const defaultMenuItems = [
         path: "/reports",
         icon: ChartBar,
         id: "reports"
-      },
-      {
-        title: "AI Adviser",
-        path: "/ai-adviser",
-        icon: Lightbulb,
-        id: "ai-adviser"
       },
     ],
   },

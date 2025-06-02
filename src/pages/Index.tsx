@@ -3,15 +3,9 @@ import { useState, useEffect } from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import ProductMetricCards from "@/components/dashboard/ProductMetricCards";
 import GraphContainer from "@/components/dashboard/GraphContainer";
-import ServiceGraphContainer from "@/components/dashboard/ServiceGraphContainer";
-import { availableGraphs, lineData } from "@/components/dashboard/data";
+import { availableGraphs } from "@/components/dashboard/data";
 
-interface IndexProps {
-  mode: "product" | "service";
-  setMode: (mode: "product" | "service") => void;
-}
-
-const Index = ({ mode, setMode }: IndexProps) => {
+const Index = () => {
   const [activeGraphs, setActiveGraphs] = useState<string[]>(['sales-stock', 'revenue-expenses']);
   const [greeting, setGreeting] = useState<string>("Hello");
   const [currentGraph, setCurrentGraph] = useState<number>(0);
@@ -56,28 +50,23 @@ const Index = ({ mode, setMode }: IndexProps) => {
 
   return (
     <div className="space-y-4 sm:space-y-8">
-      <DashboardHeader 
-        greeting={greeting} 
-        mode={mode} 
-        setMode={setMode} 
-      />
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
+          {greeting}, Brian!
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
+          Here's what's happening with your business today.
+        </p>
+      </div>
 
-      {mode === "product" ? (
-        <>
-          <ProductMetricCards />
-          <GraphContainer 
-            availableGraphs={availableGraphs}
-            currentGraph={currentGraph}
-            handlePrevGraph={handlePrevGraph}
-            handleNextGraph={handleNextGraph}
-            handleSelectGraph={handleSelectGraph}
-          />
-        </>
-      ) : (
-        <>
-          <ServiceGraphContainer data={lineData} />
-        </>
-      )}
+      <ProductMetricCards />
+      <GraphContainer 
+        availableGraphs={availableGraphs}
+        currentGraph={currentGraph}
+        handlePrevGraph={handlePrevGraph}
+        handleNextGraph={handleNextGraph}
+        handleSelectGraph={handleSelectGraph}
+      />
     </div>
   );
 };
