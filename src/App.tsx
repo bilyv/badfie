@@ -16,7 +16,7 @@ import Expenses from "./pages/Expenses";
 import Tax from "./pages/Tax";
 import Reminders from "./pages/Reminders";
 import Reports from "./pages/Reports";
-import Users from "./pages/Users";
+import Workers from "./pages/Workers";
 import DocsStorage from "./pages/DocsStorage";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
@@ -24,6 +24,7 @@ import Subscription from "./pages/Subscription";
 import Contacts from "./pages/Contacts";
 import BarManagement from "./pages/BarManagement";
 import KitchenManagement from "./pages/KitchenManagement";
+import HealthCheck from "./components/HealthCheck";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,10 +54,11 @@ const Layout = () => {
               <Route path="/bar-management" element={<BarManagement />} />
               <Route path="/kitchen-management" element={<KitchenManagement />} />
               <Route path="/reports" element={<Reports />} />
-              <Route path="/users" element={<Users />} />
+              <Route path="/workers" element={<Workers />} />
               <Route path="/docs-storage" element={<DocsStorage />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/subscription" element={<Subscription />} />
+              <Route path="/health" element={<HealthCheck />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>

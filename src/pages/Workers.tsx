@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,59 +26,59 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Sample data for demonstration
-const sampleUsers = [
-  { id: 1, name: "John Doe", email: "john@example.com", role: "Admin" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Manager" },
-  { id: 3, name: "Bob Wilson", email: "bob@example.com", role: "User" },
-  { id: 4, name: "Alice Johnson", email: "alice@example.com", role: "User" },
+const sampleWorkers = [
+  { id: 1, name: "John Doe", email: "john@example.com", role: "Manager" },
+  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Staff" },
+  { id: 3, name: "Bob Wilson", email: "bob@example.com", role: "Worker" },
+  { id: 4, name: "Alice Johnson", email: "alice@example.com", role: "Worker" },
 ];
 
 const sampleTasks = [
-  { id: 1, userId: 1, task: "Complete quarterly report", status: "completed", revenue: 1500 },
-  { id: 2, userId: 2, task: "Client meeting preparation", status: "in-progress", revenue: 800 },
-  { id: 3, userId: 3, task: "Website update", status: "pending", revenue: 0 },
-  { id: 4, userId: 1, task: "Team training session", status: "completed", revenue: 2000 },
+  { id: 1, workerId: 1, task: "Complete quarterly report", status: "completed", revenue: 1500 },
+  { id: 2, workerId: 2, task: "Client meeting preparation", status: "in-progress", revenue: 800 },
+  { id: 3, workerId: 3, task: "Website update", status: "pending", revenue: 0 },
+  { id: 4, workerId: 1, task: "Team training session", status: "completed", revenue: 2000 },
 ];
 
-const Users = () => {
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+const Workers = () => {
+  const [selectedWorker, setSelectedWorker] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSendMessage = () => {
     if (!messageInput.trim()) return;
     // Here you would implement the actual message sending logic
-    console.log(`Sending message to ${selectedUser}: ${messageInput}`);
+    console.log(`Sending message to ${selectedWorker}: ${messageInput}`);
     setMessageInput("");
   };
 
-  // Filter users based on search query
-  const filteredUsers = sampleUsers.filter(user => 
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.role.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter workers based on search query
+  const filteredWorkers = sampleWorkers.filter(worker => 
+    worker.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    worker.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    worker.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
-          User Management
+          Worker Management
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Manage users, tasks, and communication
+          Manage workers, tasks, and communication
         </p>
       </div>
       
-      <Tabs defaultValue="users" className="w-full">
+      <Tabs defaultValue="workers" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="workers">Workers</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="messages">Messages</TabsTrigger>
         </TabsList>
 
-        {/* Users Tab */}
-        <TabsContent value="users" className="mt-6">
+        {/* Workers Tab */}
+        <TabsContent value="workers" className="mt-6">
           <Card className="p-6">
             <div className="flex flex-col space-y-4">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -87,7 +86,7 @@ const Users = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
                   <Input 
                     className="pl-10" 
-                    placeholder="Search users..." 
+                    placeholder="Search workers..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -95,12 +94,12 @@ const Users = () => {
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button className="whitespace-nowrap">
-                      <Plus className="mr-2 h-4 w-4" /> Create User
+                      <Plus className="mr-2 h-4 w-4" /> Create Worker
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Add New User</DialogTitle>
+                      <DialogTitle>Add New Worker</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                       <div className="grid grid-cols-4 items-center gap-4">
@@ -112,21 +111,25 @@ const Users = () => {
                         <Input id="email" type="email" className="col-span-3" />
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="password" className="text-right">Password</Label>
+                        <Input id="password" type="password" className="col-span-3" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="role" className="text-right">Role</Label>
                         <Select>
                           <SelectTrigger className="col-span-3">
                             <SelectValue placeholder="Select role" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="admin">Admin</SelectItem>
                             <SelectItem value="manager">Manager</SelectItem>
-                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="staff">Staff</SelectItem>
+                            <SelectItem value="worker">Worker</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="submit">Save User</Button>
+                      <Button type="submit">Save Worker</Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
@@ -143,11 +146,11 @@ const Users = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredUsers.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.name}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.role}</TableCell>
+                    {filteredWorkers.map((worker) => (
+                      <TableRow key={worker.id}>
+                        <TableCell className="font-medium">{worker.name}</TableCell>
+                        <TableCell>{worker.email}</TableCell>
+                        <TableCell>{worker.role}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <Button variant="outline" size="sm">
@@ -172,7 +175,7 @@ const Users = () => {
           <Card className="p-6">
             <div className="flex flex-col space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium">User Tasks</h3>
+                <h3 className="text-lg font-medium">Worker Tasks</h3>
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button>
@@ -185,14 +188,14 @@ const Users = () => {
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                       <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="task-user" className="text-right">User</Label>
+                        <Label htmlFor="task-worker" className="text-right">Worker</Label>
                         <Select>
                           <SelectTrigger className="col-span-3">
-                            <SelectValue placeholder="Select user" />
+                            <SelectValue placeholder="Select worker" />
                           </SelectTrigger>
                           <SelectContent>
-                            {sampleUsers.map(user => (
-                              <SelectItem key={user.id} value={user.id.toString()}>{user.name}</SelectItem>
+                            {sampleWorkers.map(worker => (
+                              <SelectItem key={worker.id} value={worker.id.toString()}>{worker.name}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -214,20 +217,20 @@ const Users = () => {
               </div>
 
               <div className="grid gap-4">
-                {sampleUsers.map((user) => {
-                  const userTasks = sampleTasks.filter(task => task.userId === user.id);
-                  const totalRevenue = userTasks.reduce((sum, task) => sum + task.revenue, 0);
+                {sampleWorkers.map((worker) => {
+                  const workerTasks = sampleTasks.filter(task => task.workerId === worker.id);
+                  const totalRevenue = workerTasks.reduce((sum, task) => sum + task.revenue, 0);
                   
                   return (
-                    <div key={user.id} className="border rounded-lg p-4 transition-all hover:shadow-md">
+                    <div key={worker.id} className="border rounded-lg p-4 transition-all hover:shadow-md">
                       <div className="flex flex-col sm:flex-row justify-between mb-4">
                         <div className="flex items-center gap-3 mb-3 sm:mb-0">
                           <div className="bg-primary/10 p-2 rounded-full">
                             <User className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <h4 className="font-medium">{user.name}</h4>
-                            <p className="text-sm text-muted-foreground">{user.role}</p>
+                            <h4 className="font-medium">{worker.name}</h4>
+                            <p className="text-sm text-muted-foreground">{worker.role}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 text-green-600">
@@ -236,9 +239,9 @@ const Users = () => {
                         </div>
                       </div>
                       
-                      {userTasks.length > 0 ? (
+                      {workerTasks.length > 0 ? (
                         <div className="space-y-2">
-                          {userTasks.map((task) => (
+                          {workerTasks.map((task) => (
                             <div key={task.id} className="flex items-center justify-between bg-muted/50 p-2 rounded-md">
                               <div className="flex items-center gap-2">
                                 {task.status === 'completed' ? (
@@ -268,17 +271,17 @@ const Users = () => {
           <Card className="p-6">
             <div className="grid md:grid-cols-[300px_1fr] gap-6">
               <div className="space-y-4">
-                <Input placeholder="Search users..." />
+                <Input placeholder="Search workers..." />
                 <ScrollArea className="h-[500px] border rounded-lg">
                   <div className="space-y-2 p-2">
-                    {sampleUsers.map((user) => (
+                    {sampleWorkers.map((worker) => (
                       <Button
-                        key={user.id}
-                        variant={selectedUser === user.name ? "secondary" : "ghost"}
+                        key={worker.id}
+                        variant={selectedWorker === worker.name ? "secondary" : "ghost"}
                         className="w-full justify-start"
-                        onClick={() => setSelectedUser(user.name)}
+                        onClick={() => setSelectedWorker(worker.name)}
                       >
-                        {user.name}
+                        {worker.name}
                       </Button>
                     ))}
                   </div>
@@ -286,10 +289,10 @@ const Users = () => {
               </div>
               
               <div className="flex flex-col h-[500px] border rounded-lg">
-                {selectedUser ? (
+                {selectedWorker ? (
                   <>
                     <div className="p-4 border-b">
-                      <h3 className="font-medium">{selectedUser}</h3>
+                      <h3 className="font-medium">{selectedWorker}</h3>
                     </div>
                     <ScrollArea className="flex-1 p-4">
                       <div className="space-y-4">
@@ -316,7 +319,7 @@ const Users = () => {
                   </>
                 ) : (
                   <div className="flex items-center justify-center h-full text-muted-foreground">
-                    Select a user to start messaging
+                    Select a worker to start messaging
                   </div>
                 )}
               </div>
@@ -328,4 +331,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Workers;

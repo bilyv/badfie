@@ -65,15 +65,84 @@
    bun install
    ```
 
-3. **Start development server**
+3. **Set up the backend** (see Backend Setup section below)
+
+4. **Start development server**
    ```bash
    bun run dev
    ```
 
-4. **Open your browser**
+   Or start both frontend and backend:
+   ```bash
+   bun run dev:full
    ```
-   http://localhost:8080
+
+5. **Open your browser**
    ```
+   Frontend: http://localhost:8080
+   Backend API: http://localhost:3001
+   ```
+
+---
+
+## 🗄️ Backend Setup
+
+The backend is a separate Node.js/TypeScript API server with PostgreSQL database.
+
+### Prerequisites
+- PostgreSQL (v12 or higher)
+- Node.js (v18 or higher)
+- Bun package manager
+
+### Setup Steps
+
+1. **Ensure your PostgreSQL database exists:**
+   Your database "saas" should already be available with the following credentials:
+   - Host: localhost
+   - Port: 5432
+   - Database: saas
+   - Username: postgres
+   - Password: 7878
+
+2. **Install backend dependencies**:
+   ```bash
+   bun run install:backend
+   ```
+
+3. **Configure environment variables**:
+   ```bash
+   cd backend
+   cp .env.example .env
+   ```
+
+   The `.env` file is already configured with your database credentials:
+   ```env
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=saas
+   DB_USER=postgres
+   DB_PASSWORD=7878
+   JWT_SECRET=digitalstock_super_secret_jwt_key_2024_restaurant_management_system
+   ```
+
+4. **Run database migrations**:
+   ```bash
+   cd backend
+   bun run db:migrate
+   ```
+
+5. **Seed the database** (optional):
+   ```bash
+   cd backend
+   bun run db:seed
+   ```
+
+### Default User Accounts (after seeding)
+- **Admin**: `admin@digitalstock.com` / `admin123456`
+- **Manager**: `manager@digitalstock.com` / `manager123456`
+- **Staff**: `staff@digitalstock.com` / `staff123456`
+
+For detailed backend documentation, see [backend/README.md](backend/README.md).
 
 ---
 
@@ -103,7 +172,7 @@
 
 ```
 digitalstock/
-├── src/
+├── src/                    # Frontend source code
 │   ├── components/          # Reusable UI components
 │   │   ├── ui/             # Base UI components (shadcn/ui)
 │   │   ├── auth/           # Authentication components
@@ -114,20 +183,46 @@ digitalstock/
 │   ├── hooks/              # Custom React hooks
 │   ├── lib/                # Utility functions and types
 │   └── main.tsx           # Application entry point
+├── backend/                # Backend API server
+│   ├── src/
+│   │   ├── config/         # Configuration files
+│   │   ├── middleware/     # Express middleware
+│   │   ├── routes/         # API routes
+│   │   ├── database/       # Database schemas and migrations
+│   │   └── index.ts        # Main server file
+│   ├── package.json        # Backend dependencies
+│   └── README.md          # Backend documentation
 ├── public/                 # Static assets
-└── package.json           # Dependencies and scripts
+└── package.json           # Frontend dependencies and scripts
 ```
 
 ---
 
 ## 🔧 Available Scripts
 
+### Frontend & Full Stack
 | Command | Description |
 |---------|-------------|
-| `bun run dev` | Start development server |
-| `bun run build` | Build for production |
-| `bun run preview` | Preview production build |
-| `bun run lint` | Run ESLint |
+| `bun run dev` | Start frontend development server |
+| `bun run build` | Build frontend for production |
+| `bun run preview` | Preview frontend production build |
+| `bun run dev:full` | Start both frontend and backend servers |
+| `bun run backend:dev` | Start backend development server |
+| `bun run backend:build` | Build backend for production |
+| `bun run backend:start` | Start backend production server |
+| `bun run install:backend` | Install backend dependencies |
+| `bun run lint` | Run ESLint on frontend |
+
+### Backend Only (from backend/ directory)
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Start backend development server |
+| `bun run build` | Build backend for production |
+| `bun run start` | Start backend production server |
+| `bun run db:migrate` | Run database migrations |
+| `bun run db:seed` | Seed database with sample data |
+| `bun run db:reset` | Reset database (drop all tables) |
+| `bun run lint` | Run ESLint on backend |
 
 ---
 

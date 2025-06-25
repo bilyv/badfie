@@ -1,6 +1,6 @@
 
-import { 
-  LayoutDashboard, 
+import {
+  LayoutDashboard,
   DollarSign,
   Percent,
   Users,
@@ -22,10 +22,16 @@ export const defaultMenuItems = [
     id: "dashboard"
   },
   {
-    title: "Contacts",
-    path: "/contacts",
-    icon: Contact,
-    id: "contacts"
+    title: "Bar Management",
+    path: "/bar-management",
+    icon: Wine,
+    id: "bar-management"
+  },
+  {
+    title: "Kitchen Management",
+    path: "/kitchen-management",
+    icon: ChefHat,
+    id: "kitchen-management"
   },
   {
     title: "Sales",
@@ -46,22 +52,16 @@ export const defaultMenuItems = [
     id: "tax"
   },
   {
+    title: "Contacts",
+    path: "/contacts",
+    icon: Contact,
+    id: "contacts"
+  },
+  {
     title: "Reminders",
     path: "/reminders",
     icon: Bell,
     id: "reminders"
-  },
-  {
-    title: "Bar Management",
-    path: "/bar-management",
-    icon: Wine,
-    id: "bar-management"
-  },
-  {
-    title: "Kitchen Management",
-    path: "/kitchen-management",
-    icon: ChefHat,
-    id: "kitchen-management"
   },
   {
     group: "Insights",
@@ -83,10 +83,10 @@ export const defaultMenuItems = [
     id: "docs-storage"
   },
   {
-    title: "Users",
-    path: "/users",
+    title: "Workers",
+    path: "/workers",
     icon: Users,
-    id: "users"
+    id: "workers"
   },
   {
     title: "Settings",
